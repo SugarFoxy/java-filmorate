@@ -6,17 +6,17 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
+
 @Slf4j
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
 
     private static final LocalDate REFERENCE_POINT_RELEASE_DATE = LocalDate.now();
-    private int id = 0;
+    private int id = 1;
 
 
     public int createId() {
@@ -24,9 +24,9 @@ public class UserController {
     }
 
     @GetMapping
-    public Map<Integer, User> getUsers() {
+    public List<User> getUsers() {
         log.info("Получен запрос на список пользователей");
-        return users;
+        return getListUsers();
     }
 
     @PostMapping
@@ -34,10 +34,14 @@ public class UserController {
         try {
             validation(user);
             user.setId(createId());
+            if (user.getName() == null || user.getName().isBlank()) {
+                user.setName(user.getLogin());
+            }
             users.put(user.getId(), user);
-            log.info("Пользователь "+user.getLogin()+" добавлен");
-        } catch (ValidationException e) {
+            log.info("Пользователь " + user.getLogin() + " добавлен");
+        } catch (RuntimeException e) {
             log.warn(e.getMessage());
+            throw new RuntimeException(e);
         }
         return user;
     }
@@ -46,26 +50,33 @@ public class UserController {
     public User updateFilm(@RequestBody User user) {
         try {
             validation(user);
-            users.replace(user.getId(), user);
-            log.info("Пользователь "+user.getLogin()+" обновлен");
-        } catch (ValidationException e) {
+            if (users.containsKey(user.getId())) {
+                users.replace(user.getId(), user);
+                log.info("Пользователь " + user.getLogin() + " обновлен");
+            } else {
+                throw new ValidationException("Такого пользователя не существует");
+            }
+        } catch (RuntimeException e) {
             log.warn(e.getMessage());
+            throw new RuntimeException(e);
         }
         return user;
     }
-
+    private List<User> getListUsers(){
+        Collection<User> value = users.values();
+        return  new ArrayList<>(value);
+    }
     private void validation(User user) throws ValidationException {
-        if (user.getEmail().isBlank() && !user.getEmail().contains("@") ) {
+        if (user.getEmail().isBlank() && !user.getEmail().contains("@")) {
             throw new ValidationException("Email не может быть пустым и должен иметь самвол '@'");
         }
-        if (user.getLogin().isBlank()) {
+        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             throw new ValidationException("логин не может быть пустым и содержать пробелы");
-        }
-        if (user.getName().isBlank()) {
-            user.setName(user.getLogin());
         }
         if (user.getBirthday().isAfter(REFERENCE_POINT_RELEASE_DATE)) {
             throw new ValidationException("дата рождения не может быть в будущем");
         }
     }
+
+
 }
