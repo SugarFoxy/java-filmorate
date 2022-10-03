@@ -34,9 +34,9 @@ public class FilmController {
             film.setId(createId());
             films.put(film.getId(), film);
             log.info("Фильм добавлен");
-        } catch (RuntimeException e) {
+        } catch (ValidationException e) {
             log.warn(e.getMessage());
-            throw new RuntimeException(e);
+            throw new ValidationException(e);
         }
         return film;
     }
@@ -47,13 +47,13 @@ public class FilmController {
             validation(film);
             if (films.containsKey(film.getId())) {
                 films.replace(film.getId(), film);
-                log.info("Фильм онавлен");
+                log.info("Фильм обнавлен");
             } else {
                 throw new ValidationException("Такого фильма не существует");
             }
-        } catch (RuntimeException e) {
+        } catch (ValidationException e) {
             log.warn(e.getMessage());
-            throw new RuntimeException(e);
+            throw new ValidationException(e);
 
         }
         return film;
@@ -65,7 +65,7 @@ public class FilmController {
     }
 
     private void validation(Film film) throws ValidationException {
-        if (film.getName().isBlank()) {
+        if (film.getName() == null || film.getName().isBlank()) {
             throw new ValidationException("название не может быть пустым");
         }
         if (film.getDescription().length() > 200) {
