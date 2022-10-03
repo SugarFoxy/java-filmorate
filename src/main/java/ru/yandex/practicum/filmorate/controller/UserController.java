@@ -19,7 +19,7 @@ public class UserController {
     private int id = 1;
 
 
-    public int createId() {
+    private int createId() {
         return id++;
     }
 
@@ -69,9 +69,6 @@ public class UserController {
     }
 
     private void validation(User user) throws ValidationException {
-        if (user.getEmail().isBlank() && !user.getEmail().contains("@")) {
-            throw new ValidationException("Email не может быть пустым и должен иметь самвол '@'");
-        }
         if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             throw new ValidationException("логин не может быть пустым и содержать пробелы");
         }
