@@ -17,7 +17,7 @@ public class FilmController {
     private static final LocalDate REFERENCE_POINT_RELEASE_DATE = LocalDate.of(1895, 12, 28);
     private int id = 1;
 
-    public int createId() {
+    private int createId() {
         return id++;
     }
 
