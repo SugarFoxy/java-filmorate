@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/users")
 @Slf4j
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
@@ -22,13 +23,13 @@ public class UserController {
         return id++;
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public Map<Integer, User> getUsers() {
         log.info("Получен запрос на список пользователей");
         return users;
     }
 
-    @PostMapping("/film")
+    @PostMapping
     public User postFilm(@RequestBody User user) {
         try {
             validation(user);
@@ -41,7 +42,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping("/film")
+    @PutMapping
     public User updateFilm(@RequestBody User user) {
         try {
             validation(user);
