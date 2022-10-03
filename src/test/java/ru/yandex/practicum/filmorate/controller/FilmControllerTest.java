@@ -29,6 +29,7 @@ class FilmControllerTest {
             LocalDate.of(1895, 12, 28),
             0
     );
+
     @BeforeEach
     public void init(){
         filmController = new FilmController();
@@ -55,6 +56,34 @@ class FilmControllerTest {
         assertThrows(ValidationException.class,  () -> filmController.postFilm(filmEarlyRelease),"дата релиза — не раньше 28 декабря 1895");
         assertThrows(ValidationException.class,  () -> filmController.postFilm(filmNegativeDuration),"продолжительность фильма должна быть положительной");
 
+        film.setId(5);
+        assertThrows(ValidationException.class,  () -> filmController.updateFilm(film),"Такого фильма не существует");
+
+        List<Film> filmsAfterIncorrectAddition = filmController.getFilms();
+
+        filmController.postFilm(film);
+        filmController.updateFilm(film);
+
+        List<Film> filmsAfter = filmController.getFilms();
+
+        assertAll(
+                () -> assertEquals(0, filmsBefore.size(), "список пуст"),
+                () -> assertEquals(0, filmsAfterIncorrectAddition.size(), "список пуст"),
+                () -> assertEquals(1, filmsAfter.size(), "имеется оди элемент")
+        );
+
+    }
+
+    @Test
+    void updateFilm() {
+        List<Film> filmsBefore = filmController.getFilms();
+
+        assertThrows(ValidationException.class,  () -> filmController.updateFilm(filmNullName), "название не может быть пустым");
+        assertThrows(ValidationException.class,  () -> filmController.updateFilm(filmEmptyName),"название не может быть пустым");
+        assertThrows(ValidationException.class,  () -> filmController.updateFilm(film201description),"максимальная длина описания — 200 символов");
+        assertThrows(ValidationException.class,  () -> filmController.updateFilm(filmEarlyRelease),"дата релиза — не раньше 28 декабря 1895");
+        assertThrows(ValidationException.class,  () -> filmController.updateFilm(filmNegativeDuration),"продолжительность фильма должна быть положительной");
+
         List<Film> filmsAfterIncorrectAddition = filmController.getFilms();
 
         filmController.postFilm(film);
@@ -66,10 +95,6 @@ class FilmControllerTest {
                 () -> assertEquals(1, filmsAfter.size(), "имеется оди элемент")
         );
 
-    }
-
-    @Test
-    void updateFilm() {
 
     }
 }
