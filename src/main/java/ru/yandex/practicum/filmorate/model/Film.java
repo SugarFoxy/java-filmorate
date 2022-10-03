@@ -11,13 +11,12 @@ import java.time.LocalDate;
 public class Film {
 
     private int id ;
-    @NonNull
     private String name;
     private String description;
     private LocalDate releaseDate;
     private long duration;
 
-    public Film(@NonNull String name, String description, LocalDate releaseDate, long duration) {
+    public Film(String name, String description, LocalDate releaseDate, long duration) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
