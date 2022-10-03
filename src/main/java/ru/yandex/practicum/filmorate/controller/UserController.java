@@ -15,7 +15,7 @@ import java.util.*;
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
 
-    private static final LocalDate REFERENCE_POINT_RELEASE_DATE = LocalDate.now();
+    private static final LocalDate NOW_DATE = LocalDate.now();
     private int id = 1;
 
 
@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User postFilm(@RequestBody User user) {
+    public User postUsers(@RequestBody User user) {
         try {
             validation(user);
             user.setId(createId());
@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateFilm(@RequestBody User user) {
+    public User updateUsers(@RequestBody User user) {
         try {
             validation(user);
             if (users.containsKey(user.getId())) {
@@ -62,10 +62,12 @@ public class UserController {
         }
         return user;
     }
-    private List<User> getListUsers(){
+
+    private List<User> getListUsers() {
         Collection<User> value = users.values();
-        return  new ArrayList<>(value);
+        return new ArrayList<>(value);
     }
+
     private void validation(User user) throws ValidationException {
         if (user.getEmail().isBlank() && !user.getEmail().contains("@")) {
             throw new ValidationException("Email не может быть пустым и должен иметь самвол '@'");
@@ -73,10 +75,8 @@ public class UserController {
         if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             throw new ValidationException("логин не может быть пустым и содержать пробелы");
         }
-        if (user.getBirthday().isAfter(REFERENCE_POINT_RELEASE_DATE)) {
+        if (user.getBirthday().isAfter(NOW_DATE)) {
             throw new ValidationException("дата рождения не может быть в будущем");
         }
     }
-
-
 }
