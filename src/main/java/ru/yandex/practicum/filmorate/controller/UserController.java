@@ -41,7 +41,7 @@ public class UserController {
             log.info("Пользователь " + user.getLogin() + " добавлен");
         } catch (RuntimeException e) {
             log.warn(e.getMessage());
-            throw new RuntimeException(e);
+            throw new ValidationException(e);
         }
         return user;
     }
@@ -58,7 +58,7 @@ public class UserController {
             }
         } catch (RuntimeException e) {
             log.warn(e.getMessage());
-            throw new RuntimeException(e);
+            throw new ValidationException(e);
         }
         return user;
     }
