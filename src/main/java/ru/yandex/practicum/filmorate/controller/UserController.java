@@ -52,6 +52,9 @@ public class UserController {
         try {
             validation(user);
             if (users.containsKey(user.getId())) {
+                if (user.getName() == null || user.getName().isBlank()) {
+                    user.setName(user.getLogin());
+                }
                 users.replace(user.getId(), user);
                 log.info("Пользователь " + user.getLogin() + " обновлен");
             } else {
