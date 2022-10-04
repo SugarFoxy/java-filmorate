@@ -70,9 +70,6 @@ public class UserController {
     }
 
     private void validation(User user) throws ValidationException {
-//        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-//            throw new ValidationException("логин не может быть пустым и содержать пробелы");
-//        }
         if (user.getBirthday().isAfter(NOW_DATE)) {
             throw new ValidationException("дата рождения не может быть в будущем");
         }
