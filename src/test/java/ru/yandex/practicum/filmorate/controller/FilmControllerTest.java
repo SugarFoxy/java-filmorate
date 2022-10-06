@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
     FilmController filmController;
-    private final Film filmNullName = new Film(null, "Test description", LocalDate.of(1994, 5, 21), 100);
-    private final Film filmEmptyName = new Film("", "Test description", LocalDate.of(1994, 5, 21), 100);
-    private final Film filmEarlyRelease = new Film("TestName", "Test description", LocalDate.of(1895, 12, 27), 100);
-    private final Film filmNegativeDuration = new Film("TestName", "Test description", LocalDate.of(1994, 5, 21), -1);
-    private final Film film201description = new Film("TestName", "Test description Test description " +
+    final Film filmNullName = new Film(null, "Test description", LocalDate.of(1994, 5, 21), 100);
+    final Film filmEmptyName = new Film("", "Test description", LocalDate.of(1994, 5, 21), 100);
+    final Film filmEarlyRelease = new Film("TestName", "Test description", LocalDate.of(1895, 12, 27), 100);
+    final Film filmNegativeDuration = new Film("TestName", "Test description", LocalDate.of(1994, 5, 21), -1);
+    final Film film201description = new Film("TestName", "Test description Test description " +
             "Test description Test description Test description Test description Test description " +
             "Test description Test description Test description Test description Test descripti",
             LocalDate.of(1994, 5, 21),
