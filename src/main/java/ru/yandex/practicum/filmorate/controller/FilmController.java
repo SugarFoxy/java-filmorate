@@ -74,7 +74,7 @@ public class FilmController {
         if (film.getReleaseDate().isBefore(REFERENCE_POINT_RELEASE_DATE)) {
             throw new ValidationException("дата релиза — не раньше 28 декабря 1895");
         }
-        if (film.getDuration() < 0) {
+        if (film.getDuration() <= 0) {
             throw new ValidationException("продолжительность фильма должна быть положительной");
         }
     }
