@@ -27,7 +27,7 @@ class FilmControllerTest {
                     "Test description Test description Test description Test description Test description " +
                     "Test description Test descript",
             LocalDate.of(1895, 12, 28),
-            0
+            10
     );
 
     @BeforeEach
