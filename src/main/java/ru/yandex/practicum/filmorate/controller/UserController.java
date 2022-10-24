@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -42,6 +43,10 @@ public class UserController {
         userService.updateUsers(user);
         return user;
     }
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Integer id){
+        return userService.getUserById(id);
+    }
 
     @GetMapping("/{id}/friends")
     public List<User> getUsersFriends(@PathVariable Integer id) {
@@ -49,13 +54,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+    public List<Integer> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        log.info("запрошен список общих друзей");
         return userService.getMutualFriends(id, otherId);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addToFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.addToFriends(id, friendId);
+        log.info("Друг добавлен");
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
@@ -74,7 +81,7 @@ public class UserController {
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String,String> handle(final ValidationException e) {
+    public Map<String,String> handle(final AbsenceOfObjectException e) {
         Map<String,String> map = Map.of("error", e.getMessage());
         log.warn(e.getMessage());
         return map;
