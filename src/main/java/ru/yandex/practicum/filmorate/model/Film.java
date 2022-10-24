@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.lang.NonNull;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
@@ -28,6 +25,12 @@ public class Film {
     @NotNull(message = "Продолжительность не может отсутствовать")
     @Positive(message = "Продолжитьльность не может быть отрицательной")
     private long duration;
+    @AssertFalse
+    boolean releaseDateAfter;
+
+    private boolean isReleaseDateAfter(){
+        return releaseDate.isBefore(LocalDate.of(1895,12,28));
+    }
 
     public Film(String name, String description, LocalDate releaseDate, long duration) {
         this.name = name;
