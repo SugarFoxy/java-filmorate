@@ -62,4 +62,8 @@ public class InMemoryUserStorage implements UserStorage {
             throw new ValidationException("дата рождения не может быть в будущем");
         }
     }
+
+    public User getUserById(Integer id ){
+        return users.get(id);
+    }
 }
