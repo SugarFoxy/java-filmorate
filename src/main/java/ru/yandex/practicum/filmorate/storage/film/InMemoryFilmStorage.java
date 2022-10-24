@@ -11,56 +11,37 @@ import java.util.*;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
-    private static final LocalDate REFERENCE_POINT_RELEASE_DATE = LocalDate.of(1895, 12, 28);
     private int id = 1;
 
     private int createId() {
         return id++;
     }
 
-    public List<Film> findAll() {
-        Collection<Film> value = films.values();
-        return new ArrayList<>(value);
+
+    @Override
+    public List<Film> getFilms() {
+        Collection<Film> films1 = films.values();
+        return new ArrayList<>(films1);
     }
 
-    public Film postFilm(Film film) {
-        try {
-            validation(film);
-            film.setId(createId());
-            films.put(film.getId(), film);
-        } catch (ValidationException e) {
-            throw new ValidationException(e);
-        }
-        return film;
+    @Override
+    public Film addFilm(Film film) {
+        return null;
     }
 
-    public Film updateFilm(Film film) {
-        try {
-            validation(film);
-            if (films.containsKey(film.getId())) {
-                films.replace(film.getId(), film);
-            } else {
-                throw new ValidationException("Такого фильма не существует");
-            }
-        } catch (ValidationException e) {
-            throw new ValidationException(e);
-        }
-        return film;
+    @Override
+    public void updateFilms(Film film) {
+
     }
 
-    private void validation(Film film) throws ValidationException {
-        if (film.getName() == null || film.getName().isBlank()) {
-            throw new ValidationException("название не может быть пустым");
-        }
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("максимальная длина описания — 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(REFERENCE_POINT_RELEASE_DATE)) {
-            throw new ValidationException("дата релиза — не раньше 28 декабря 1895");
-        }
-        if (film.getDuration() <= 0) {
-            throw new ValidationException("продолжительность фильма должна быть положительной");
-        }
+    @Override
+    public Film getFilmById(Integer id) {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, Film> getMapFilms() {
+        return null;
     }
 }
 

@@ -11,8 +11,6 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
-
-    private static final LocalDate NOW_DATE = LocalDate.now();
     private int id = 1;
 
 
