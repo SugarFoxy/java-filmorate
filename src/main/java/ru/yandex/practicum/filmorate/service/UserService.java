@@ -1,4 +1,4 @@
 package ru.yandex.practicum.filmorate.service;
 
-public interface UserStorage {
+public class UserService {
 }
