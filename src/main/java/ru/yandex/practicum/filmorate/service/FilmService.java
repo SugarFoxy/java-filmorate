@@ -11,13 +11,17 @@ import java.util.List;
 public class FilmService {
     InMemoryFilmStorage storage;
 
-@Autowired
+    @Autowired
     public FilmService(InMemoryFilmStorage storage) {
         this.storage = storage;
     }
 
-    public List<Film> getAllFilms(){
-    return storage.getFilms();
+    public List<Film> getAllFilms() {
+        return storage.getFilms();
+    }
+
+    public Film addFilm(Film film) {
+        return storage.addFilm(film);
     }
 
 }

@@ -15,7 +15,7 @@ import java.util.*;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-   FilmService service;
+    FilmService service;
 
     @Autowired
     public FilmController(FilmService service) {
@@ -30,14 +30,8 @@ public class FilmController {
 
     @PostMapping
     public Film postFilm(@Valid @RequestBody Film film) {
-        try {
-            inMemoryFilmStorage.postFilm(film);
-            log.info("Фильм добавлен");
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            throw new ValidationException(e);
-        }
-        return film;
+        log.info("Фильм добавлен");
+        return service.addFilm(film);
     }
 
     @PutMapping
