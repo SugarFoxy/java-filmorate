@@ -19,51 +19,30 @@ public class InMemoryUserStorage implements UserStorage {
         return id++;
     }
 
+    @Override
     public List<User> getUsers() {
         Collection<User> value = users.values();
         return new ArrayList<>(value);
     }
 
+    @Override
+    public User addUser(User user) {
+        user.setId(createId());
+        users.put(user.getId(), user);
+        return user;
+    }
 
-    public User postUsers(User user) {
-        try {
-            validation(user);
-            user.setId(createId());
-            if (user.getName() == null || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
+    @Override
+    public void updateUsers(User user) {
+        if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
-        } catch (RuntimeException e) {
-            throw new ValidationException(e);
-        }
-        return user;
-    }
-
-
-    public User updateUsers(User user) {
-        try {
-            validation(user);
-            if (users.containsKey(user.getId())) {
-                if (user.getName() == null || user.getName().isBlank()) {
-                    user.setName(user.getLogin());
-                }
-                users.replace(user.getId(), user);
-            } else {
-                throw new ValidationException("Такого пользователя не существует");
-            }
-        } catch (RuntimeException e) {
-            throw new ValidationException(e);
-        }
-        return user;
-    }
-
-    private void validation(User user) throws ValidationException {
-        if (user.getBirthday().isAfter(NOW_DATE)) {
-            throw new ValidationException("дата рождения не может быть в будущем");
+        }else {
+            throw new ValidationException("Такого пользователя нет");
         }
     }
 
-    public User getUserById(Integer id ){
+    @Override
+    public User getUserById(Integer id) {
         return users.get(id);
     }
 }
