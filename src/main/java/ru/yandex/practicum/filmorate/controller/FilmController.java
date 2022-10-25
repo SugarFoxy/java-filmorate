@@ -72,6 +72,14 @@ public class FilmController {
     }
 
     @ExceptionHandler()
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String,String> handle(final ValidationException e) {
+        Map<String,String> map = Map.of("error", e.getMessage());
+        log.warn(e.getMessage());
+        return map;
+    }
+
+    @ExceptionHandler()
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String,String> handle(final AbsenceOfObjectException e) {
         Map<String,String> map = Map.of("error", e.getMessage());

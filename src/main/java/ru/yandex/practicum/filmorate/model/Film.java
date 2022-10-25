@@ -4,6 +4,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.*;
@@ -14,10 +15,11 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Film {
 
     private int id;
-    List<Integer> likes;
+    private List<Integer> likes;
     @NotBlank(message = "Название отсутствует")
     private String name;
     @NotNull(message = "Филь не может быть без описания")
@@ -28,13 +30,6 @@ public class Film {
     @NotNull(message = "Продолжительность не может отсутствовать")
     @Positive(message = "Продолжитьльность не может быть отрицательной")
     private long duration;
-    @AssertFalse
-    boolean releaseDateAfter;
-
-    private boolean isReleaseDateAfter() {
-        return releaseDate.isBefore(LocalDate.of(1895, 12, 28));
-    }
-
 
     public Film(String name, String description, LocalDate releaseDate, long duration) {
         this.name = name;
