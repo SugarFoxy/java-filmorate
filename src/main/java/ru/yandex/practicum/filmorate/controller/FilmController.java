@@ -2,7 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -56,6 +59,24 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count){
         log.info("Получен запрос на список популярных фильмов");
         return service.getPopularFilms(count);
+    }
+
+    @ExceptionHandler()
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String,String> handle(final MethodArgumentNotValidException e) {
+        String[] allErrors = e.getAllErrors().toString().split(";");
+        String massage = allErrors[allErrors.length-1];
+        Map<String,String> map = Map.of("error", massage);
+        log.warn(massage);
+        return map;
+    }
+
+    @ExceptionHandler()
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String,String> handle(final AbsenceOfObjectException e) {
+        Map<String,String> map = Map.of("error", e.getMessage());
+        log.warn(e.getMessage());
+        return map;
     }
 }
 
