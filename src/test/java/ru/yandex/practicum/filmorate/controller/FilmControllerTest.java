@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
+    @Autowired
     FilmController filmController;
     final Film filmNullName = new Film(null, "Test description", LocalDate.of(1994, 5, 21), 100);
     final Film filmEmptyName = new Film("", "Test description", LocalDate.of(1994, 5, 21), 100);
@@ -29,11 +31,6 @@ class FilmControllerTest {
             LocalDate.of(1895, 12, 28),
             10
     );
-
-    @BeforeEach
-    public void init(){
-        filmController = new FilmController();
-    }
 
     @Test
     void getFilms() {
