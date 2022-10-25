@@ -1,11 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Component
@@ -32,8 +29,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void updateFilms(Film film) {
-
+    public Film updateFilms(Film film) {
+        if (films.containsKey(film.getId())) {
+            films.put(film.getId(), film);
+            return film;
+        }
+        return film;
     }
 
     @Override

@@ -36,14 +36,8 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        try {
-            inMemoryFilmStorage.updateFilm(film);
             log.info("Фильм обнавлен");
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            throw new ValidationException(e);
-        }
-        return film;
+        return service.updateFilm(film);
     }
 }
 

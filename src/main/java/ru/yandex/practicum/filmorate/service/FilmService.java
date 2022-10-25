@@ -24,4 +24,8 @@ public class FilmService {
         return storage.addFilm(film);
     }
 
+    public Film updateFilm(Film film){
+       return storage.updateFilms(film);
+    }
+
 }
