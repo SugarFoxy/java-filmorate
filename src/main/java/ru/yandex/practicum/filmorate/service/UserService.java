@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -79,7 +80,7 @@ public class UserService {
         if (you.getFriends() != null && friend.getFriends() != null) {
             List<Integer> idUsers = you.getFriends().stream()
                     .filter(u -> friend.getFriends().contains(u))
-                    .toList();
+                    .collect(Collectors.toList());
             List<User> users = new ArrayList<>();
             for (Integer id1 : idUsers) {
                 users.add(storage.getMapUsers().get(id1));
