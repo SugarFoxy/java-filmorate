@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,31 +13,31 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    InMemoryUserStorage inMemoryUserStorage;
+    UserStorage storage;
 
     @Autowired
     private UserService(InMemoryUserStorage storage){
-        this.inMemoryUserStorage = storage;
+        this.storage = storage;
     }
 
     public List<User> getUsers() {
-        return inMemoryUserStorage.getUsers();
+        return storage.getUsers();
     }
 
     public User postUser(User user) {
         if (user.getName()==null|| user.getName().isBlank()){
             user.setName(user.getLogin());
         }
-        return inMemoryUserStorage.addUser(user);
+        return storage.addUser(user);
     }
 
     public void updateUsers(User user) throws AbsenceOfObjectException {
-            inMemoryUserStorage.updateUsers(user);
+        storage.updateUsers(user);
     }
 
     public User getUserById(Integer id)throws AbsenceOfObjectException {
-        if (inMemoryUserStorage.getMapUsers().containsKey(id)) {
-            return inMemoryUserStorage.getUserById(id);
+        if (storage.getMapUsers().containsKey(id)) {
+            return storage.getUserById(id);
         }else {
             throw new AbsenceOfObjectException("Такого пользователя нет");
         }
@@ -44,27 +45,27 @@ public class UserService {
 
     public List<User> findAllFriends(Integer id){
         List<User> users = new ArrayList<>();
-        for (Integer idet : inMemoryUserStorage.getUserById(id).getFriends()){
-            users.add(inMemoryUserStorage.getUserById(idet));
+        for (Integer idet : storage.getUserById(id).getFriends()){
+            users.add(storage.getUserById(idet));
         }
         return users;
     }
 
     public void addToFriends(Integer id, Integer otherId) throws AbsenceOfObjectException{
-        if (!inMemoryUserStorage.getMapUsers().containsKey(id)
-                || !inMemoryUserStorage.getMapUsers().containsKey(otherId)){
+        if (!storage.getMapUsers().containsKey(id)
+                || !storage.getMapUsers().containsKey(otherId)){
             throw new  AbsenceOfObjectException("Один или оба пользователя не были добавлены");
         }
-        User you = inMemoryUserStorage.getUserById(id);
-        User friend = inMemoryUserStorage.getUserById(otherId);
+        User you = storage.getUserById(id);
+        User friend = storage.getUserById(otherId);
         you.addFriend(otherId);
         friend.addFriend(id);
     }
 
 
     public void removeFromFriends(Integer id, Integer otherId){
-        User you = inMemoryUserStorage.getUserById(id);
-        User friend = inMemoryUserStorage.getUserById(otherId);
+        User you = storage.getUserById(id);
+        User friend = storage.getUserById(otherId);
         List<Integer> allFriends1 = new ArrayList<>(you.getFriends());
         allFriends1.remove(otherId);
         you.setFriends(allFriends1);
@@ -74,8 +75,8 @@ public class UserService {
     }
 
     public List<Integer> getMutualFriends(Integer id, Integer otherId){
-        User you = inMemoryUserStorage.getUserById(id);
-        User friend = inMemoryUserStorage.getUserById(otherId);
+        User you = storage.getUserById(id);
+        User friend = storage.getUserById(otherId);
         if(you.getFriends() != null && friend.getFriends() != null){
         return you.getFriends().stream()
                 .filter(u->friend.getFriends().contains(u))
