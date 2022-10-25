@@ -39,5 +39,11 @@ public class FilmController {
             log.info("Фильм обнавлен");
         return service.updateFilm(film);
     }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void like(@PathVariable Integer id, @PathVariable Integer userId){
+        log.info("Фильму {} поставлен Лайк", id);
+        like(id,userId);
+    }
 }
 
