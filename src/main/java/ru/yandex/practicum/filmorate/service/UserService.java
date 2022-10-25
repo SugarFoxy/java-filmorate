@@ -66,12 +66,8 @@ public class UserService {
     public void removeFromFriends(Integer id, Integer otherId){
         User you = storage.getUserById(id);
         User friend = storage.getUserById(otherId);
-        List<Integer> allFriends1 = new ArrayList<>(you.getFriends());
-        allFriends1.remove(otherId);
-        you.setFriends(allFriends1);
-        List<Integer> allFriends2 = new ArrayList<>(friend.getFriends());
-        allFriends2.remove(id);
-        friend.setFriends(allFriends2);
+        you.deleteFriend(otherId);
+        friend.deleteFriend(id);
     }
 
     public List<Integer> getMutualFriends(Integer id, Integer otherId){
