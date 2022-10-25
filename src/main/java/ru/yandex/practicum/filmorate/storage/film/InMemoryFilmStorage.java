@@ -32,6 +32,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film updateFilms(Film film) {
         if (films.containsKey(film.getId())) {
+            film.setLikes(films.get(film.getId()).getLikes());
             films.put(film.getId(), film);
             return film;
         }else {
