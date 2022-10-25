@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -46,7 +47,11 @@ public class FilmService {
     }
 
     public void deleteLike(Integer id,Integer userId){
-        storage.getFilmById(id).deleteLike(userId);
+        if (storage.getFilmById(id).getLikes().contains(userId)) {
+            storage.getFilmById(id).deleteLike(userId);
+        }else {
+            throw new AbsenceOfObjectException("Такой пользаватель не оставлял лайк на этот фильм");
+        }
     }
 
     public List<Film> getPopularFilms(Integer count){
@@ -54,9 +59,6 @@ public class FilmService {
                 .sorted(Comparator.comparing(Film::getCountLikes).reversed())
                 .limit(count)
                 .collect(Collectors.toList());
-
-
-
     }
 
 }
