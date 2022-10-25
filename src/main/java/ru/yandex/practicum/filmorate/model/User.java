@@ -28,13 +28,6 @@ public class User {
     @Past(message = "День рождения не должен быть в будущем")
     private LocalDate birthday;
 
-    @AssertFalse(message = "Логин не может содержать пробелы")
-    private boolean loginHaveSpace;
-
-    private boolean isLoginHaveSpace() {
-        return login.contains(" ");
-    }
-
     public List<Integer>  getFriends(){
         if (friends==null) {friends = new ArrayList<>();}
         return friends;

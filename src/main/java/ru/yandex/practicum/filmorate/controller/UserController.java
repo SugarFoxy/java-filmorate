@@ -7,16 +7,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.util.*;
 
 @RestController
 @RequestMapping("/users")
-@Validated
 @Slf4j
 public class UserController {
     UserService userService;
@@ -79,6 +78,14 @@ public class UserController {
         String massage = allErrors[allErrors.length-1];
         Map<String,String> map = Map.of("error", massage);
         log.warn(massage);
+        return map;
+    }
+
+    @ExceptionHandler()
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String,String> handle(final ValidationException e) {
+        Map<String,String> map = Map.of("error", e.getMessage());
+        log.warn(e.getMessage());
         return map;
     }
 
