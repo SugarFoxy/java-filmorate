@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<Integer> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+    public List<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         log.info("запрошен список общих друзей");
         return userService.getMutualFriends(id, otherId);
     }

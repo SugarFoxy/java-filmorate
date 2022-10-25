@@ -70,13 +70,18 @@ public class UserService {
         friend.deleteFriend(id);
     }
 
-    public List<Integer> getMutualFriends(Integer id, Integer otherId){
+    public List<User> getMutualFriends(Integer id, Integer otherId){
         User you = storage.getUserById(id);
         User friend = storage.getUserById(otherId);
         if(you.getFriends() != null && friend.getFriends() != null){
-        return you.getFriends().stream()
-                .filter(u->friend.getFriends().contains(u))
-                .collect(Collectors.toList());
+            List<Integer> idUsers = you.getFriends().stream()
+                    .filter(u->friend.getFriends().contains(u))
+                    .collect(Collectors.toList());
+            List<User> users = new ArrayList<>();
+            for (Integer id1:idUsers){
+                users.add(storage.getMapUsers().get(id1));
+            }
+        return users;
         }else {
             return new ArrayList<>();
         }
