@@ -34,8 +34,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
             return film;
+        }else {
+            throw new AbsenceOfObjectException("Фильм не существует");
         }
-        return film;
     }
 
     @Override
