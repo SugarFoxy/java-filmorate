@@ -35,23 +35,18 @@ public class InMemoryFilmStorage implements FilmStorage {
             film.setLikes(films.get(film.getId()).getLikes());
             films.put(film.getId(), film);
             return film;
-        }else {
+        } else {
             throw new AbsenceOfObjectException("Фильм не существует");
         }
     }
 
     @Override
     public Film getFilmById(Integer id) {
-        if(films.containsKey(id)){
+        if (films.containsKey(id)) {
             return films.get(id);
-        }else {
+        } else {
             throw new AbsenceOfObjectException("Фильм не найден");
         }
-    }
-
-    @Override
-    public Map<Integer, Film> getMapFilms() {
-        return null;
     }
 }
 

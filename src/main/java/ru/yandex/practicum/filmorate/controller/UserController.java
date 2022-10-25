@@ -16,8 +16,8 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    public UserController(UserService userService){
-        this.userService =userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
@@ -38,8 +38,9 @@ public class UserController {
         log.info("пользователь изменен");
         return user;
     }
+
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Integer id){
+    public User getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 

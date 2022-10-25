@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -20,26 +19,26 @@ public class ErrorHandler {
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String,String> handle(final MethodArgumentNotValidException e) {
+    public Map<String, String> handle(final MethodArgumentNotValidException e) {
         String[] allErrors = e.getAllErrors().toString().split(";");
-        String massage = allErrors[allErrors.length-1];
-        Map<String,String> map = Map.of("error", massage);
+        String massage = allErrors[allErrors.length - 1];
+        Map<String, String> map = Map.of("error", massage);
         log.warn(massage);
         return map;
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String,String> handle(final ValidationException e) {
-        Map<String,String> map = Map.of("error", e.getMessage());
+    public Map<String, String> handle(final ValidationException e) {
+        Map<String, String> map = Map.of("error", e.getMessage());
         log.warn(e.getMessage());
         return map;
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String,String> handle(final AbsenceOfObjectException e) {
-        Map<String,String> map = Map.of("error", e.getMessage());
+    public Map<String, String> handle(final AbsenceOfObjectException e) {
+        Map<String, String> map = Map.of("error", e.getMessage());
         log.warn(e.getMessage());
         return map;
     }

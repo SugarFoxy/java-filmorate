@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -28,37 +27,36 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895,12,28))){
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             throw new ValidationException("Фильм не может быть выпущен раньше 28.12.1895");
         }
         return storage.addFilm(film);
     }
 
-    public Film updateFilm(Film film){
-       return storage.updateFilms(film);
+    public Film updateFilm(Film film) {
+        return storage.updateFilms(film);
     }
 
-    public Film getFilmById(Integer id){
+    public Film getFilmById(Integer id) {
         return storage.getFilmById(id);
     }
 
-    public void like ( Integer id,Integer userId){
+    public void like(Integer id, Integer userId) {
         storage.getFilmById(id).addLike(userId);
     }
 
-    public void deleteLike(Integer id,Integer userId){
+    public void deleteLike(Integer id, Integer userId) {
         if (storage.getFilmById(id).getLikes().contains(userId)) {
             storage.getFilmById(id).deleteLike(userId);
-        }else {
+        } else {
             throw new AbsenceOfObjectException("Такой пользаватель не оставлял лайк на этот фильм");
         }
     }
 
-    public List<Film> getPopularFilms(Integer count){
+    public List<Film> getPopularFilms(Integer count) {
         return storage.getFilms().stream()
                 .sorted(Comparator.comparing(Film::getCountLikes).reversed())
                 .limit(count)
                 .collect(Collectors.toList());
     }
-
 }
