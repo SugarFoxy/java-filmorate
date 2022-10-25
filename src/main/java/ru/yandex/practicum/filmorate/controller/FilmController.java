@@ -51,5 +51,11 @@ public class FilmController {
         log.info("У фильма {} удален лайк", id);
         service.deleteLike(id,userId);
     }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count){
+        log.info("Получен запрос на список популярных фильмов");
+        return service.getPopularFilms(count);
+    }
 }
 

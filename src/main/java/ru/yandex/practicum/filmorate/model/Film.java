@@ -57,4 +57,8 @@ public class Film {
     public void deleteLike(Integer id) {
         likes.remove(id);
     }
+
+    public int getCountLikes(){
+        return  likes.size();
+    }
 }
