@@ -34,4 +34,8 @@ public class FilmService {
         storage.getFilmById(id).addLike(userId);
     }
 
+    public void deleteLike(Integer id,Integer userId){
+        storage.getFilmById(id).deleteLike(userId);
+    }
+
 }
