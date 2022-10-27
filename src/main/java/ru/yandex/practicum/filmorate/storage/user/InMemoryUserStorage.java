@@ -15,10 +15,6 @@ public class InMemoryUserStorage implements UserStorage {
         return id++;
     }
 
-    public Map<Integer, User> getMapUsers() {
-        return users;
-    }
-
     @Override
     public List<User> getUsers() {
         Collection<User> value = users.values();
@@ -43,6 +39,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserById(Integer id) {
-        return users.get(id);
+        if(users.containsKey(id)) {
+            return users.get(id);
+        }else {
+           throw new  AbsenceOfObjectException("Такого пользователя нет");
+        }
     }
 }
