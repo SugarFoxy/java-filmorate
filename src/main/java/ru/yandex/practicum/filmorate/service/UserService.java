@@ -45,39 +45,34 @@ public class UserService {
 
     public List<User> findAllFriends(Integer id) {
         List<User> users = new ArrayList<>();
-        for (Integer idet : storage.getUserById(id).getFriends()) {
-            users.add(storage.getUserById(idet));
+        for (Integer friendId : storage.getUserById(id).getFriends()) {
+            users.add(storage.getUserById(friendId));
         }
         return users;
     }
 
     public void addToFriends(Integer id, Integer otherId) throws AbsenceOfObjectException {
-            User you = storage.getUserById(id);
+            User user = storage.getUserById(id);
             User friend = storage.getUserById(otherId);
-            you.addFriend(otherId);
+            user.addFriend(otherId);
             friend.addFriend(id);
     }
 
 
     public void removeFromFriends(Integer id, Integer otherId) {
-        User you = storage.getUserById(id);
+        User user = storage.getUserById(id);
         User friend = storage.getUserById(otherId);
-        you.deleteFriend(otherId);
+        user.deleteFriend(otherId);
         friend.deleteFriend(id);
     }
 
     public List<User> getMutualFriends(Integer id, Integer otherId) {
-        User you = storage.getUserById(id);
+        User user = storage.getUserById(id);
         User friend = storage.getUserById(otherId);
-        if (you.getFriends() != null && friend.getFriends() != null) {
-            List<Integer> idUsers = you.getFriends().stream()
-                    .filter(u -> friend.getFriends().contains(u))
+        if (user.getFriends() != null && friend.getFriends() != null) {
+            return user.getFriends().stream()
+                    .map(storage::getUserById)
                     .collect(Collectors.toList());
-            List<User> users = new ArrayList<>();
-                for (Integer id1 : idUsers) {
-                    users.add(storage.getUserById(id1));
-                }
-            return users;
         } else {
             return new ArrayList<>();
         }
