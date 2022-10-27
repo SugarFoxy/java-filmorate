@@ -22,24 +22,24 @@ public class ErrorHandler {
     public Map<String, String> handle(final MethodArgumentNotValidException e) {
         String[] allErrors = e.getAllErrors().toString().split(";");
         String massage = allErrors[allErrors.length - 1];
-        Map<String, String> map = Map.of("error", massage);
+        Map<String, String> error = Map.of("error", massage);
         log.warn(massage);
-        return map;
+        return error;
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(final ValidationException e) {
-        Map<String, String> map = Map.of("error", e.getMessage());
+        Map<String, String> error = Map.of("error", e.getMessage());
         log.warn(e.getMessage());
-        return map;
+        return error;
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handle(final AbsenceOfObjectException e) {
-        Map<String, String> map = Map.of("error", e.getMessage());
+        Map<String, String> error = Map.of("error", e.getMessage());
         log.warn(e.getMessage());
-        return map;
+        return error;
     }
 }
