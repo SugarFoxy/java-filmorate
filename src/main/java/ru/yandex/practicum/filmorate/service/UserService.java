@@ -21,8 +21,8 @@ public class UserService {
         this.storage = storage;
     }
 
-    public List<User> getUsers() {
-        return storage.getUsers();
+    public List<User> getUser() {
+        return storage.getUser();
     }
 
     public User postUser(User user) {
@@ -35,8 +35,8 @@ public class UserService {
         return storage.addUser(user);
     }
 
-    public void updateUsers(User user) throws AbsenceOfObjectException {
-        storage.updateUsers(user);
+    public void updateUser(User user) throws AbsenceOfObjectException {
+        storage.updateUser(user);
     }
 
     public User getUserById(Integer id) throws AbsenceOfObjectException {

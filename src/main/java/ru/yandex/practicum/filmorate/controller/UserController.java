@@ -23,7 +23,7 @@ public class UserController {
     @GetMapping
     public List<User> getUsers() {
         log.info("Получен запрос на список пользователей");
-        return userService.getUsers();
+        return userService.getUser();
     }
 
     @PostMapping
@@ -34,7 +34,7 @@ public class UserController {
 
     @PutMapping
     public User updateUsers(@Valid @RequestBody User user) {
-        userService.updateUsers(user);
+        userService.updateUser(user);
         log.info("пользователь изменен");
         return user;
     }

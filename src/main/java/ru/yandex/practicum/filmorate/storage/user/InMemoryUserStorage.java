@@ -16,7 +16,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUsers() {
+    public List<User> getUser() {
         Collection<User> value = users.values();
         return new ArrayList<>(value);
     }
@@ -29,7 +29,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void updateUsers(User user) {
+    public void updateUser(User user) {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
         } else {
