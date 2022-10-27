@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    UserStorage storage;
+    private final UserStorage storage;
 
     @Autowired
     private UserService(InMemoryUserStorage storage) {

@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    FilmService service;
+    private final FilmService service;
 
     @Autowired
     public FilmController(FilmService service) {
