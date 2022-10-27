@@ -25,7 +25,7 @@ public class UserService {
         return storage.getUser();
     }
 
-    public User postUser(User user) {
+    public User createUser(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
