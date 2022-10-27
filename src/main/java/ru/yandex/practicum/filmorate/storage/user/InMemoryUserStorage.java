@@ -17,8 +17,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getUser() {
-        Collection<User> value = users.values();
-        return new ArrayList<>(value);
+        return new ArrayList<>(users.values());
     }
 
     @Override
