@@ -40,11 +40,7 @@ public class UserService {
     }
 
     public User getUserById(Integer id) throws AbsenceOfObjectException {
-        try {
-            return storage.getUserById(id);
-        } catch (AbsenceOfObjectException e) {
-            throw new AbsenceOfObjectException(e.getMessage());
-        }
+        return storage.getUserById(id);
     }
 
     public List<User> findAllFriends(Integer id) {
@@ -56,14 +52,10 @@ public class UserService {
     }
 
     public void addToFriends(Integer id, Integer otherId) throws AbsenceOfObjectException {
-        try {
             User you = storage.getUserById(id);
             User friend = storage.getUserById(otherId);
             you.addFriend(otherId);
             friend.addFriend(id);
-        } catch (AbsenceOfObjectException e) {
-            throw new AbsenceOfObjectException(e.getMessage());
-        }
     }
 
 
@@ -82,13 +74,9 @@ public class UserService {
                     .filter(u -> friend.getFriends().contains(u))
                     .collect(Collectors.toList());
             List<User> users = new ArrayList<>();
-            try {
                 for (Integer id1 : idUsers) {
                     users.add(storage.getUserById(id1));
                 }
-            } catch (AbsenceOfObjectException e) {
-                throw new AbsenceOfObjectException(e.getMessage());
-            }
             return users;
         } else {
             return new ArrayList<>();
