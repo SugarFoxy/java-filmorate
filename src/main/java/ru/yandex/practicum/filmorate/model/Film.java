@@ -41,21 +41,28 @@ public class Film {
     }
 
     public List<Integer> getLikes() {
-        if (likes == null) {
-            likes = new ArrayList<>();
-        }
+        createLikes();
         return likes;
     }
 
     public void addLike(Integer id) {
+        createLikes();
         likes.add(id);
     }
 
     public void deleteLike(Integer id) {
+        createLikes();
         likes.remove(id);
     }
 
     public int getCountLikes() {
+        createLikes();
         return likes.size();
     }
+     private void createLikes(){
+         if (likes == null) {
+             likes = new ArrayList<>();
+         }
+     }
+
 }

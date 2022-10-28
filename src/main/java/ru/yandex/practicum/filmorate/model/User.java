@@ -31,17 +31,23 @@ public class User {
     private LocalDate birthday;
 
     public List<Integer> getFriends() {
-        if (friends == null) {
-            friends = new ArrayList<>();
-        }
+        createFriends();
         return friends;
     }
 
     public void addFriend(Integer id) {
+        createFriends();
         friends.add(id);
     }
 
     public void deleteFriend(Integer id) {
+        createFriends();
         friends.remove(id);
+    }
+
+    private void createFriends(){
+        if (friends == null) {
+            friends = new ArrayList<>();
+        }
     }
 }
