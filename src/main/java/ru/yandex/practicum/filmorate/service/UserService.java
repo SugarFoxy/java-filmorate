@@ -72,6 +72,7 @@ public class UserService {
         if (user.getFriends() != null && friend.getFriends() != null) {
             return user.getFriends().stream()
                     .map(storage::getUserById)
+                    .filter(u -> friend.getFriends().contains(u.getId()))
                     .collect(Collectors.toList());
         } else {
             return new ArrayList<>();
