@@ -36,6 +36,9 @@ public class UserService {
     }
 
     public void updateUser(User user) throws AbsenceOfObjectException {
+        if (user.getLogin().contains(" ")) {
+            throw new ValidationException("Логин не может содержать пробелы");
+        }
         storage.updateUser(user);
     }
 

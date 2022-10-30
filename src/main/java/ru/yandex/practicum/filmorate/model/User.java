@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class User {
-    private int id;
+    private Integer id;
     private List<Integer> friends;
     @NotNull(message = "Email не может отсутствовать")
     @NotBlank(message = "Email не может быть пустым")

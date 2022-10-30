@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Film {
 
-    private int id;
+    private Integer id;
     private List<Integer> likes;
     @NotBlank(message = "Название отсутствует")
     private String name;
