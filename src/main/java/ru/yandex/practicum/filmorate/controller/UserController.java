@@ -1,80 +1,70 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-
 @Slf4j
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
+    private final UserService userService;
 
-    private static final LocalDate NOW_DATE = LocalDate.now();
-    private int id = 1;
-
-
-    private int createId() {
-        return id++;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
     public List<User> getUsers() {
         log.info("Получен запрос на список пользователей");
-        return getListUsers();
+        return userService.getUser();
     }
 
     @PostMapping
-    public User postUsers(@Valid @RequestBody User user) {
-        try {
-            validation(user);
-            user.setId(createId());
-            if (user.getName() == null || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
-            users.put(user.getId(), user);
-            log.info("Пользователь " + user.getLogin() + " добавлен");
-        } catch (RuntimeException e) {
-            log.warn(e.getMessage());
-            throw new ValidationException(e);
-        }
-        return user;
+    public User addUser(@Valid @RequestBody User user) {
+        log.info("Получен запрос на создание пользавателя");
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUsers(@Valid @RequestBody User user) {
-        try {
-            validation(user);
-            if (users.containsKey(user.getId())) {
-                if (user.getName() == null || user.getName().isBlank()) {
-                    user.setName(user.getLogin());
-                }
-                users.replace(user.getId(), user);
-                log.info("Пользователь " + user.getLogin() + " обновлен");
-            } else {
-                throw new ValidationException("Такого пользователя не существует");
-            }
-        } catch (RuntimeException e) {
-            log.warn(e.getMessage());
-            throw new ValidationException(e);
-        }
+        userService.updateUser(user);
+        log.info("пользователь изменен");
         return user;
     }
 
-    private List<User> getListUsers() {
-        Collection<User> value = users.values();
-        return new ArrayList<>(value);
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Integer id) {
+        return userService.getUserById(id);
     }
 
-    private void validation(User user) throws ValidationException {
-        if (user.getBirthday().isAfter(NOW_DATE)) {
-            throw new ValidationException("дата рождения не может быть в будущем");
-        }
+    @GetMapping("/{id}/friends")
+    public List<User> getUsersFriends(@PathVariable Integer id) {
+        log.info("запрошен список друзей определеного пользователя");
+        return userService.findAllFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        log.info("запрошен список общих друзей");
+        return userService.getMutualFriends(id, otherId);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addToFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.addToFriends(id, friendId);
+        log.info("Друг добавлен");
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.removeFromFriends(id, friendId);
+        log.info("Друг удален");
     }
 }

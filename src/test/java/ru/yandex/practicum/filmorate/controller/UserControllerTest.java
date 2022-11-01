@@ -1,385 +1,114 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import ru.yandex.practicum.filmorate.controller.adapter.LocalDateAdapter;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootApplication
+@SpringBootTest
 class UserControllerTest {
 
     private ConfigurableApplicationContext context;
     private final URI url = URI.create("http://localhost:8080/users");
+    private User nullLogin;
+    private User nullEmail;
+    private User incorrectLogin;
+    private User incorrectBirthday;
+    private User incorrectEmail;
+    private User nullName;
+    private User nonexistentId;
 
     @BeforeEach
     public void init() {
         context = SpringApplication.run(FilmorateApplication.class);
+        nullLogin = new User(null, null, "mail@mail.ru", null, "Nick Name", LocalDate.of(1946, 8, 20));
+        nullEmail = new User(null, null, null, null, "dolore", LocalDate.of(1946, 8, 20));
+        incorrectLogin = new User(1, null, "mail@mail.ru", "dol ore", "Nick Name", LocalDate.of(1946, 8, 20));
+        incorrectBirthday = new User(null, null, "mail@mail.ru", "dolore", "Nick Name", LocalDate.of(2050, 8, 20));
+        incorrectEmail = new User(null, null, "mailmail.ru", "dolore", "Nick Name", LocalDate.of(1946, 8, 20));
+        nullName = new User(1, null, "mail@mail.ru", "dolore", null, LocalDate.of(1946, 8, 20));
+        nonexistentId = new User(9999, null, "mail@mail.ru", "dolore", "Nick Name", LocalDate.of(1946, 8, 20));
     }
 
-    @Test
-    void postUsers() throws IOException, InterruptedException {
+    private int postToServer(User user) throws IOException, InterruptedException {
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
+        Gson gson = gsonBuilder.create();
+
+        String userSerialized = gson.toJson(user);
+
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String bodyBefore = response.body();
 
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(userSerialized);
 
-        String json = "{\n" +
-                "  \"login\": \"dolore\",\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": \"oks.94@mail.ru\",\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}";
-
-        final HttpRequest.BodyPublisher bodyNullLogin = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": null,\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": \"mail@mail.ru\",\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}");
         HttpRequest requestNullLogin = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json")
-                .POST(bodyNullLogin).build();
+                .POST(body).build();
         HttpResponse<String> responseNullLogin = client.send(requestNullLogin, HttpResponse.BodyHandlers.ofString());
-        int statusNullLogin = responseNullLogin.statusCode();
-
-        final HttpRequest.BodyPublisher bodyEmptyLogin = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\":  \" \",\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": \"mail@mail.ru\",\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}");
-        HttpRequest requestEmptyLogin = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(bodyEmptyLogin)
-                .build();
-        HttpResponse<String> responseEmptyLogin = client.send(requestEmptyLogin, HttpResponse.BodyHandlers.ofString());
-        int statusEmptyLogin = responseEmptyLogin.statusCode();
-
-        final HttpRequest.BodyPublisher bodyEmptyEmail = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\":  \"login\",\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": \"\",\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}");
-        HttpRequest requestEmptyEmail = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(bodyEmptyEmail)
-                .build();
-        HttpResponse<String> responseEmptyEmail = client.send(requestEmptyEmail, HttpResponse.BodyHandlers.ofString());
-        int statusEmptyEmail = responseEmptyEmail.statusCode();
-
-        final HttpRequest.BodyPublisher bodyNullEmail = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\":  \"login\",\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": null,\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}");
-        HttpRequest requestNullEmail = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(bodyNullEmail)
-                .build();
-        HttpResponse<String> responseNullEmail = client.send(requestNullEmail, HttpResponse.BodyHandlers.ofString());
-        int statusNullEmail = responseNullEmail.statusCode();
-
-        final HttpRequest.BodyPublisher bodyIncorrectEmail = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\":  \"login\",\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": \"hszdzh\",\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}");
-        HttpRequest requestIncorrectEmail = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(bodyIncorrectEmail)
-                .build();
-        HttpResponse<String> responseIncorrectEmail = client.send(requestIncorrectEmail, HttpResponse.BodyHandlers.ofString());
-        int statusIncorrectEmail = responseIncorrectEmail.statusCode();
-
-        final HttpRequest.BodyPublisher bodyIncorrectDate = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": \"dolore\",\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": \"mail@mail.ru\",\n" +
-                "  \"birthday\": \"2050-08-20\"\n" +
-                "}");
-        HttpRequest requestIncorrectDate = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(bodyIncorrectDate)
-                .build();
-        HttpResponse<String> responseIncorrectDate = client.send(requestIncorrectDate, HttpResponse.BodyHandlers.ofString());
-        int statusIncorrectDate = responseIncorrectDate.statusCode();
-
-        HttpRequest request1 = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
-        String bodyAfterIncorrectBodyRequest = response1.body();
-        int statusAfterIncorrectBodyRequest = response1.statusCode();
-
-        final HttpRequest.BodyPublisher bodyCorrect = HttpRequest.BodyPublishers.ofString(json);
-        HttpRequest requestCorrect = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(bodyCorrect)
-                .build();
-        HttpResponse<String> responseCorrect = client.send(requestCorrect, HttpResponse.BodyHandlers.ofString());
-        int statusCorrect = responseCorrect.statusCode();
-
-        final HttpRequest.BodyPublisher bodyCorrectNullName = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": \"oks\",\n" +
-                "  \"name\": null,\n" +
-                "  \"email\": \"oks.94@mail.ru\",\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}");
-        HttpRequest requestCorrectNullName = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(bodyCorrectNullName)
-                .build();
-        HttpResponse<String> responseCorrectNullName = client.send(requestCorrectNullName, HttpResponse.BodyHandlers.ofString());
-        int statusCorrectNullName = responseCorrectNullName.statusCode();
-
-        HttpRequest request2 = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
-        String bodyAfter = response2.body();
-        int statusAfter = response2.statusCode();
-
-        assertAll(
-                () -> assertEquals("[]", bodyBefore, "тело GET запроса должно быть пустое"),
-                () -> assertEquals(400, statusNullLogin, "Логин не должен быть null, статус не 200"),
-                () -> assertEquals(400, statusEmptyLogin, "Логин не должен быть пустым, статус не 200"),
-                () -> assertEquals(400, statusEmptyEmail, "Email не должен быть пустым, статус не 200"),
-                () -> assertEquals(400, statusNullEmail, "Email не должен быть null, статус не 200"),
-                () -> assertEquals(400, statusIncorrectEmail, "Email должен быть существующим, статус не 200"),
-                () -> assertEquals(500, statusIncorrectDate, "День рождения не должен быть в будующем, статус не 200"),
-                () -> assertEquals("[]", bodyAfterIncorrectBodyRequest, "Корректных данных не поступало список пользователь пуст"),
-                () -> assertEquals(200, statusAfterIncorrectBodyRequest, "на статус GET некорректные данные не повлияли"),
-                () -> assertEquals(200, statusCorrect, "тело запроса коректно статус 200"),
-                () -> assertEquals(200, statusCorrectNullName, "тело запроса коректно но без имени статус 200"),
-                () -> assertEquals("[{\"id\":1,\"email\":\"oks.94@mail.ru\",\"login\":\"dolore\",\"name\":\"Nick Name\",\"birthday\":\"1946-08-20\"},{\"id\":2,\"email\":\"oks.94@mail.ru\",\"login\":\"oks\",\"name\":\"oks\",\"birthday\":\"1946-08-20\"}]", bodyAfter, "тело ответа состаит из двух элементов"),
-                () -> assertEquals(200, statusAfter, "Запрос GET должен быть успешен 200")
-                );
+        return responseNullLogin.statusCode();
     }
 
-    @Test
-    void getUsers() throws IOException, InterruptedException {
+    private int putToServer(User user) throws IOException, InterruptedException {
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
+        Gson gson = gsonBuilder.create();
+        String userSerialized = gson.toJson(user);
+
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String bodyBefore = response.body();
-        int statusBefore = response.statusCode();
 
-        String json = "{\n" +
-                "  \"login\": \"dolore\",\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": \"oks.94@mail.ru\",\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}";
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(userSerialized);
 
-        final HttpRequest.BodyPublisher bodyCorrect = HttpRequest.BodyPublishers.ofString(json);
-        HttpRequest requestCorrect = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(bodyCorrect)
-                .build();
-        HttpResponse<String> responseCorrect = client.send(requestCorrect, HttpResponse.BodyHandlers.ofString());
-
-        HttpRequest request2 = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
-        String bodyAfter = response2.body();
-        int statusAfter = response2.statusCode();
-
-        assertAll(
-                () -> assertEquals("[]", bodyBefore, "тело GET запроса должно быть пустое"),
-                () -> assertEquals(200, statusBefore, "Запрос GET должен быть успешен 200"),
-                () -> assertEquals("[{\"id\":1,\"email\":\"oks.94@mail.ru\",\"login\":\"dolore\",\"name\":\"Nick Name\",\"birthday\":\"1946-08-20\"}]", bodyAfter, "тело ответа состоит из двух элементов"),
-                () -> assertEquals(200, statusAfter, "Запрос GET должен быть успешен 200")
-        );
-
-    }
-
-    @Test
-    void updateUsers() throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String bodyBefore = response.body();
-
-        String jsonForPost = "{\n" +
-                "  \"login\": \"dolore\",\n" +
-                "  \"name\": \"Nick Name\",\n" +
-                "  \"email\": \"oks.94@mail.ru\",\n" +
-                "  \"birthday\": \"1946-08-20\"\n" +
-                "}";
-
-        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(jsonForPost);
-        HttpRequest requestPost = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .POST(body)
-                .build();
-        client.send(requestPost, HttpResponse.BodyHandlers.ofString());
-
-
-        String jsonForPut = "{\n" +
-                "  \"login\": \"doloreUpdate\",\n" +
-                "  \"name\": \"est adipisicing\",\n" +
-                "  \"id\": 1,\n" +
-                "  \"email\": \"mail@yandex.ru\",\n" +
-                "  \"birthday\": \"1976-09-20\"\n" +
-                "}";
-
-
-        final HttpRequest.BodyPublisher bodyNullLogin = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": null,\n" +
-                "  \"name\": \"est adipisicing\",\n" +
-                "  \"id\": 1,\n" +
-                "  \"email\": \"mail@yandex.ru\",\n" +
-                "  \"birthday\": \"1976-09-20\"\n" +
-                "}");
         HttpRequest requestNullLogin = HttpRequest.newBuilder()
                 .uri(url)
                 .header("Content-Type", "application/json")
-                .PUT(bodyNullLogin).build();
+                .PUT(body).build();
         HttpResponse<String> responseNullLogin = client.send(requestNullLogin, HttpResponse.BodyHandlers.ofString());
-        int statusNullLogin = responseNullLogin.statusCode();
+        return responseNullLogin.statusCode();
+    }
 
-        final HttpRequest.BodyPublisher bodyEmptyLogin = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": \"\",\n" +
-                "  \"name\": \"est adipisicing\",\n" +
-                "  \"id\": 1,\n" +
-                "  \"email\": \"mail@yandex.ru\",\n" +
-                "  \"birthday\": \"1976-09-20\"\n" +
-                "}");
-        HttpRequest requestEmptyLogin = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(bodyEmptyLogin)
-                .build();
-        HttpResponse<String> responseEmptyLogin = client.send(requestEmptyLogin, HttpResponse.BodyHandlers.ofString());
-        int statusEmptyLogin = responseEmptyLogin.statusCode();
 
-        final HttpRequest.BodyPublisher bodyEmptyEmail = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": \"login\",\n" +
-                "  \"name\": \"est adipisicing\",\n" +
-                "  \"id\": 1,\n" +
-                "  \"email\": \"\",\n" +
-                "  \"birthday\": \"1976-09-20\"\n" +
-                "}");
-        HttpRequest requestEmptyEmail = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(bodyEmptyEmail)
-                .build();
-        HttpResponse<String> responseEmptyEmail = client.send(requestEmptyEmail, HttpResponse.BodyHandlers.ofString());
-        int statusEmptyEmail = responseEmptyEmail.statusCode();
-
-        final HttpRequest.BodyPublisher bodyNullEmail = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": \"login\",\n" +
-                "  \"name\": \"est adipisicing\",\n" +
-                "  \"id\": 1,\n" +
-                "  \"email\": null,\n" +
-                "  \"birthday\": \"1976-09-20\"\n" +
-                "}");
-        HttpRequest requestNullEmail = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(bodyNullEmail)
-                .build();
-        HttpResponse<String> responseNullEmail = client.send(requestNullEmail, HttpResponse.BodyHandlers.ofString());
-        int statusNullEmail = responseNullEmail.statusCode();
-
-        final HttpRequest.BodyPublisher bodyIncorrectEmail = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": \"login\",\n" +
-                "  \"name\": \"est adipisicing\",\n" +
-                "  \"id\": 1,\n" +
-                "  \"email\": \"shaerh\",\n" +
-                "  \"birthday\": \"1976-09-20\"\n" +
-                "}");
-        HttpRequest requestIncorrectEmail = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(bodyIncorrectEmail)
-                .build();
-        HttpResponse<String> responseIncorrectEmail = client.send(requestIncorrectEmail, HttpResponse.BodyHandlers.ofString());
-        int statusIncorrectEmail = responseIncorrectEmail.statusCode();
-
-        final HttpRequest.BodyPublisher bodyIncorrectDate = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": \"login\",\n" +
-                "  \"name\": \"est adipisicing\",\n" +
-                "  \"id\": 1,\n" +
-                "  \"email\": \"mail@yandex.ru\",\n" +
-                "  \"birthday\": \"2050-09-20\"\n" +
-                "}");
-        HttpRequest requestIncorrectDate = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(bodyIncorrectDate)
-                .build();
-        HttpResponse<String> responseIncorrectDate = client.send(requestIncorrectDate, HttpResponse.BodyHandlers.ofString());
-        int statusIncorrectDate = responseIncorrectDate.statusCode();
-
-        final HttpRequest.BodyPublisher bodyIncorrectId = HttpRequest.BodyPublishers.ofString("{\n" +
-                "  \"login\": \"login\",\n" +
-                "  \"name\": \"est adipisicing\",\n" +
-                "  \"id\": 99999,\n" +
-                "  \"email\": \"mail@yandex.ru\",\n" +
-                "  \"birthday\": \"1976-09-20\"\n" +
-                "}");
-        HttpRequest requestIncorrectId = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(bodyIncorrectId)
-                .build();
-        HttpResponse<String> responseIncorrectId = client.send(requestIncorrectId, HttpResponse.BodyHandlers.ofString());
-        int statusIncorrectId = responseIncorrectId.statusCode();
-
-        HttpRequest request1 = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
-        String bodyAfterIncorrectUpdate = response1.body();
-
-        final HttpRequest.BodyPublisher bodyCorrect = HttpRequest.BodyPublishers.ofString(jsonForPut);
-        HttpRequest requestCorrect = HttpRequest.newBuilder()
-                .uri(url)
-                .header("Content-Type", "application/json")
-                .PUT(bodyCorrect)
-                .build();
-        HttpResponse<String> responseCorrect = client.send(requestCorrect, HttpResponse.BodyHandlers.ofString());
-        int statusCorrect= responseCorrect.statusCode();
-
-        HttpRequest request2 = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
-        String bodyAfter= response2.body();
-
+    @Test
+    void postUsers() {
         assertAll(
-                () -> assertEquals("[]", bodyBefore, "тело GET запроса должно быть пустое"),
-                () -> assertEquals(400, statusNullLogin, "Логин не должен быть null, статус не 200"),
-                () -> assertEquals(400, statusEmptyLogin, "Логин не должен быть пустым, статус не 200"),
-                () -> assertEquals(400, statusEmptyEmail, "Email не должен быть пустым, статус не 200"),
-                () -> assertEquals(400, statusNullEmail, "Email не должен быть null, статус не 200"),
-                () -> assertEquals(400, statusIncorrectEmail, "Email должен быть существующим, статус не 200"),
-                () -> assertEquals(500, statusIncorrectDate, "День рождения не должен быть в будующем, статус не 200"),
-                () -> assertEquals("[{\"id\":1,\"email\":\"oks.94@mail.ru\",\"login\":\"dolore\",\"name\":\"Nick Name\",\"birthday\":\"1946-08-20\"}]", bodyAfterIncorrectUpdate, "Корректных данных не поступало список пользователь пуст"),
-                () -> assertEquals(200, statusCorrect, "тело запроса коректно статус 200"),
-                () -> assertEquals("[{\"id\":1,\"email\":\"mail@yandex.ru\",\"login\":\"doloreUpdate\",\"name\":\"est adipisicing\",\"birthday\":\"1976-09-20\"}]", bodyAfter, "тело ответа состоит из одного элемента"),
-                () -> assertEquals(500, statusIncorrectId, "такого id не существует")
+                () -> assertEquals(400, postToServer(nullLogin), "Логин не должен быть null, статус 400"),
+                () -> assertEquals(400, postToServer(incorrectLogin), "Логин не должен содержать пробелы, статус 400"),
+                () -> assertEquals(400, postToServer(incorrectEmail), "Email некоррекный, статус 400"),
+                () -> assertEquals(400, postToServer(nullEmail), "Email не должен быть null, статус 400"),
+                () -> assertEquals(400, postToServer(incorrectBirthday), "День рождения не должен быть в будующем, статус 400"),
+                () -> assertEquals(200, postToServer(nullName), "Имя может быть пустым, статус 200")
         );
+    }
 
+    @Test
+    void putUsers() throws IOException, InterruptedException {
+        postToServer(nullName);
+        assertAll(
+                () -> assertEquals(400, putToServer(nullLogin), "Логин не должен быть null, статус 400"),
+                () -> assertEquals(400, putToServer(incorrectLogin), "Логин не должен содержать пробелы, статус 400"),
+                () -> assertEquals(400, putToServer(incorrectEmail), "Email некоррекный, статус 400"),
+                () -> assertEquals(400, putToServer(nullEmail), "Email не должен быть null, статус 400"),
+                () -> assertEquals(400, putToServer(incorrectBirthday), "День рождения не должен быть в будующем, статус 400"),
+                () -> assertEquals(200, putToServer(nullName), "Имя может быть пустым, статус 200"),
+                () -> assertEquals(404, putToServer(nonexistentId), "Такого пользователя не существует, статус 404")
+        );
     }
 
     @AfterEach

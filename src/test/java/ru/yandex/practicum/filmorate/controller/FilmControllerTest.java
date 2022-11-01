@@ -1,100 +1,113 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import ru.yandex.practicum.filmorate.FilmorateApplication;
+import ru.yandex.practicum.filmorate.controller.adapter.LocalDateAdapter;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FilmControllerTest {
-    FilmController filmController;
-    final Film filmNullName = new Film(null, "Test description", LocalDate.of(1994, 5, 21), 100);
-    final Film filmEmptyName = new Film("", "Test description", LocalDate.of(1994, 5, 21), 100);
-    final Film filmEarlyRelease = new Film("TestName", "Test description", LocalDate.of(1895, 12, 27), 100);
-    final Film filmNegativeDuration = new Film("TestName", "Test description", LocalDate.of(1994, 5, 21), -1);
-    final Film film201description = new Film("TestName", "Test description Test description " +
-            "Test description Test description Test description Test description Test description " +
-            "Test description Test description Test description Test description Test descripti",
-            LocalDate.of(1994, 5, 21),
-            100
-    );
-    Film film = new Film("TestName",
-            "Test description Test description Test description Test description Test description " +
-                    "Test description Test description Test description Test description Test description " +
-                    "Test description Test descript",
-            LocalDate.of(1895, 12, 28),
-            10
-    );
+
+
+    private ConfigurableApplicationContext context;
+    private final URI url = URI.create("http://localhost:8080/films");
+    private Film nullname;
+    private Film incorrectDescription;
+    private Film incorrectReleaseDate;
+    private Film negativeDuration;
+    private Film correctFilm;
+    private Film nonexistentId;
 
     @BeforeEach
-    public void init(){
-        filmController = new FilmController();
+    public void init() {
+        context = SpringApplication.run(FilmorateApplication.class);
+        nullname = new Film(null, null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100);
+        incorrectDescription = new Film(null, null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100);
+        incorrectReleaseDate = new Film(null, null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100);
+        negativeDuration = new Film(null, null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),-3);
+        correctFilm = new Film(1, null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100);
+        nonexistentId = new Film(9999, null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100);
     }
 
+    private int postToServer(Film film) throws IOException, InterruptedException {
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
+        Gson gson = gsonBuilder.create();
+
+        String userSerialized = gson.toJson(film);
+
+        HttpClient client = HttpClient.newHttpClient();
+
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(userSerialized);
+
+        HttpRequest requestNullLogin = HttpRequest.newBuilder()
+                .uri(url)
+                .header("Content-Type", "application/json")
+                .POST(body).build();
+        HttpResponse<String> responseNullLogin = client.send(requestNullLogin, HttpResponse.BodyHandlers.ofString());
+        return responseNullLogin.statusCode();
+    }
+
+    private int putToServer(Film film) throws IOException, InterruptedException {
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
+        Gson gson = gsonBuilder.create();
+        String userSerialized = gson.toJson(film);
+
+        HttpClient client = HttpClient.newHttpClient();
+
+        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(userSerialized);
+
+        HttpRequest requestNullLogin = HttpRequest.newBuilder()
+                .uri(url)
+                .header("Content-Type", "application/json")
+                .PUT(body).build();
+        HttpResponse<String> responseNullLogin = client.send(requestNullLogin, HttpResponse.BodyHandlers.ofString());
+        return responseNullLogin.statusCode();
+    }
+
+
     @Test
-    void getFilms() {
-        List<Film> filmsBefore = filmController.getFilms();
-        filmController.postFilm(film);
-        List<Film> filmsAfter = filmController.getFilms();
+    void postUsers() {
         assertAll(
-                () -> assertEquals(0, filmsBefore.size(), "список пуст"),
-                () -> assertEquals(1, filmsAfter.size(), "имеется оди элемент")
+                () -> assertEquals(400, postToServer(nullname), "Имя не должно быть null, статус 400"),
+                () -> assertEquals(400, postToServer(incorrectDescription), "Описание не должно привышать 200 символов, статус 400"),
+                () -> assertEquals(400, postToServer(incorrectReleaseDate), "релиз не может быть раньше 28.12.1895, статус 400"),
+                () -> assertEquals(400, postToServer(negativeDuration), "продолжительность не может быть отрицательной, статус 400"),
+                () -> assertEquals(200, postToServer(correctFilm), "Фильм создан верно, статус 200")
         );
     }
 
     @Test
-    void postFilm(){
-        List<Film> filmsBefore = filmController.getFilms();
-
-        assertThrows(ValidationException.class,  () -> filmController.postFilm(filmNullName), "название не может быть пустым");
-        assertThrows(ValidationException.class,  () -> filmController.postFilm(filmEmptyName),"название не может быть пустым");
-        assertThrows(ValidationException.class,  () -> filmController.postFilm(film201description),"максимальная длина описания — 200 символов");
-        assertThrows(ValidationException.class,  () -> filmController.postFilm(filmEarlyRelease),"дата релиза — не раньше 28 декабря 1895");
-        assertThrows(ValidationException.class,  () -> filmController.postFilm(filmNegativeDuration),"продолжительность фильма должна быть положительной");
-
-        film.setId(5);
-        assertThrows(ValidationException.class,  () -> filmController.updateFilm(film),"Такого фильма не существует");
-
-        List<Film> filmsAfterIncorrectAddition = filmController.getFilms();
-
-        filmController.postFilm(film);
-        filmController.updateFilm(film);
-
-        List<Film> filmsAfter = filmController.getFilms();
-
+    void putUsers() throws IOException, InterruptedException {
+        postToServer(correctFilm);
         assertAll(
-                () -> assertEquals(0, filmsBefore.size(), "список пуст"),
-                () -> assertEquals(0, filmsAfterIncorrectAddition.size(), "список пуст"),
-                () -> assertEquals(1, filmsAfter.size(), "имеется оди элемент")
+                () -> assertEquals(400, putToServer(nullname), "Имя не должно быть null, статус 400"),
+                () -> assertEquals(400, putToServer(incorrectDescription), "Описание не должно привышать 200 символов, статус 400"),
+                () -> assertEquals(400, putToServer(incorrectReleaseDate), "релиз не может быть раньше 28.12.1895, статус 400"),
+                () -> assertEquals(400, putToServer(negativeDuration), "продолжительность не может быть отрицательной, статус 400"),
+                () -> assertEquals(404, putToServer(nonexistentId), "Фильм не существует, статус 404"),
+                () -> assertEquals(200, putToServer(correctFilm), "Фильм создан верно, статус 200")
         );
-
     }
 
-    @Test
-    void updateFilm() {
-        List<Film> filmsBefore = filmController.getFilms();
-
-        assertThrows(ValidationException.class,  () -> filmController.updateFilm(filmNullName), "название не может быть пустым");
-        assertThrows(ValidationException.class,  () -> filmController.updateFilm(filmEmptyName),"название не может быть пустым");
-        assertThrows(ValidationException.class,  () -> filmController.updateFilm(film201description),"максимальная длина описания — 200 символов");
-        assertThrows(ValidationException.class,  () -> filmController.updateFilm(filmEarlyRelease),"дата релиза — не раньше 28 декабря 1895");
-        assertThrows(ValidationException.class,  () -> filmController.updateFilm(filmNegativeDuration),"продолжительность фильма должна быть положительной");
-
-        List<Film> filmsAfterIncorrectAddition = filmController.getFilms();
-
-        filmController.postFilm(film);
-
-        List<Film> filmsAfter = filmController.getFilms();
-        assertAll(
-                () -> assertEquals(0, filmsBefore.size(), "список пуст"),
-                () -> assertEquals(0, filmsAfterIncorrectAddition.size(), "список пуст"),
-                () -> assertEquals(1, filmsAfter.size(), "имеется оди элемент")
-        );
-
-
+    @AfterEach
+    public void close() {
+        SpringApplication.exit(context);
     }
 }
