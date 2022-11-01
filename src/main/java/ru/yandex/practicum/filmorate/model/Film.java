@@ -33,7 +33,8 @@ public class Film {
     @Positive(message = "Продолжитьльность не может быть отрицательной")
     private long duration;
 
-    public Film(String name, String description, LocalDate releaseDate, long duration) {
+    public Film(Integer id,String name, String description, LocalDate releaseDate, long duration) {
+        this.id =id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;

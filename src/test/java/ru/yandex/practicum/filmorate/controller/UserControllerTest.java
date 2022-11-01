@@ -38,13 +38,13 @@ class UserControllerTest {
     @BeforeEach
     public void init() {
         context = SpringApplication.run(FilmorateApplication.class);
-        nullLogin = new User(null, null, "mail@mail.ru", null, "Nick Name", LocalDate.of(1946, 8, 20));
-        nullEmail = new User(null, null, null, null, "dolore", LocalDate.of(1946, 8, 20));
-        incorrectLogin = new User(1, null, "mail@mail.ru", "dol ore", "Nick Name", LocalDate.of(1946, 8, 20));
-        incorrectBirthday = new User(null, null, "mail@mail.ru", "dolore", "Nick Name", LocalDate.of(2050, 8, 20));
-        incorrectEmail = new User(null, null, "mailmail.ru", "dolore", "Nick Name", LocalDate.of(1946, 8, 20));
-        nullName = new User(1, null, "mail@mail.ru", "dolore", null, LocalDate.of(1946, 8, 20));
-        nonexistentId = new User(9999, null, "mail@mail.ru", "dolore", "Nick Name", LocalDate.of(1946, 8, 20));
+        nullLogin = new User(null, "mail@mail.ru", null, "Nick Name", LocalDate.of(1946, 8, 20));
+        nullEmail = new User(null, null, null, "dolore", LocalDate.of(1946, 8, 20));
+        incorrectLogin = new User(1, "mail@mail.ru", "dol ore", "Nick Name", LocalDate.of(1946, 8, 20));
+        incorrectBirthday = new User(null, "mail@mail.ru", "dolore", "Nick Name", LocalDate.of(2050, 8, 20));
+        incorrectEmail = new User(null, "mailmail.ru", "dolore", "Nick Name", LocalDate.of(1946, 8, 20));
+        nullName = new User(1, "mail@mail.ru", "dolore", null, LocalDate.of(1946, 8, 20));
+        nonexistentId = new User(9999, "mail@mail.ru", "dolore", "Nick Name", LocalDate.of(1946, 8, 20));
     }
 
     private int postToServer(User user) throws IOException, InterruptedException {
