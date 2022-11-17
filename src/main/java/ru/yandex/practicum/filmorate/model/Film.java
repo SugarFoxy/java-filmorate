@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -19,7 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Film {
-
+    @Id
+    @GeneratedValue
     private Integer id;
     private List<Integer> likes;
     @NotBlank(message = "Название отсутствует")
@@ -32,13 +35,17 @@ public class Film {
     @NotNull(message = "Продолжительность не может отсутствовать")
     @Positive(message = "Продолжитьльность не может быть отрицательной")
     private long duration;
+    @NotNull
+    private MPA mpa;
 
-    public Film(Integer id,String name, String description, LocalDate releaseDate, long duration) {
+    public Film(Integer id,String name, String description, LocalDate releaseDate, long duration, MPA mpa) {
+
         this.id =id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.mpa = mpa;
     }
 
     public List<Integer> getLikes() {
@@ -65,5 +72,6 @@ public class Film {
              likes = new ArrayList<>();
          }
      }
+
 
 }
