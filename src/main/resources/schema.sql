@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS film (
     description VARCHAR(200),
     release_date DATE,
     duration BIGINT,
-    rating INT REFERENCES rating(rating_id)
+    rating INT REFERENCES rating(rating_id) NOT NULL
     );
 
 CREATE TABLE IF NOT EXISTS genre (
