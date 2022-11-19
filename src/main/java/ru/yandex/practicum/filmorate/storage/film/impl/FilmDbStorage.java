@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
