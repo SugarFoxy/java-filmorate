@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.genre.impl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
@@ -28,7 +29,11 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Genre getById(Integer id) {
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet("select * from GENRE where GENRE_ID = ?", id);
-        return new Genre(genreRows.getInt("genre_id"),genreRows.getString("genre"));
+        if(genreRows.next()) {
+            return new Genre(genreRows.getInt("genre_id"), genreRows.getString("genre"));
+        }else {
+            throw new AbsenceOfObjectException("такого жанра нет");
+        }
     }
 
     @Override
@@ -38,11 +43,11 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public void deleteAllByFilmId(Integer filmId) {
-
+    public void assignGenre(Integer filmId, Integer genreId) {
+        jdbcTemplate.update("INSERT INTO FILM_GENRE (FILM_ID,GENRE_ID) values ( ?,? )",filmId,genreId);
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
-        return new Genre(rs.getInt("genre_id"),rs.getString("genre"));
+        return getById(rs.getInt("genre_id"));
     }
 }
