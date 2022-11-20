@@ -6,14 +6,15 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class FilmDbStorage implements FilmStorage {
@@ -23,8 +24,8 @@ public class FilmDbStorage implements FilmStorage {
     private final LikeStorage likeStorage;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate,
-                         @Qualifier("genreDbStorage")GenreStorage genreStorage,
-                         @Qualifier("likeDbStorage")LikeStorage likeStorage) {
+                         @Qualifier("genreDbStorage") GenreStorage genreStorage,
+                         @Qualifier("likeDbStorage") LikeStorage likeStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genreStorage = genreStorage;
         this.likeStorage = likeStorage;
@@ -39,13 +40,31 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        jdbcTemplate.update("INSERT INTO film (NAME, DESCRIPTION,RELEASE_DATE,DURATION,RATING) " +
-                        "VALUES (?, ?, ?, ?, ? );",
-                film.getName(),
-                film.getDescription(),
-                film.getReleaseDate(),
-                film.getDuration(),
-                film.getMpa().getId());
+        int id = 0;
+        try {
+            Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
+            String query = "INSERT INTO film (NAME, DESCRIPTION,RELEASE_DATE,DURATION,RATING) VALUES (?, ?, ?, ?, ? );";
+            try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                statement.setString(1, film.getName());
+                statement.setString(2, film.getDescription());
+                statement.setDate(3, Date.valueOf(film.getReleaseDate()));
+                statement.setLong(4, film.getDuration());
+                statement.setInt(5, film.getMpa().getId());
+                statement.executeUpdate();
+                try (ResultSet keys = statement.getGeneratedKeys()) {
+                    keys.next();
+                    id = keys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        film.setId(id);
+        if (!film.getGenres().isEmpty()) {
+            for (Genre genre : film.getGenres()) {
+                genreStorage.assignGenre(id, genre.getId());
+            }
+        }
         return film;
     }
 
@@ -65,7 +84,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
         film.setGenres(genreStorage.getByFilmId(film.getId()));
         film.setLikes(likeStorage.getFilmLikeId(film.getId()));
-       if(amountLines == 0) {
+        if (amountLines == 0) {
             throw new AbsenceOfObjectException("Фильм для изменения не найден");
         }
         return film;
@@ -74,17 +93,21 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilmById(Integer id) {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select * from FILM where FILM_ID = ?", id);
-        Film film = Film.builder()
-                .id(id)
-                .name(filmRows.getString("name"))
-                .description(filmRows.getString("description"))
-                .releaseDate(filmRows.getDate("release_date").toLocalDate())
-                .duration(filmRows.getInt("duration"))
-                .mpa(new MPA(filmRows.getInt("rating")))
-                .build();
-        film.setGenres(genreStorage.getByFilmId(film.getId()));
-        film.setLikes(likeStorage.getFilmLikeId(film.getId()));
-        return film;
+       if (filmRows.next()) {
+           Film film = Film.builder()
+                   .id(id)
+                   .name(filmRows.getString("name"))
+                   .description(filmRows.getString("description"))
+                   .releaseDate(filmRows.getDate("release_date").toLocalDate())
+                   .duration(filmRows.getInt("duration"))
+                   .mpa(new MPA(filmRows.getInt("rating")))
+                   .build();
+           film.setGenres(genreStorage.getByFilmId(film.getId()));
+           film.setLikes(likeStorage.getFilmLikeId(film.getId()));
+           return film;
+       }else{
+           throw new AbsenceOfObjectException("такого фильма нет");
+       }
     }
 
 
