@@ -22,15 +22,15 @@ public class MPA {
     public String getName() {
         switch (id) {
             case 1:
-                return RatingMpa.G.toString();
+                return RatingMpa.G.getRating();
             case 2:
-                return RatingMpa.PG.toString();
+                return RatingMpa.PG.getRating();
             case 3:
-                return RatingMpa.PG13.toString();
+                return RatingMpa.PG13.getRating();
             case 4:
-                return RatingMpa.R.toString();
+                return RatingMpa.R.getRating();
             case 5:
-                return RatingMpa.NC17.toString();
+                return RatingMpa.NC17.getRating();
             default:
                 throw new AbsenceOfObjectException("Такого Мпа рейтинга не существует");
         }
