@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.like.impl;
 
-import org.h2.message.DbException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
@@ -28,8 +27,8 @@ public class LikeDbStorage implements LikeStorage {
     @Override
     public void deleteLike(int userId, int filmId) {
         int amountLines = jdbcTemplate.update("DELETE FROM LIKE_USER_FILM WHERE film_id = ? AND user_id = ?;", filmId, userId);
-        if(amountLines == 0) {
-            throw new AbsenceOfObjectException(String.format("Пользователь %d не ставил лайк для фильма %d",userId, filmId));
+        if (amountLines == 0) {
+            throw new AbsenceOfObjectException(String.format("Пользователь %d не ставил лайк для фильма %d", userId, filmId));
         }
     }
 
@@ -37,8 +36,8 @@ public class LikeDbStorage implements LikeStorage {
     public List<Integer> getFilmLikeId(int filmId) {
         String sqlQuery = "SELECT user_id FROM LIKE_USER_FILM WHERE film_id = ?";
         try {
-            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> createLikeId(rs),filmId);
-        }catch (Exception e){
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> createLikeId(rs), filmId);
+        } catch (Exception e) {
             return new ArrayList<>();
         }
     }

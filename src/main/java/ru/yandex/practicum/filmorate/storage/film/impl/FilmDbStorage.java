@@ -83,7 +83,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId());
         genreStorage.delete(film.getId());
-        for (Genre genre: film.getGenres()){
+        for (Genre genre : film.getGenres()) {
             genreStorage.assignGenre(film.getId(), genre.getId());
         }
         film.setGenres(genreStorage.getByFilmId(film.getId()));
@@ -97,21 +97,21 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilmById(Integer id) {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select * from FILM where FILM_ID = ?", id);
-       if (filmRows.next()) {
-           Film film = Film.builder()
-                   .id(id)
-                   .name(filmRows.getString("name"))
-                   .description(filmRows.getString("description"))
-                   .releaseDate(filmRows.getDate("release_date").toLocalDate())
-                   .duration(filmRows.getInt("duration"))
-                   .mpa(new MPA(filmRows.getInt("rating")))
-                   .build();
-           film.setGenres(genreStorage.getByFilmId(film.getId()));
-           film.setLikes(likeStorage.getFilmLikeId(film.getId()));
-           return film;
-       }else{
-           throw new AbsenceOfObjectException("такого фильма нет");
-       }
+        if (filmRows.next()) {
+            Film film = Film.builder()
+                    .id(id)
+                    .name(filmRows.getString("name"))
+                    .description(filmRows.getString("description"))
+                    .releaseDate(filmRows.getDate("release_date").toLocalDate())
+                    .duration(filmRows.getInt("duration"))
+                    .mpa(new MPA(filmRows.getInt("rating")))
+                    .build();
+            film.setGenres(genreStorage.getByFilmId(film.getId()));
+            film.setLikes(likeStorage.getFilmLikeId(film.getId()));
+            return film;
+        } else {
+            throw new AbsenceOfObjectException("такого фильма нет");
+        }
     }
 
 

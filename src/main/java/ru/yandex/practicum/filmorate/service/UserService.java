@@ -69,7 +69,7 @@ public class UserService {
 
     public void removeFromFriends(Integer id, Integer otherId) {
         log.info("Получен запрос на удаление из друзей");
-        friendStorage.deleteFriend(id,otherId);
+        friendStorage.deleteFriend(id, otherId);
     }
 
     public List<User> getMutualFriends(Integer id, Integer otherId) {
@@ -86,7 +86,7 @@ public class UserService {
         }
     }
 
-    private void  validLogin(User user){
+    private void validLogin(User user) {
         if (user.getLogin().contains(" ")) {
             throw new ValidationException("Логин не может содержать пробелы");
         }

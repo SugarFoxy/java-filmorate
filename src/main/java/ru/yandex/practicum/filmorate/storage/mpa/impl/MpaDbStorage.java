@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public MpaDbStorage(JdbcTemplate jdbcTemplate){
+    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -29,15 +28,15 @@ public class MpaDbStorage implements MpaStorage {
     @Override
     public MPA getById(Integer id) {
         SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("select * from RATING where RATING_ID = ?", id);
-        if (mpaRows.next()){
-            return new MPA(mpaRows.getInt("rating_id"),mpaRows.getString("rating"));
-        }else {
+        if (mpaRows.next()) {
+            return new MPA(mpaRows.getInt("rating_id"), mpaRows.getString("rating"));
+        } else {
             throw new AbsenceOfObjectException("такого mpa-рейтинга не существует");
         }
     }
 
     private MPA makeMPA(ResultSet rs) throws SQLException {
-        return  new MPA(rs.getInt("rating_id"),rs.getString("rating"));
+        return new MPA(rs.getInt("rating_id"), rs.getString("rating"));
     }
 }
 

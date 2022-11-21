@@ -31,10 +31,11 @@ public class User {
     @Past(message = "День рождения не должен быть в будущем")
     private LocalDate birthday;
     private List<Integer> friends;
-    public User(Integer id, String email, String login, String name, LocalDate birthday){
+
+    public User(Integer id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
-        this.login =login;
+        this.login = login;
         this.name = name;
         this.birthday = birthday;
     }
@@ -54,7 +55,7 @@ public class User {
         friends.remove(id);
     }
 
-    private void createFriends(){
+    private void createFriends() {
         if (friends == null) {
             friends = new ArrayList<>();
         }

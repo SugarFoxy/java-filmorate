@@ -75,7 +75,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User getUserById(Integer id) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from USERS where USER_ID = ?", id);
-        if(userRows.next()) {
+        if (userRows.next()) {
             return User.builder()
                     .id(userRows.getInt("user_id"))
                     .name(userRows.getString("name"))
@@ -84,7 +84,7 @@ public class UserDbStorage implements UserStorage {
                     .birthday(userRows.getDate("birthday").toLocalDate())
                     .friends(friendStorage.getAllFriendByUser(userRows.getInt("user_id")))
                     .build();
-        }else {
+        } else {
             throw new AbsenceOfObjectException("такого пользователя нет");
         }
     }

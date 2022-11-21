@@ -39,8 +39,8 @@ public class Film {
     @NotNull
     private MPA mpa;
 
-    public Film(Integer id,String name, String description, LocalDate releaseDate, long duration, MPA mpa) {
-        this.id =id;
+    public Film(Integer id, String name, String description, LocalDate releaseDate, long duration, MPA mpa) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
@@ -68,18 +68,19 @@ public class Film {
         createLikes();
         return likes.size();
     }
-     private void createLikes(){
-         if (likes == null) {
-             likes = new ArrayList<>();
-         }
-     }
+
+    private void createLikes() {
+        if (likes == null) {
+            likes = new ArrayList<>();
+        }
+    }
 
     public List<Genre> getGenres() {
         createGenres();
         return genres;
     }
 
-    private void createGenres(){
+    private void createGenres() {
         if (genres == null) {
             genres = new ArrayList<>();
         }
