@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -15,21 +16,21 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
     private Integer id;
-    private List<Integer> friends;
+    private String name;
     @NotNull(message = "Email не может отсутствовать")
     @NotBlank(message = "Email не может быть пустым")
-    @Email(message = "Email должен быть действительной")
+    @Email(message = "Email должен быть действительным")
     private String email;
     @NotNull(message = "логин не может быть null")
     @NotBlank(message = "логин не может быть пустым")
     private String login;
-    private String name;
     @NotNull(message = "День рождения отсутствует")
     @Past(message = "День рождения не должен быть в будущем")
     private LocalDate birthday;
-
+    private List<Integer> friends;
     public User(Integer id, String email, String login, String name, LocalDate birthday){
         this.id = id;
         this.email = email;
