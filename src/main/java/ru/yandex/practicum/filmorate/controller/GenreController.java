@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/genres")
-@Slf4j
 public class GenreController {
     private final GenreService service;
 

@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/films")
-@Slf4j
 public class FilmController {
     private final FilmService service;
 
@@ -22,7 +21,6 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
-        log.info("Получен запрос на список фильмов");
         return service.getAllFilms();
     }
 
@@ -33,31 +31,26 @@ public class FilmController {
 
     @PostMapping
     public Film postFilm(@Valid @RequestBody Film film) {
-        log.info("Фильм добавлен");
         return service.addFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-            log.info("Фильм обнавлен");
         return service.updateFilm(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void like(@PathVariable Integer id, @PathVariable Integer userId){
-        log.info("Фильму {} поставлен Лайк", id);
         service.like(id,userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId){
-        log.info("У фильма {} удален лайк", id);
         service.deleteLike(id,userId);
     }
 
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count){
-        log.info("Получен запрос на список популярных фильмов");
         return service.getPopularFilms(count);
     }
 }
