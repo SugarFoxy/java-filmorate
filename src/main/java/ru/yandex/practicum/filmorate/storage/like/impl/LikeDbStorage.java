@@ -34,10 +34,10 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public List<Integer> getFilmLikeId(long filmId) {
+    public List<Integer> getFilmLikeId(int filmId) {
         String sqlQuery = "SELECT user_id FROM LIKE_USER_FILM WHERE film_id = ?";
         try {
-            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> createLikeId(rs));
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> createLikeId(rs),filmId);
         }catch (Exception e){
             return new ArrayList<>();
         }
