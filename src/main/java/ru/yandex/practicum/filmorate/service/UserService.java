@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.frends.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
@@ -15,10 +16,13 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserStorage storage;
+    private final FriendStorage friendStorage;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage storage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage storage,
+                       @Qualifier("friendDbStorage") FriendStorage friendStorage) {
         this.storage = storage;
+        this.friendStorage = friendStorage;
     }
 
     public List<User> getUser() {
@@ -48,25 +52,19 @@ public class UserService {
 
     public List<User> findAllFriends(Integer id) {
         List<User> users = new ArrayList<>();
-        for (Integer friendId : storage.getUserById(id).getFriends()) {
+        for (Integer friendId : friendStorage.getAllFriendByUser(id)) {
             users.add(storage.getUserById(friendId));
         }
         return users;
     }
 
     public void addToFriends(Integer id, Integer otherId) throws AbsenceOfObjectException {
-            User user = storage.getUserById(id);
-            User friend = storage.getUserById(otherId);
-            user.addFriend(otherId);
-            friend.addFriend(id);
+        friendStorage.addFriend(id, otherId);
     }
 
 
     public void removeFromFriends(Integer id, Integer otherId) {
-        User user = storage.getUserById(id);
-        User friend = storage.getUserById(otherId);
-        user.deleteFriend(otherId);
-        friend.deleteFriend(id);
+        friendStorage.deleteFriend(id,otherId);
     }
 
     public List<User> getMutualFriends(Integer id, Integer otherId) {
