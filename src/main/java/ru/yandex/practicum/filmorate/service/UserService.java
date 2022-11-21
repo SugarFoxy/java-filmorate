@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserService {
     private final UserStorage storage;
     private final FriendStorage friendStorage;
@@ -33,16 +35,12 @@ public class UserService {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        if (user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не может содержать пробелы");
-        }
+        validLogin(user);
         return storage.addUser(user);
     }
 
     public void updateUser(User user) throws AbsenceOfObjectException {
-        if (user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не может содержать пробелы");
-        }
+        validLogin(user);
         storage.updateUser(user);
     }
 
@@ -77,6 +75,12 @@ public class UserService {
                     .collect(Collectors.toList());
         } else {
             return new ArrayList<>();
+        }
+    }
+
+    private void  validLogin(User user){
+        if (user.getLogin().contains(" ")) {
+            throw new ValidationException("Логин не может содержать пробелы");
         }
     }
 }
