@@ -25,6 +25,7 @@ public class Film {
     @GeneratedValue
     private Integer id;
     private List<Integer> likes;
+    private List<Genre> genres;
     @NotBlank(message = "Название отсутствует")
     private String name;
     @NotNull(message = "Филь не может быть без описания")
@@ -39,13 +40,13 @@ public class Film {
     private MPA mpa;
 
     public Film(Integer id,String name, String description, LocalDate releaseDate, long duration, MPA mpa) {
-
         this.id =id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
+        createGenres();
     }
 
     public List<Integer> getLikes() {
@@ -72,6 +73,17 @@ public class Film {
              likes = new ArrayList<>();
          }
      }
+
+    public List<Genre> getGenres() {
+        createGenres();
+        return genres;
+    }
+
+    private void createGenres(){
+        if (genres == null) {
+            genres = new ArrayList<>();
+        }
+    }
 
 
 }

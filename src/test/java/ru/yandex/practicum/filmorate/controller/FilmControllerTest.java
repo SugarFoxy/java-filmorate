@@ -36,12 +36,12 @@ class FilmControllerTest {
     @BeforeEach
     public void init() {
         context = SpringApplication.run(FilmorateApplication.class);
-        nullname = new Film(null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100);
-        incorrectDescription = new Film(null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100);
-        incorrectReleaseDate = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100);
-        negativeDuration = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),-3);
-        correctFilm = new Film(1, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100);
-        nonexistentId = new Film(9999, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100);
+        nullname = new Film(null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, null);
+        incorrectDescription = new Film(null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100, null);
+        incorrectReleaseDate = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100, null);
+        negativeDuration = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),-3, null);
+        correctFilm = new Film(1, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, null);
+        nonexistentId = new Film(9999, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, null);
     }
 
     private int postToServer(Film film) throws IOException, InterruptedException {

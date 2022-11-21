@@ -20,6 +20,7 @@ public class GenreDbStorage implements GenreStorage {
     public GenreDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public List<Genre> getAll() {
         String sql = "select * from genre";
@@ -29,9 +30,9 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Genre getById(Integer id) {
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet("select * from GENRE where GENRE_ID = ?", id);
-        if(genreRows.next()) {
+        if (genreRows.next()) {
             return new Genre(genreRows.getInt("genre_id"), genreRows.getString("genre"));
-        }else {
+        } else {
             throw new AbsenceOfObjectException("такого жанра нет");
         }
     }
@@ -44,7 +45,15 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void assignGenre(Integer filmId, Integer genreId) {
-        jdbcTemplate.update("INSERT INTO FILM_GENRE (FILM_ID,GENRE_ID) values ( ?,? )",filmId,genreId);
+        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("select * from FILM_GENRE where FILM_ID = ? and GENRE_ID = ?;", filmId, genreId);
+        if (!genreRows.next()) {
+            jdbcTemplate.update("INSERT INTO FILM_GENRE (FILM_ID,GENRE_ID) values ( ?,? )", filmId, genreId);
+        }
+    }
+
+    @Override
+    public void delete(Integer filmId) {
+        jdbcTemplate.update("DELETE FROM FILM_GENRE WHERE film_id = ?;", filmId);
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {

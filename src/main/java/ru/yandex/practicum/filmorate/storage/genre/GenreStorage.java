@@ -9,4 +9,5 @@ public interface GenreStorage {
     Genre getById(Integer id);
     List<Genre> getByFilmId(Integer filmId);
     void assignGenre(Integer filmId,Integer genreId);
+    void delete(Integer filmId);
 }

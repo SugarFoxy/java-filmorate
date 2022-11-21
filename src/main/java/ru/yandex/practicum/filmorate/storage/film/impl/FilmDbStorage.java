@@ -82,6 +82,10 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId());
+        genreStorage.delete(film.getId());
+        for (Genre genre: film.getGenres()){
+            genreStorage.assignGenre(film.getId(), genre.getId());
+        }
         film.setGenres(genreStorage.getByFilmId(film.getId()));
         film.setLikes(likeStorage.getFilmLikeId(film.getId()));
         if (amountLines == 0) {
