@@ -28,10 +28,12 @@ public class UserService {
     }
 
     public List<User> getUser() {
+        log.info("Получен запрос на список всех пользователей");
         return storage.getUser();
     }
 
     public User createUser(User user) {
+        log.info("Получен запрос на создание пользавателя");
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
@@ -40,15 +42,18 @@ public class UserService {
     }
 
     public void updateUser(User user) throws AbsenceOfObjectException {
+        log.info("Получен запрос на изменение пользователя");
         validLogin(user);
         storage.updateUser(user);
     }
 
     public User getUserById(Integer id) throws AbsenceOfObjectException {
+        log.info("Получен запрос на получение пользователя по ID");
         return storage.getUserById(id);
     }
 
     public List<User> findAllFriends(Integer id) {
+        log.info("Получен запрос на список друзей пользователя");
         List<User> users = new ArrayList<>();
         for (Integer friendId : friendStorage.getAllFriendByUser(id)) {
             users.add(storage.getUserById(friendId));
@@ -57,15 +62,18 @@ public class UserService {
     }
 
     public void addToFriends(Integer id, Integer otherId) throws AbsenceOfObjectException {
+        log.info("Получен запрос на добавление в друзья");
         friendStorage.addFriend(id, otherId);
     }
 
 
     public void removeFromFriends(Integer id, Integer otherId) {
+        log.info("Получен запрос на удаление из друзей");
         friendStorage.deleteFriend(id,otherId);
     }
 
     public List<User> getMutualFriends(Integer id, Integer otherId) {
+        log.info("Получен запрос на получение списка общих друзей");
         User user = storage.getUserById(id);
         User friend = storage.getUserById(otherId);
         if (user.getFriends() != null && friend.getFriends() != null) {
