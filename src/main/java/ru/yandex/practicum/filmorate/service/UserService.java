@@ -29,7 +29,7 @@ public class UserService {
 
     public List<User> getUser() {
         log.info("Получен запрос на список всех пользователей");
-        return storage.getUser();
+        return storage.getUsers();
     }
 
     public User createUser(User user) {

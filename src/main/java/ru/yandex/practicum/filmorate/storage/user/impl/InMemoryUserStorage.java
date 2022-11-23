@@ -20,7 +20,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUser() {
+    public List<User> getUsers() {
         return new ArrayList<>(users.values());
     }
 
@@ -32,9 +32,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void updateUser(User user) {
+    public User updateUser(User user) {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
+            return users.get(user.getId());
         } else {
             throw new AbsenceOfObjectException("Такого пользователя нет");
         }

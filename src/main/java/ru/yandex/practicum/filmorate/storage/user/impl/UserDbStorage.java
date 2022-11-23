@@ -25,7 +25,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUser() {
+    public List<User> getUsers() {
         String sql = "select * from USERS";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     }
@@ -71,14 +71,18 @@ public class UserDbStorage implements UserStorage {
             throw new AbsenceOfObjectException("Пользователь для изменения не найден");
         }
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from USERS where USER_ID = ?", user.getId());
-        return User.builder()
-                .id(userRows.getInt("user_id"))
-                .name(userRows.getString("name"))
-                .login(userRows.getString("login"))
-                .email(userRows.getString("email"))
-                .birthday(userRows.getDate("birthday").toLocalDate())
-                .friends(friendStorage.getAllFriendByUser(userRows.getInt("user_id")))
-                .build();
+        if (userRows.next()) {
+            return User.builder()
+                    .id(userRows.getInt("user_id"))
+                    .name(userRows.getString("name"))
+                    .login(userRows.getString("login"))
+                    .email(userRows.getString("email"))
+                    .birthday(userRows.getDate("birthday").toLocalDate())
+                    .friends(friendStorage.getAllFriendByUser(userRows.getInt("user_id")))
+                    .build();
+        }else {
+            throw new AbsenceOfObjectException("Измененый пользователь не найден");
+        }
     }
 
     @Override
