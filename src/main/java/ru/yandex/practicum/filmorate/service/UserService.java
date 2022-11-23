@@ -41,10 +41,10 @@ public class UserService {
         return storage.addUser(user);
     }
 
-    public void updateUser(User user) throws AbsenceOfObjectException {
+    public User updateUser(User user) throws AbsenceOfObjectException {
         log.info("Получен запрос на изменение пользователя");
         validLogin(user);
-        storage.updateUser(user);
+        return storage.updateUser(user);
     }
 
     public User getUserById(Integer id) throws AbsenceOfObjectException {

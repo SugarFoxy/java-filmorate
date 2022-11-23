@@ -30,8 +30,7 @@ public class UserController {
 
     @PutMapping
     public User updateUsers(@Valid @RequestBody User user) {
-        userService.updateUser(user);
-        return user;
+        return userService.updateUser(user);
     }
 
     @GetMapping("/{id}")

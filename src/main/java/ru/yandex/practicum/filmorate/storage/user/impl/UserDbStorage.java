@@ -56,7 +56,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void updateUser(User user) {
+    public User updateUser(User user) {
         int amountLines = jdbcTemplate.update("UPDATE USERS SET NAME=?, " +
                         "LOGIN = ?, " +
                         "EMAIL = ?, " +
@@ -70,6 +70,15 @@ public class UserDbStorage implements UserStorage {
         if (amountLines == 0) {
             throw new AbsenceOfObjectException("Пользователь для изменения не найден");
         }
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from USERS where USER_ID = ?", user.getId());
+        return User.builder()
+                .id(userRows.getInt("user_id"))
+                .name(userRows.getString("name"))
+                .login(userRows.getString("login"))
+                .email(userRows.getString("email"))
+                .birthday(userRows.getDate("birthday").toLocalDate())
+                .friends(friendStorage.getAllFriendByUser(userRows.getInt("user_id")))
+                .build();
     }
 
     @Override
