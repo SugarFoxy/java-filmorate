@@ -44,7 +44,7 @@ class FilmControllerTest {
         negativeDuration = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),-3, new MPA(1));
         correctFilm = new Film(1, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
         nonexistentId = new Film(9999, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
-        nullMpa = new Film(null, "Хроники програмиста))", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
+        nullMpa = new Film(null, "Хроники програмиста))", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, null);
     }
 
     private int postToServer(Film film) throws IOException, InterruptedException {
