@@ -10,6 +10,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.controller.adapter.LocalDateAdapter;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.MPA;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,16 +33,18 @@ class FilmControllerTest {
     private Film negativeDuration;
     private Film correctFilm;
     private Film nonexistentId;
+    private  Film nullMpa;
 
     @BeforeEach
     public void init() {
         context = SpringApplication.run(FilmorateApplication.class);
-        nullname = new Film(null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, null);
-        incorrectDescription = new Film(null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100, null);
-        incorrectReleaseDate = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100, null);
-        negativeDuration = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),-3, null);
-        correctFilm = new Film(1, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, null);
-        nonexistentId = new Film(9999, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, null);
+        nullname = new Film(null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
+        incorrectDescription = new Film(null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100, new MPA(1));
+        incorrectReleaseDate = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100, new MPA(1));
+        negativeDuration = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),-3, new MPA(1));
+        correctFilm = new Film(1, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
+        nonexistentId = new Film(9999, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
+        nullMpa = new Film(null, "Хроники програмиста))", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
     }
 
     private int postToServer(Film film) throws IOException, InterruptedException {
@@ -89,7 +92,8 @@ class FilmControllerTest {
                 () -> assertEquals(400, postToServer(incorrectDescription), "Описание не должно привышать 200 символов, статус 400"),
                 () -> assertEquals(400, postToServer(incorrectReleaseDate), "релиз не может быть раньше 28.12.1895, статус 400"),
                 () -> assertEquals(400, postToServer(negativeDuration), "продолжительность не может быть отрицательной, статус 400"),
-                () -> assertEquals(200, postToServer(correctFilm), "Фильм создан верно, статус 200")
+                () -> assertEquals(200, postToServer(correctFilm), "Фильм создан верно, статус 200"),
+                () -> assertEquals(400, postToServer(nullMpa), "Mpa не должно быть null, статус 400")
         );
     }
 
@@ -102,7 +106,8 @@ class FilmControllerTest {
                 () -> assertEquals(400, putToServer(incorrectReleaseDate), "релиз не может быть раньше 28.12.1895, статус 400"),
                 () -> assertEquals(400, putToServer(negativeDuration), "продолжительность не может быть отрицательной, статус 400"),
                 () -> assertEquals(404, putToServer(nonexistentId), "Фильм не существует, статус 404"),
-                () -> assertEquals(200, putToServer(correctFilm), "Фильм создан верно, статус 200")
+                () -> assertEquals(200, putToServer(correctFilm), "Фильм создан верно, статус 200"),
+                () -> assertEquals(400, postToServer(nullMpa), "Mpa не должно быть null, статус 400")
         );
     }
 
