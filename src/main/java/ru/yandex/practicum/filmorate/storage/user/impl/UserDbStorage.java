@@ -80,7 +80,7 @@ public class UserDbStorage implements UserStorage {
                     .birthday(userRows.getDate("birthday").toLocalDate())
                     .friends(friendStorage.getAllFriendByUser(userRows.getInt("user_id")))
                     .build();
-        }else {
+        } else {
             throw new AbsenceOfObjectException("Измененый пользователь не найден");
         }
     }
