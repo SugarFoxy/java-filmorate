@@ -21,7 +21,10 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public void addLike(int userId, int filmId) {
-        jdbcTemplate.update("INSERT INTO LIKE_USER_FILM (film_id, user_id) VALUES (?, ?);", filmId, userId);
+        int amountLines = jdbcTemplate.update("INSERT INTO LIKE_USER_FILM (film_id, user_id) VALUES (?, ?);", filmId, userId);
+        if (amountLines == 0) {
+            throw new AbsenceOfObjectException(String.format("Пользователь %d уже поставил лайк фильму %d", userId, filmId));
+        }
     }
 
     @Override
