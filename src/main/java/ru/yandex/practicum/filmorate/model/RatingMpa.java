@@ -8,7 +8,7 @@ public enum RatingMpa {
         this.rating = rating;
     }
 
-    String getRating() {
+    public String getRating() {
         return rating;
     }
 }
