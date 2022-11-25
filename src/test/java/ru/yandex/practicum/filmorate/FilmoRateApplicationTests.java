@@ -32,7 +32,7 @@ import static ru.yandex.practicum.filmorate.model.RatingMpa.*;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"schema.sql", "data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"test-schema.sql", "data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class FilmoRateApplicationTests {
 
     @Autowired
