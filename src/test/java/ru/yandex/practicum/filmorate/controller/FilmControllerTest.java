@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.controller.adapter.LocalDateAdapter;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -112,6 +113,7 @@ class FilmControllerTest {
     }
 
     @AfterEach
+    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void close() {
         SpringApplication.exit(context);
     }
