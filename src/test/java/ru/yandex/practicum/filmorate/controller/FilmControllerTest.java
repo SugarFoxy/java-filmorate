@@ -32,7 +32,6 @@ class FilmControllerTest {
 
     @LocalServerPort
     int randomServerPort;
-    private ConfigurableApplicationContext context;
     private URI url;
     private Film nullname;
     private Film incorrectDescription;
