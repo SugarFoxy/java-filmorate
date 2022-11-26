@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -26,12 +27,13 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("/application-test.properties")
 class UserControllerTest {
-/*
-    private ConfigurableApplicationContext context;
-    private final URI url = URI.create("http://localhost:8080/users");
+
+    @LocalServerPort
+    int randomServerPort;
+    private URI url;
     private User nullLogin;
     private User nullEmail;
     private User incorrectLogin;
@@ -42,7 +44,7 @@ class UserControllerTest {
 
     @BeforeEach
     public void init() {
-        context = SpringApplication.run(FilmorateApplication.class);
+        url = URI.create("http://localhost:"+randomServerPort+"/users");
         nullLogin = new User(null, "mail@mail.ru", null, "Nick Name", LocalDate.of(1946, 8, 20));
         nullEmail = new User(null, null, null, "dolore", LocalDate.of(1946, 8, 20));
         incorrectLogin = new User(1, "mail@mail.ru", "dol ore", "Nick Name", LocalDate.of(1946, 8, 20));
@@ -119,6 +121,6 @@ class UserControllerTest {
     @AfterEach
     @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void close() {
-        SpringApplication.exit(context);
-    }*/
+        //SpringApplication.exit(context);
+    }
 }

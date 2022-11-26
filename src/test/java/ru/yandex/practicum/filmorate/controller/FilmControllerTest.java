@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -27,13 +28,14 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("/application-test.properties")
 class FilmControllerTest {
 
-/*
+    @LocalServerPort
+    int randomServerPort;
     private ConfigurableApplicationContext context;
-    private final URI url = URI.create("http://localhost:8080/films");
+    private URI url;
     private Film nullname;
     private Film incorrectDescription;
     private Film incorrectReleaseDate;
@@ -44,7 +46,7 @@ class FilmControllerTest {
 
     @BeforeEach
     public void init() {
-        context = SpringApplication.run(FilmorateApplication.class);
+        url = URI.create("http://localhost:"+randomServerPort+"/users");
         nullname = new Film(null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
         incorrectDescription = new Film(null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100, new MPA(1));
         incorrectReleaseDate = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100, new MPA(1));
@@ -122,5 +124,5 @@ class FilmControllerTest {
     @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void close() {
         SpringApplication.exit(context);
-    }*/
+    }
 }
