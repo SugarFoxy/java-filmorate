@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @TestPropertySource("/application-test.properties")
 class UserControllerTest {
-
+/*
     private ConfigurableApplicationContext context;
     private final URI url = URI.create("http://localhost:8080/users");
     private User nullLogin;
@@ -120,5 +120,5 @@ class UserControllerTest {
     @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void close() {
         SpringApplication.exit(context);
-    }
+    }*/
 }

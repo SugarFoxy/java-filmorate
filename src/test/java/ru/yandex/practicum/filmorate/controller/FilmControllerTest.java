@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestPropertySource("/application-test.properties")
 class FilmControllerTest {
 
-
+/*
     private ConfigurableApplicationContext context;
     private final URI url = URI.create("http://localhost:8080/films");
     private Film nullname;
@@ -122,5 +122,5 @@ class FilmControllerTest {
     @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void close() {
         SpringApplication.exit(context);
-    }
+    }*/
 }
