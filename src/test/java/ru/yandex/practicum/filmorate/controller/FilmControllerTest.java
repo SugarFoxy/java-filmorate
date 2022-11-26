@@ -2,18 +2,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.controller.adapter.LocalDateAdapter;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPA;
@@ -30,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("/application-test.properties")
+@Sql(value = {"/ru/yandex/practicum/filmorate/test-schema.sql", "/ru/yandex/practicum/filmorate/test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/ru/yandex/practicum/filmorate/clear-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/ru/yandex/practicum/filmorate/clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class FilmControllerTest {
 
     @LocalServerPort
@@ -46,7 +44,7 @@ class FilmControllerTest {
 
     @BeforeEach
     public void init() {
-        url = URI.create("http://localhost:"+randomServerPort+"/users");
+        url = URI.create("http://localhost:"+randomServerPort+"/films");
         nullname = new Film(null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
         incorrectDescription = new Film(null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100, new MPA(1));
         incorrectReleaseDate = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100, new MPA(1));
@@ -95,7 +93,7 @@ class FilmControllerTest {
 
 
     @Test
-    void postUsers() {
+    void postFilms() {
         assertAll(
                 () -> assertEquals(400, postToServer(nullname), "Имя не должно быть null, статус 400"),
                 () -> assertEquals(400, postToServer(incorrectDescription), "Описание не должно привышать 200 символов, статус 400"),
@@ -107,7 +105,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void putUsers() throws IOException, InterruptedException {
+    void putFilms() throws IOException, InterruptedException {
         postToServer(correctFilm);
         assertAll(
                 () -> assertEquals(400, putToServer(nullname), "Имя не должно быть null, статус 400"),
@@ -118,11 +116,5 @@ class FilmControllerTest {
                 () -> assertEquals(200, putToServer(correctFilm), "Фильм создан верно, статус 200"),
                 () -> assertEquals(400, postToServer(nullMpa), "Mpa не должно быть null, статус 400")
         );
-    }
-
-    @AfterEach
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void close() {
-        SpringApplication.exit(context);
     }
 }

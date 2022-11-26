@@ -32,7 +32,7 @@ import static ru.yandex.practicum.filmorate.model.RatingMpa.*;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"test-schema.sql", "data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"test-schema.sql", "test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class FilmoRateApplicationTests {
 
     @Autowired
@@ -53,7 +53,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Users-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testFindUserById() {
         User requestUser = userStorage.getUserById(1);
         Optional<User> userOptional = Optional.ofNullable(requestUser);
@@ -71,7 +71,7 @@ class FilmoRateApplicationTests {
     }
 
     @Test
-    @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testAddUser() {
         User requestUser = userStorage.addUser(new User(null, "test4Name", "test4Login", "test4@email.ru", LocalDate.of(2007, 3, 4)));
         Optional<User> userOptional = Optional.of(requestUser);
@@ -90,7 +90,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Users-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testUpdateUser() {
         User requestUser = userStorage.updateUser(new User(3, "test4Name", "test4Login", "test4@email.ru", LocalDate.of(2007, 3, 4)));
         Optional<User> userOptional = Optional.of(requestUser);
@@ -109,7 +109,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Users-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testGetUsers() {
         List<User> allUsersRequest = userStorage.getUsers();
         String sql = "select * from USERS";
@@ -125,7 +125,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Users-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testAddFriends() {
         friendStorage.addFriend(2, 1);
         User userInsideDb = getUserById(2);
@@ -134,7 +134,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Users-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testDeleteAddFriends() {
         friendStorage.deleteFriend(1, 2);
         User userInsideDb = getUserById(2);
@@ -143,7 +143,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Users-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Users-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testGetAllFriendByUser() {
         List<Integer> allFriends = friendStorage.getAllFriendByUser(1);
 
@@ -155,7 +155,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testFindFilmById() {
         Film requestFilm = filmDbStorage.getFilmById(1);
         Optional<Film> filmOptional = Optional.ofNullable(requestFilm);
@@ -175,7 +175,7 @@ class FilmoRateApplicationTests {
     }
 
     @Test
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testAddFilm() {
         Film requestFilm = new Film(null, "testName", "testDescription", LocalDate.of(2007, 3, 4), 100, new MPA(1, "G"));
         Optional<Film> filmOptional = Optional.ofNullable(filmDbStorage.addFilm(requestFilm));
@@ -196,7 +196,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testUpdateFilm() {
         Film requestFilm = new Film(1, "test4Name", "test4Description", LocalDate.of(2007, 3, 4), 400, new MPA(4));
         Optional<Film> filmOptional = Optional.of(filmDbStorage.updateFilms(requestFilm));
@@ -217,7 +217,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testGetFilms() {
         List<Film> allFilmsRequest = filmDbStorage.getFilms();
         String sql = "select * from FILMORATETEST.PUBLIC.FILM";
@@ -233,7 +233,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testGetMpaById() {
         MPA mpaRating = mpaDbStorage.getById(1);
         Optional<MPA> optionalMPA = Optional.of(mpaRating);
@@ -278,7 +278,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testGetGenreById() {
         Genre genreById = genreDbStorage.getById(1);
         Optional<Genre> optionalGenre = Optional.of(genreById);
@@ -290,7 +290,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testGetGenresByFilmId() {
         List<Genre> genres = genreDbStorage.getByFilmId(3);
         assertThat(genres)
@@ -302,7 +302,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testAssignGenre() {
         genreDbStorage.assignGenre(1, 2);
         Film film = getFilmById(1);
@@ -319,7 +319,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testDeleteGenre() {
         genreDbStorage.delete(2);
         Film film = getFilmById(2);
@@ -330,7 +330,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testAddLike() {
         likeDbStorage.addLike(2, 3);
         Film film = getFilmById(3);
@@ -344,7 +344,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testDeleteLike() {
         likeDbStorage.deleteLike(2, 1);
         Film film = getFilmById(1);
@@ -358,7 +358,7 @@ class FilmoRateApplicationTests {
 
     @Test
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"create-Films-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testGetFilmLikesId() {
         List<Integer> likes = likeDbStorage.getFilmLikeId(1);
         assertThat(likes)
