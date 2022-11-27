@@ -45,6 +45,11 @@ public class User {
         return friends;
     }
 
+    public void setFriends(List<Integer> friends) {
+        createFriends();
+        this.friends = friends;
+    }
+
     public void addFriend(Integer id) {
         createFriends();
         friends.add(id);
