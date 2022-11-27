@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.user.impl;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -61,7 +62,7 @@ public class UserDbStorage implements UserStorage {
                         "LOGIN = ?, " +
                         "EMAIL = ?, " +
                         "BIRTHDAY= ? " +
-                        "WHERE USER_ID = ?",
+                        "WHERE ID = ?",
                 user.getName(),
                 user.getLogin(),
                 user.getEmail(),
@@ -70,45 +71,37 @@ public class UserDbStorage implements UserStorage {
         if (amountLines == 0) {
             throw new AbsenceOfObjectException("Пользователь для изменения не найден");
         }
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from USERS where USER_ID = ?", user.getId());
-        if (userRows.next()) {
-            return User.builder()
-                    .id(userRows.getInt("user_id"))
-                    .name(userRows.getString("name"))
-                    .login(userRows.getString("login"))
-                    .email(userRows.getString("email"))
-                    .birthday(userRows.getDate("birthday").toLocalDate())
-                    .friends(friendStorage.getAllFriendByUser(userRows.getInt("user_id")))
-                    .build();
-        } else {
-            throw new AbsenceOfObjectException("Измененый пользователь не найден");
+        try {
+            User changedUser = jdbcTemplate.queryForObject("select * from USERS where ID = ?", new BeanPropertyRowMapper<>(User.class), user.getId());
+            int userId = user.getId();
+            assert changedUser != null;
+            changedUser.setFriends(friendStorage.getAllFriendByUser(userId));
+            return changedUser;
+        } catch (EmptyResultDataAccessException e) {
+            throw new AbsenceOfObjectException("Измененный пользователь не найден");
         }
     }
 
     @Override
     public User getUserById(Integer id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from USERS where USER_ID = ?", id);
-        if (userRows.next()) {
-            return User.builder()
-                    .id(userRows.getInt("user_id"))
-                    .name(userRows.getString("name"))
-                    .login(userRows.getString("login"))
-                    .email(userRows.getString("email"))
-                    .birthday(userRows.getDate("birthday").toLocalDate())
-                    .friends(friendStorage.getAllFriendByUser(userRows.getInt("user_id")))
-                    .build();
-        } else {
-            throw new AbsenceOfObjectException("такого пользователя нет");
+        try {
+            User user = jdbcTemplate.queryForObject("select * from USERS where ID = ?", new BeanPropertyRowMapper<>(User.class), id);
+            assert user != null;
+            user.setFriends(friendStorage.getAllFriendByUser(id));
+            return user;
+        } catch (EmptyResultDataAccessException e) {
+            throw new AbsenceOfObjectException("Такого пользователя не существует");
         }
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
         return User.builder()
-                .id(rs.getInt("user_id"))
+                .id(rs.getInt("id"))
                 .name(rs.getString("name"))
                 .login(rs.getString("login"))
                 .email(rs.getString("email"))
                 .birthday(rs.getDate("birthday").toLocalDate())
+                .friends(friendStorage.getAllFriendByUser(rs.getInt("id")))
                 .build();
     }
 }
