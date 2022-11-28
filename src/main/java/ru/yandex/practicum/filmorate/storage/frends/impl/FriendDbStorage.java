@@ -22,19 +22,17 @@ public class FriendDbStorage implements FriendStorage {
     @Override
     public void addFriend(int userId, int friendId) {
         try {
-            SqlRowSet friendRows = jdbcTemplate.queryForRowSet("select id from friend where USER_ID =? and FRIEND_ID = ?");
+            SqlRowSet friendRows = jdbcTemplate.queryForRowSet("select * from friend where USER_ID =? and FRIEND_ID = ?",userId,friendId);
             if (friendRows.next()) {
                 jdbcTemplate.update("UPDATE FRIEND SET STATUS = true where id = ?", friendRows.getInt("id"));
-            }
-        } catch (Exception e) {
-            try {
+            } else {
                 jdbcTemplate.update("INSERT INTO FRIEND(user_id, friend_id, status) values ( ?,?,? );",
                         userId, friendId, true);
                 jdbcTemplate.update("INSERT INTO FRIEND(user_id, friend_id, status) values ( ?,?,? );",
                         friendId, userId, false);
-            } catch (RuntimeException e1) {
-                throw new AbsenceOfObjectException("пользователь не существует");
             }
+        } catch (RuntimeException e1) {
+            throw new AbsenceOfObjectException("пользователь не существует");
         }
     }
 
