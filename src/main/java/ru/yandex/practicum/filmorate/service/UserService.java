@@ -83,7 +83,9 @@ public class UserService {
     public List<User> getMutualFriends(Integer id, Integer otherId) {
         log.info("Получен запрос на получение списка общих друзей");
         User user = storage.getUserById(id);
+        user.setFriends(friendStorage.getAllFriendByUser(user.getId()));
         User friend = storage.getUserById(otherId);
+        friend.setFriends(friendStorage.getAllFriendByUser(friend.getId()));
         if (user.getFriends() != null && friend.getFriends() != null) {
             return user.getFriends().stream()
                     .map(storage::getUserById)
