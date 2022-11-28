@@ -17,12 +17,9 @@ import java.util.Objects;
 @Repository
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final FriendStorage friendStorage;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate,
-                         @Qualifier("friendDbStorage") FriendStorage friendStorage) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.friendStorage = friendStorage;
     }
 
     @Override
@@ -52,7 +49,6 @@ public class UserDbStorage implements UserStorage {
             throw new RuntimeException(e);
         }
         user.setId(id);
-        user.setFriends(friendStorage.getAllFriendByUser(id));
         return user;
     }
 
@@ -74,8 +70,6 @@ public class UserDbStorage implements UserStorage {
         try {
             User changedUser = jdbcTemplate.queryForObject("select * from USERS where ID = ?", new BeanPropertyRowMapper<>(User.class), user.getId());
             int userId = user.getId();
-            assert changedUser != null;
-            changedUser.setFriends(friendStorage.getAllFriendByUser(userId));
             return changedUser;
         } catch (EmptyResultDataAccessException e) {
             throw new AbsenceOfObjectException("Измененный пользователь не найден");
@@ -86,8 +80,6 @@ public class UserDbStorage implements UserStorage {
     public User getUserById(Integer id) {
         try {
             User user = jdbcTemplate.queryForObject("select * from USERS where ID = ?", new BeanPropertyRowMapper<>(User.class), id);
-            assert user != null;
-            user.setFriends(friendStorage.getAllFriendByUser(id));
             return user;
         } catch (EmptyResultDataAccessException e) {
             throw new AbsenceOfObjectException("Такого пользователя не существует");
@@ -101,7 +93,6 @@ public class UserDbStorage implements UserStorage {
                 .login(rs.getString("login"))
                 .email(rs.getString("email"))
                 .birthday(rs.getDate("birthday").toLocalDate())
-                .friends(friendStorage.getAllFriendByUser(rs.getInt("id")))
                 .build();
     }
 }
