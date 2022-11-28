@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.yandex.practicum.filmorate.model.RatingMpa.*;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -66,8 +65,7 @@ class FilmoRateApplicationTests {
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("name", userInsideDb.getName()))
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("login", userInsideDb.getLogin()))
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("email", userInsideDb.getEmail()))
-                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("birthday", userInsideDb.getBirthday()))
-                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("friends", userInsideDb.getFriends()));
+                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("birthday", userInsideDb.getBirthday()));
     }
 
     @Test
@@ -84,8 +82,7 @@ class FilmoRateApplicationTests {
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("name", userInsideDb.getName()))
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("login", userInsideDb.getLogin()))
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("email", userInsideDb.getEmail()))
-                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("birthday", userInsideDb.getBirthday()))
-                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("friends", userInsideDb.getFriends()));
+                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("birthday", userInsideDb.getBirthday()));
     }
 
     @Test
@@ -103,8 +100,7 @@ class FilmoRateApplicationTests {
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("name", userInsideDb.getName()))
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("login", userInsideDb.getLogin()))
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("email", userInsideDb.getEmail()))
-                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("birthday", userInsideDb.getBirthday()))
-                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("friends", userInsideDb.getFriends()));
+                .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("birthday", userInsideDb.getBirthday()));
     }
 
     @Test
@@ -169,9 +165,7 @@ class FilmoRateApplicationTests {
                 .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("description", filmInsideDb.getDescription()))
                 .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("releaseDate", filmInsideDb.getReleaseDate()))
                 .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("duration", filmInsideDb.getDuration()))
-                .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("mpa", filmInsideDb.getMpa()))
-                .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("genres", filmInsideDb.getGenres()))
-                .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("likes", filmInsideDb.getLikes()));
+                .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("mpa", filmInsideDb.getMpa()));
     }
 
     @Test
@@ -179,8 +173,7 @@ class FilmoRateApplicationTests {
     public void testAddFilm() {
         Film requestFilm = new Film(null, "testName", "testDescription", LocalDate.of(2007, 3, 4), 100, new MPA(1, "G"));
         Optional<Film> filmOptional = Optional.ofNullable(filmDbStorage.addFilm(requestFilm));
-
-        Film filmInsideDb = getFilmById(1);
+        Film filmInsideDb = filmDbStorage.getFilmById(1);
         assertThat(filmInsideDb).isNotNull();
         assertThat(filmOptional)
                 .isPresent()
@@ -198,7 +191,7 @@ class FilmoRateApplicationTests {
     @Sql(value = {"create-Films-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testUpdateFilm() {
-        Film requestFilm = new Film(1, "test4Name", "test4Description", LocalDate.of(2007, 3, 4), 400, new MPA(4));
+        Film requestFilm = new Film(1, "test4Name", "test4Description", LocalDate.of(2007, 3, 4), 400, new MPA(4, "R"));
         Optional<Film> filmOptional = Optional.of(filmDbStorage.updateFilms(requestFilm));
 
         Film filmInsideDb = getFilmById(1);
@@ -210,9 +203,7 @@ class FilmoRateApplicationTests {
                 .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("description", filmInsideDb.getDescription()))
                 .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("releaseDate", filmInsideDb.getReleaseDate()))
                 .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("duration", filmInsideDb.getDuration()))
-                .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("mpa", filmInsideDb.getMpa()))
-                .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("genres", filmInsideDb.getGenres()))
-                .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("likes", filmInsideDb.getLikes()));
+                .hasValueSatisfying(film -> assertThat(film).hasFieldOrPropertyWithValue("mpa", filmInsideDb.getMpa()));
     }
 
     @Test
@@ -250,13 +241,13 @@ class FilmoRateApplicationTests {
                 .isNotEmpty()
                 .hasSize(5)
                 .doesNotHaveDuplicates()
-                .contains(new MPA(1, G.getRating()),
-                        new MPA(2, PG.getRating()),
-                        new MPA(3, PG13.getRating()),
-                        new MPA(4, R.getRating()),
-                        new MPA(5, NC17.getRating()))
-                .endsWith(new MPA(5, NC17.getRating()))
-                .startsWith(new MPA(1, G.getRating()));
+                .contains(new MPA(1, "G"),
+                        new MPA(2, "PG"),
+                        new MPA(3, "PG-13"),
+                        new MPA(4, "R"),
+                        new MPA(5, "NC-17"))
+                .endsWith(new MPA(5, "NC-17"))
+                .startsWith(new MPA(1, "G"));
     }
 
     @Test
@@ -306,6 +297,7 @@ class FilmoRateApplicationTests {
     public void testAssignGenre() {
         genreDbStorage.assignGenre(1, 2);
         Film film = getFilmById(1);
+        film.setGenres(genreDbStorage.getByFilmId(1));
         List<Genre> genres = film.getGenres();
         assertThat(genres)
                 .isNotEmpty()
@@ -323,6 +315,7 @@ class FilmoRateApplicationTests {
     public void testDeleteGenre() {
         genreDbStorage.delete(2);
         Film film = getFilmById(2);
+        film.setGenres(genreDbStorage.getByFilmId(film.getId()));
         List<Genre> genres = film.getGenres();
         assertThat(genres)
                 .isEmpty();
@@ -334,6 +327,7 @@ class FilmoRateApplicationTests {
     public void testAddLike() {
         likeDbStorage.addLike(2, 3);
         Film film = getFilmById(3);
+        film.setLikes(likeDbStorage.getFilmLikeId(film.getId()));
         List<Integer> likes = film.getLikes();
         assertThat(likes)
                 .isNotEmpty()
@@ -348,6 +342,7 @@ class FilmoRateApplicationTests {
     public void testDeleteLike() {
         likeDbStorage.deleteLike(2, 1);
         Film film = getFilmById(1);
+        film.setLikes(likeDbStorage.getFilmLikeId(film.getId()));
         List<Integer> likes = film.getLikes();
         assertThat(likes)
                 .isNotEmpty()
@@ -371,17 +366,15 @@ class FilmoRateApplicationTests {
 
     private Film getFilmById(Integer id) {
         Film film = new Film();
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select * from FILMORATETEST.PUBLIC.FILM where FILM_ID = ?", id);
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select * from FILMORATETEST.PUBLIC.FILM where ID = ?", id);
         if (filmRows.next()) {
             film = Film.builder()
-                    .id(filmRows.getInt("film_id"))
+                    .id(filmRows.getInt("id"))
                     .name(filmRows.getString("name"))
                     .description(filmRows.getString("description"))
                     .releaseDate(Objects.requireNonNull(filmRows.getDate("release_date")).toLocalDate())
                     .duration(filmRows.getInt("duration"))
-                    .mpa(mpaDbStorage.getById(filmRows.getInt("rating")))
-                    .genres(genreDbStorage.getByFilmId(filmRows.getInt("film_id")))
-                    .likes(likeDbStorage.getFilmLikeId(filmRows.getInt("film_id")))
+                    .mpa(mpaDbStorage.getById(filmRows.getInt("mpa_id")))
                     .build();
         }
         return film;
@@ -389,15 +382,15 @@ class FilmoRateApplicationTests {
 
     private User getUserById(Integer id) {
         User user = new User();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from FILMORATETEST.PUBLIC.USERS where USER_ID = ?", id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from FILMORATETEST.PUBLIC.USERS where ID = ?", id);
         if (userRows.next()) {
             user = User.builder()
-                    .id(userRows.getInt("user_id"))
+                    .id(userRows.getInt("id"))
                     .name(userRows.getString("name"))
                     .login(userRows.getString("login"))
                     .email(userRows.getString("email"))
                     .birthday(Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate())
-                    .friends(friendStorage.getAllFriendByUser(userRows.getInt("user_id")))
+                    .friends(friendStorage.getAllFriendByUser(id))
                     .build();
         }
         return user;
@@ -405,21 +398,19 @@ class FilmoRateApplicationTests {
 
     private Film makeFilm(ResultSet rs) throws SQLException {
         Film film = Film.builder()
-                .id(rs.getInt("film_id"))
+                .id(rs.getInt("id"))
                 .name(rs.getString("name"))
                 .description(rs.getString("description"))
                 .releaseDate(rs.getDate("release_date").toLocalDate())
                 .duration(rs.getInt("duration"))
-                .mpa(new MPA(rs.getInt("rating")))
+                .mpa(mpaDbStorage.getById(rs.getInt("mpa_id")))
                 .build();
-        film.setGenres(genreDbStorage.getByFilmId(film.getId()));
-        film.setLikes(likeDbStorage.getFilmLikeId(rs.getInt("film_id")));
         return film;
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
         return User.builder()
-                .id(rs.getInt("user_id"))
+                .id(rs.getInt("id"))
                 .name(rs.getString("name"))
                 .login(rs.getString("login"))
                 .email(rs.getString("email"))

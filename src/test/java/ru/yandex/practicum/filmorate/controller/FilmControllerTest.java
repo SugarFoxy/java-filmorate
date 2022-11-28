@@ -44,12 +44,12 @@ class FilmControllerTest {
     @BeforeEach
     public void init() {
         url = URI.create("http://localhost:"+randomServerPort+"/films");
-        nullname = new Film(null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
-        incorrectDescription = new Film(null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100, new MPA(1));
-        incorrectReleaseDate = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100, new MPA(1));
-        negativeDuration = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),-3, new MPA(1));
-        correctFilm = new Film(1, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
-        nonexistentId = new Film(9999, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1));
+        nullname = new Film(null, null, "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1,"G"));
+        incorrectDescription = new Film(null, "labore nulla", "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.", LocalDate.of(1946, 8, 20),100, new MPA(1,"G"));
+        incorrectReleaseDate = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1884, 8, 20),100, new MPA(1,"G"));
+        negativeDuration = new Film(null, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),-3, new MPA(1,"G"));
+        correctFilm = new Film(1, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1,"G"));
+        nonexistentId = new Film(9999, "labore nulla", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, new MPA(1,"G"));
         nullMpa = new Film(null, "Хроники програмиста))", "Duis in consequat esse", LocalDate.of(1946, 8, 20),100, null);
     }
 
