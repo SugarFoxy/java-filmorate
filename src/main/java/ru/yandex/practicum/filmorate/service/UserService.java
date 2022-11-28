@@ -27,9 +27,11 @@ public class UserService {
         this.friendStorage = friendStorage;
     }
 
-    public List<User> getUser() {
+    public List<User> getUsers() {
         log.info("Получен запрос на список всех пользователей");
-        return storage.getUsers();
+        List<User> users = storage.getUsers();
+        users.forEach(user -> user.setFriends(friendStorage.getAllFriendByUser(user.getId())));
+        return users;
     }
 
     public User createUser(User user) {
@@ -38,18 +40,24 @@ public class UserService {
             user.setName(user.getLogin());
         }
         validLogin(user);
-        return storage.addUser(user);
+        User createdUser =storage.addUser(user);
+        createdUser.setFriends(friendStorage.getAllFriendByUser(createdUser.getId()));
+        return createdUser;
     }
 
     public User updateUser(User user) throws AbsenceOfObjectException {
         log.info("Получен запрос на изменение пользователя");
         validLogin(user);
-        return storage.updateUser(user);
+        User changedUser =storage.updateUser(user);
+        changedUser.setFriends(friendStorage.getAllFriendByUser(changedUser.getId()));
+        return changedUser;
     }
 
     public User getUserById(Integer id) throws AbsenceOfObjectException {
         log.info("Получен запрос на получение пользователя по ID");
-        return storage.getUserById(id);
+        User user = storage.getUserById(id);
+        user.setFriends(friendStorage.getAllFriendByUser(id));
+        return user;
     }
 
     public List<User> findAllFriends(Integer id) {
