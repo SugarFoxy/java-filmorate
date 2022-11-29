@@ -38,8 +38,8 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public List<Genre> getByFilmId(Integer filmId) {
-        String sql = String.format("select * from FILM_GENRE WHERE FILM_ID = %d", filmId);
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
+        String sql = "select fg.GENRE_ID as ID, g.genre from FILM_GENRE as fg JOIN GENRE as g ON fg.GENRE_ID = g.ID where FILM_ID = ?;";
+        return jdbcTemplate.query(sql, new  GenreMapper(),filmId);
     }
 
     @Override
@@ -53,10 +53,6 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public void delete(Integer filmId) {
         jdbcTemplate.update("DELETE FROM FILM_GENRE WHERE film_id = ?;", filmId);
-    }
-
-    private Genre makeGenre(ResultSet rs) throws SQLException {
-        return getById(rs.getInt("genre_id"));
     }
 
     public static class GenreMapper implements RowMapper<Genre>{
