@@ -2,13 +2,12 @@ package ru.yandex.practicum.filmorate.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ConfigurableApplicationContext;
-import ru.yandex.practicum.filmorate.FilmorateApplication;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.controller.adapter.LocalDateAdapter;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -22,11 +21,16 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource("/application-test.properties")
+@Sql(value = {"/ru/yandex/practicum/filmorate/test-schema.sql", "/ru/yandex/practicum/filmorate/test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/ru/yandex/practicum/filmorate/clear-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/ru/yandex/practicum/filmorate/clear-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class UserControllerTest {
 
-    private ConfigurableApplicationContext context;
-    private final URI url = URI.create("http://localhost:8080/users");
+    @LocalServerPort
+    int randomServerPort;
+    private URI url;
     private User nullLogin;
     private User nullEmail;
     private User incorrectLogin;
@@ -37,7 +41,7 @@ class UserControllerTest {
 
     @BeforeEach
     public void init() {
-        context = SpringApplication.run(FilmorateApplication.class);
+        url = URI.create("http://localhost:"+randomServerPort+"/users");
         nullLogin = new User(null, "mail@mail.ru", null, "Nick Name", LocalDate.of(1946, 8, 20));
         nullEmail = new User(null, null, null, "dolore", LocalDate.of(1946, 8, 20));
         incorrectLogin = new User(1, "mail@mail.ru", "dol ore", "Nick Name", LocalDate.of(1946, 8, 20));
@@ -109,10 +113,5 @@ class UserControllerTest {
                 () -> assertEquals(200, putToServer(nullName), "Имя может быть пустым, статус 200"),
                 () -> assertEquals(404, putToServer(nonexistentId), "Такого пользователя не существует, статус 404")
         );
-    }
-
-    @AfterEach
-    public void close() {
-        SpringApplication.exit(context);
     }
 }

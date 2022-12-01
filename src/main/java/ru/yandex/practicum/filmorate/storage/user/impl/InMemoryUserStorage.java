@@ -1,10 +1,14 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.storage.user.impl;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -16,7 +20,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUser() {
+    public List<User> getUsers() {
         return new ArrayList<>(users.values());
     }
 
@@ -28,9 +32,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void updateUser(User user) {
+    public User updateUser(User user) {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
+            return users.get(user.getId());
         } else {
             throw new AbsenceOfObjectException("Такого пользователя нет");
         }
@@ -38,10 +43,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserById(Integer id) {
-        if(users.containsKey(id)) {
+        if (users.containsKey(id)) {
             return users.get(id);
-        }else {
-           throw new  AbsenceOfObjectException("Такого пользователя нет");
+        } else {
+            throw new AbsenceOfObjectException("Такого пользователя нет");
         }
     }
 }
