@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ public interface FilmStorage {
     Film getFilmById(int id);
     List<Film> getAllFilms();
     List<Film> getMostLikedFilms(int limit);
+    List<Film> getPopularByGenreAndYear(Genre genre, int year,int count);
 }

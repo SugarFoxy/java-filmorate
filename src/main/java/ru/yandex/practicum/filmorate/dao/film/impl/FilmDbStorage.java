@@ -16,8 +16,8 @@ import ru.yandex.practicum.filmorate.utils.film.FilmUtils;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -122,6 +122,17 @@ public class FilmDbStorage implements FilmStorage {
             topFilms.add(FilmMapper.mapFilm(filmRows, filmUtils.getFilmMpa(mpaId), filmUtils.getFilmGenres(filmId)));
         }
         return topFilms;
+    }
+
+    @Override
+    public List<Film> getPopularByGenreAndYear(Genre genre, int year, int count) {
+        TreeSet<Film> films = new TreeSet<>((f1, f2) -> filmUtils.getAmountLikesByFilmId(f1) - filmUtils.getAmountLikesByFilmId(f2));
+        films.addAll(getAllFilms().stream()
+                .filter(film -> film.getGenres().contains(genre))
+                .filter(film -> film.getReleaseDate().getYear() == year)
+                .limit(count)
+                .collect(Collectors.toList()));
+        return new ArrayList<>(films.descendingSet());
     }
 
     private void addFilmGenres(Film film) {

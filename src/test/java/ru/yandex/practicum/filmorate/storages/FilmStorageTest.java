@@ -165,10 +165,47 @@ public class FilmStorageTest {
         likesStorage.addLikeToFilm(thirdFilmId, secondUser.getId());
         likesStorage.addLikeToFilm(secondFilmId, firstUser.getId());
         List<Film> topFilms = filmStorage.getMostLikedFilms(10);
-        System.out.println(topFilms.size());
-        System.out.println(topFilms);
         assertEquals("Третий", topFilms.get(0).getName());
         assertEquals("Второй", topFilms.get(1).getName());
         assertEquals("Название", topFilms.get(2).getName());
+    }
+
+    @Test
+    @Sql("classpath:data.sql")
+    public void getPopularByGenreAndYear() {
+        User firstUser = userStorage.addUser(new User("e5k4p3@gmail.com", "e5k4p3", "e5k4p3",
+                LocalDate.of(1995, 7, 11)));
+        User secondUser = userStorage.addUser(new User("mulenas@gmail.com", "Mulenas", "Mulenas",
+                LocalDate.of(1995, 7, 11)));
+        Film secondFilm = new Film("Второй", "Описание второго",
+                LocalDate.of(1999, 8, 15), 50L, gMpa);
+        Film thirdFilm = new Film("Третий", "Описание третьего",
+                LocalDate.of(1999, 4, 7), 50L, pgMpa);
+
+        Set<Genre> comedyGenres = new TreeSet<>(Comparator.comparing(Genre::getId));
+        Set<Genre> DramaGenres = new TreeSet<>(Comparator.comparing(Genre::getId));
+
+        comedyGenres.add(genreComedy);
+        DramaGenres.add(genreDrama);
+
+        secondFilm.setGenres(comedyGenres);
+        thirdFilm.setGenres(comedyGenres);
+        film.setGenres(DramaGenres);
+
+        int filmId = filmStorage.addFilm(film).getId();
+        int secondFilmId = filmStorage.addFilm(secondFilm).getId();
+        int thirdFilmId = filmStorage.addFilm(thirdFilm).getId();
+
+        likesStorage.addLikeToFilm(thirdFilmId, firstUser.getId());
+        likesStorage.addLikeToFilm(thirdFilmId, secondUser.getId());
+        likesStorage.addLikeToFilm(secondFilmId, firstUser.getId());
+        likesStorage.addLikeToFilm(filmId, firstUser.getId());
+        likesStorage.addLikeToFilm(filmId, secondUser.getId());
+
+        List<Film> topFilms = filmStorage.getPopularByGenreAndYear(genreComedy,1999, 10);
+
+        assertEquals(2, topFilms.size());
+        assertEquals("Третий", topFilms.get(0).getName());
+        assertEquals("Второй", topFilms.get(1).getName());
     }
 }
