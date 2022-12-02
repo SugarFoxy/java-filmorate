@@ -1,3 +1,3 @@
 # java-filmorate
 Template repository for Filmorate project.
-![Database Diagram](https://raw.githubusercontent.com/SugarFoxy/java-filmorate/main/resources/%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%B0%20%D0%91%D0%94.JPG)
+![er filmorate](https://user-images.githubusercontent.com/86505088/203482192-a4001ac4-b8d4-4c46-90b1-c7b474f367e5.png)

@@ -1,16 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.exception.AbsenceOfObjectException;
+import lombok.*;
 
 @Data
-@Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class MPA {
-    private Integer id;
+public class Mpa {
+    private final int id;
     private String name;
+    private String description;
 }
