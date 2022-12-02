@@ -46,6 +46,10 @@ public class FilmService {
         return filmStorage.getMostLikedFilms(limit);
     }
 
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
     public void addLikeToFilm(int filmId, int userId) {
         likesStorage.addLikeToFilm(filmId, userId);
     }

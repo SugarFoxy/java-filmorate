@@ -145,4 +145,19 @@ public class FilmDbStorage implements FilmStorage {
             }
         }
     }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        List<Film> commonFilms = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM films_model " +
+                "WHERE film_id IN (SELECT film_id FROM films_likes WHERE user_id = ?  " +
+                "INTERSECT SELECT film_id FROM films_likes WHERE user_id = ?) ";
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
+        while (filmRows.next()) {
+            int filmId = filmUtils.getFilmId(filmRows);
+            int mpaId = filmUtils.getFilmMpaId(filmRows);
+            commonFilms.add(FilmMapper.mapFilm(filmRows, filmUtils.getFilmMpa(mpaId), filmUtils.getFilmGenres(filmId)));
+        }
+        return commonFilms;
+    }
 }
