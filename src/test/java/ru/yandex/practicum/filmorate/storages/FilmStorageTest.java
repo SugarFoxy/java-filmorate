@@ -202,7 +202,7 @@ public class FilmStorageTest {
         likesStorage.addLikeToFilm(filmId, firstUser.getId());
         likesStorage.addLikeToFilm(filmId, secondUser.getId());
 
-        List<Film> topFilms = filmStorage.getPopularByGenreAndYear(genreComedy,1999, 10);
+        List<Film> topFilms = filmStorage.getPopularByGenreAndYear(genreComedy, 1999, 10);
 
         assertEquals(2, topFilms.size());
         assertEquals("Третий", topFilms.get(0).getName());
