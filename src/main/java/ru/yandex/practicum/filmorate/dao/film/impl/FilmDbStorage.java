@@ -100,7 +100,10 @@ public class FilmDbStorage implements FilmStorage {
         if (filmRow.next()) {
             int filmId = filmUtils.getFilmId(filmRow);
             int mpaId = filmUtils.getFilmMpaId(filmRow);
-            return FilmMapper.mapFilm(filmRow, filmUtils.getFilmMpa(mpaId), filmUtils.getFilmGenres(filmId), filmUtils.getFilmDirectors(filmId));
+            return FilmMapper.mapFilm(filmRow,
+                    filmUtils.getFilmMpa(mpaId),
+                    filmUtils.getFilmGenres(filmId),
+                    filmUtils.getFilmDirectors(filmId));
         } else {
             throw new EntityNotFoundException("Фильм с id " + id + " не найден.");
         }
@@ -186,7 +189,10 @@ public class FilmDbStorage implements FilmStorage {
         while (filmRows.next()) {
             int filmId = filmUtils.getFilmId(filmRows);
             int mpaId = filmUtils.getFilmMpaId(filmRows);
-            allFilms.add(FilmMapper.mapFilm(filmRows, filmUtils.getFilmMpa(mpaId), filmUtils.getFilmGenres(filmId), filmUtils.getFilmDirectors(filmId)));
+            allFilms.add(FilmMapper.mapFilm(filmRows,
+                    filmUtils.getFilmMpa(mpaId),
+                    filmUtils.getFilmGenres(filmId),
+                    filmUtils.getFilmDirectors(filmId)));
         }
         return allFilms;
     }
@@ -210,7 +216,10 @@ public class FilmDbStorage implements FilmStorage {
         while (filmRows.next()) {
             int filmId = filmUtils.getFilmId(filmRows);
             int mpaId = filmUtils.getFilmMpaId(filmRows);
-            commonFilms.add(FilmMapper.mapFilm(filmRows, filmUtils.getFilmMpa(mpaId), filmUtils.getFilmGenres(filmId)));
+            commonFilms.add(FilmMapper.mapFilm(filmRows,
+                    filmUtils.getFilmMpa(mpaId),
+                    filmUtils.getFilmGenres(filmId),
+                    filmUtils.getFilmDirectors(filmId)));
         }
         return commonFilms;
     }
