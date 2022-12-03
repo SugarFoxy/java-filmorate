@@ -82,7 +82,7 @@ public class FilmStorageTest {
         SqlRowSet filmRow = jdbcTemplate.queryForRowSet(sqlQuery, id);
         filmRow.next();
         int filmId = filmRow.getInt("film_id");
-        Film newFilm = FilmMapper.mapFilm(filmRow, filmUtils.getFilmMpa(filmId), filmUtils.getFilmGenres(filmId));
+        Film newFilm = FilmMapper.mapFilm(filmRow, filmUtils.getFilmMpa(filmId), filmUtils.getFilmGenres(filmId), filmUtils.getFilmDirectors(filmId));
         assertEquals(film.getName(), newFilm.getName());
         assertEquals(film.getDescription(), newFilm.getDescription());
         assertEquals(film.getReleaseDate(), newFilm.getReleaseDate());
@@ -119,7 +119,7 @@ public class FilmStorageTest {
         updatedFilmRow.next();
         int filmId = filmUtils.getFilmId(updatedFilmRow);
         int mpaId = filmUtils.getFilmMpaId(updatedFilmRow);
-        Film updatedFilm = FilmMapper.mapFilm(updatedFilmRow, filmUtils.getFilmMpa(mpaId), filmUtils.getFilmGenres(filmId));
+        Film updatedFilm = FilmMapper.mapFilm(updatedFilmRow, filmUtils.getFilmMpa(mpaId), filmUtils.getFilmGenres(filmId), filmUtils.getFilmDirectors(filmId));
         assertNotEquals(film.getName(), updatedFilm.getName());
         assertNotEquals(film.getDescription(), updatedFilm.getDescription());
         assertNotEquals(film.getReleaseDate(), updatedFilm.getReleaseDate());
