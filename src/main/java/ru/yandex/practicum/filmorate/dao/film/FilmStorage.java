@@ -14,4 +14,5 @@ public interface FilmStorage {
     List<Film> getMostLikedFilms(int limit);
     List<Film> getAllFilmsByDirector(int directorId);
     List<Film> getAllFilmsByDirectorByYear(int directorId);
+    List<Film> getCommonFilms(int userId, int friendId);
 }

@@ -221,4 +221,29 @@ public class FilmStorageTest {
         assertEquals("Название", directorFilmsByYear.get(1).getName());
         assertEquals("Третий", directorFilmsByYear.get(2).getName());
     }
+
+    @Test
+    @Sql("classpath:data.sql")
+    public void getCommonFilms() {
+        User firstUser = userStorage.addUser(new User("e5k4p3@gmail.com", "e5k4p3", "e5k4p3",
+                LocalDate.of(1995, 7, 11)));
+        User secondUser = userStorage.addUser(new User("mulenas@gmail.com", "Mulenas", "Mulenas",
+                LocalDate.of(1995, 7, 11)));
+        Film secondFilm = new Film("Второй", "Описание второго",
+                LocalDate.of(1999, 8, 15), 50L, gMpa);
+        Film thirdFilm = new Film("Третий", "Описание третьего",
+                LocalDate.of(2007, 4, 7), 50L, pgMpa);
+        filmStorage.addFilm(film);
+        int secondFilmId = filmStorage.addFilm(secondFilm).getId();
+        int thirdFilmId = filmStorage.addFilm(thirdFilm).getId();
+        likesStorage.addLikeToFilm(secondFilmId, firstUser.getId());
+        likesStorage.addLikeToFilm(thirdFilmId, firstUser.getId());
+        likesStorage.addLikeToFilm(thirdFilmId, secondUser.getId());
+        List<Film> commonFilms = filmStorage.getCommonFilms(firstUser.getId(), secondUser.getId());
+        System.out.println(commonFilms.size());
+        System.out.println(commonFilms);
+        assertEquals("Третий", commonFilms.get(0).getName());
+        assertEquals(1, commonFilms.size());
+    }
+
 }
