@@ -148,7 +148,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void addFilmDirectors(Film film) {
-        checkDirectorIdExistence(film);
+        checkDirectorExistence(film);
         String sqlQuery = "INSERT INTO films_directors(film_id, director_id) VALUES (?, ?)";
         for (Director director : film.getDirectors()) {
             jdbcTemplate.update(sqlQuery, film.getId(), director.getId());
@@ -160,17 +160,16 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sqlQuery, id);
     }
 
-    private void checkDirectorIdExistence(Film film) {
-        String sqlQuery = "SELECT * FROM directors_model WHERE director_id = ?";
+    private void checkDirectorExistence(Film film) {
         for (Director director : film.getDirectors()) {
-            if (!jdbcTemplate.queryForRowSet(sqlQuery, director.getId()).next()) {
+            if (!directorUtils.getSqlRowSetByDirectorId(director.getId()).next()) {
                 throw new EntityNotFoundException("Режиссер с id " + director.getId() + " не найден.");
             }
         }
     }
 
     private void addFilmGenres(Film film) {
-        checkGenreIdExistence(film);
+        checkGenreExistence(film);
         String sqlQuery = "INSERT INTO films_genres(film_id, genre_id) VALUES (?, ?)";
         for (Genre genre : film.getGenres()) {
             jdbcTemplate.update(sqlQuery, film.getId(), genre.getId());
@@ -192,7 +191,7 @@ public class FilmDbStorage implements FilmStorage {
         return allFilms;
     }
 
-    private void checkGenreIdExistence(Film film) {
+    private void checkGenreExistence(Film film) {
         String sqlQuery = "SELECT * FROM genre_dictionary WHERE genre_id = ?";
         for (Genre genre : film.getGenres()) {
             if (!jdbcTemplate.queryForRowSet(sqlQuery, genre.getId()).next()) {
