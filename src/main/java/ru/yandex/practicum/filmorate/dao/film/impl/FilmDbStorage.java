@@ -131,12 +131,14 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularByGenreAndYear(Genre genre, int year, int count) {
-        TreeSet<Film> films = new TreeSet<>((f1, f2) -> filmUtils.getAmountLikesByFilmId(f1) - filmUtils.getAmountLikesByFilmId(f2));
-        films.addAll(getAllFilms().stream()
+        List<Film> allFilms = getAllFilms();
+        List<Film> filteredFilms = allFilms.stream()
                 .filter(getFilter(genre,year))
+                .sorted(Comparator.comparingInt(filmUtils::getAmountLikesByFilmId).reversed())
                 .limit(count)
-                .collect(Collectors.toList()));
-        return new ArrayList<>(films.descendingSet());
+                .collect(Collectors.toList());
+        Collections.reverse(filteredFilms);
+        return filteredFilms;
     }
 
     private Predicate<Film> getFilter (Genre genre, int year){
