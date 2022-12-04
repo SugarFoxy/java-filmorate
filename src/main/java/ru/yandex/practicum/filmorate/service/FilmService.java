@@ -46,6 +46,22 @@ public class FilmService {
         return filmStorage.getMostLikedFilms(limit);
     }
 
+    public List<Film> getFilmsByDirector(int directorId, String sortBy) {
+        if (sortBy.equals("year")) {
+            return filmStorage.getAllFilmsByDirectorByYear(directorId);
+        } else {
+            return filmStorage.getAllFilmsByDirector(directorId);
+        }
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    public List<Film> searchFilm(String query, String by) {
+        return filmStorage.searchFilm(query, by);
+    }
+
     public void addLikeToFilm(int filmId, int userId) {
         likesStorage.addLikeToFilm(filmId, userId);
     }
