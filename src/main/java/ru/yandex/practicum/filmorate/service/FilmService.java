@@ -47,10 +47,13 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirector(int directorId, String sortBy) {
-        if (sortBy.equals("year")) {
-            return filmStorage.getAllFilmsByDirectorByYear(directorId);
-        } else {
-            return filmStorage.getAllFilmsByDirector(directorId);
+        switch(sortBy) {
+            case "year":
+                return filmStorage.getAllFilmsByDirectorByYear(directorId);
+            case "likes":
+                return filmStorage.getAllFilmsByDirector(directorId);
+            default:
+                throw new IllegalArgumentException("Необрабатываемый параметр sortBy - " + sortBy + ".");
         }
     }
 
