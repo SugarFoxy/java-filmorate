@@ -239,7 +239,7 @@ public class FilmDbStorage implements FilmStorage {
                         "WHERE LOWER(dm.director_name) LIKE LOWER('%'||?||'%'))" +
                         "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
         final String stmtForDirectorAndTitle =
-                "SELECT fm.* FROM films_model fm " +
+                "SELECT * FROM films_model fm " +
                         "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
                         "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') OR " +
                         "fm.film_id in " +
