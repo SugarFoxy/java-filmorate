@@ -37,4 +37,11 @@ public class ExceptionsHandler {
         log.error(e.getMessage());
         return new ErrorResponse("Пользователь с таким логином или email уже существует.", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgument(final IllegalArgumentException e) {
+        log.error(e.getMessage());
+        return new ErrorResponse("Необрабатываемый параметр запроса.", e.getMessage());
+    }
 }

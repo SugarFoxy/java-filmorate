@@ -291,4 +291,31 @@ public class FilmStorageTest {
         assertEquals("Третий", topFilmsNotYear.get(0).getName());
         assertEquals("Второй", topFilmsNotYear.get(1).getName());
     }
+
+    @Test
+    @Sql("classpath:data.sql")
+    public void searchFilms() {
+        Film searchFilmOne = new Film("Поиск", "этот фильм должен быть найден по названию",
+                LocalDate.of(2000, 1, 1), 10L, gMpa);
+        Film searchFilmTwo = new Film("Название", "этот фильм должен быть найден по режиссёру",
+                LocalDate.of(2001, 2, 2), 20L, gMpa);
+        Film searchFilmThree = new Film("Название", "этот фильм не должен быть найден",
+                LocalDate.of(2002, 3, 3), 30L, gMpa);
+        User firstUser = userStorage.addUser(new User("user@gmail.com", "user", "name",
+                LocalDate.of(2000, 1, 1)));
+        Director searchDirector = new Director(1, "Поиск");
+        directorStorage.addDirector(searchDirector);
+        List<Director> filmDirectors = new ArrayList<>();
+        filmDirectors.add(searchDirector);
+        searchFilmTwo.setDirectors(filmDirectors); //добавили директора в searchFilmTwo
+        filmStorage.addFilm(searchFilmOne);
+        int filmTwoId = filmStorage.addFilm(searchFilmTwo).getId();
+        filmStorage.addFilm(searchFilmThree); // добавили три фильма
+        likesStorage.addLikeToFilm(filmTwoId, firstUser.getId()); //юзер поставил лайк searchFilmTwo
+        List<Film> searchFilms = filmStorage.searchFilm("пОиС", "title,director");
+        System.out.println(searchFilms.size());
+        System.out.println(searchFilms);
+        assertEquals("Название", searchFilms.get(0).getName());
+        assertEquals(2, searchFilms.size());
+    }
 }

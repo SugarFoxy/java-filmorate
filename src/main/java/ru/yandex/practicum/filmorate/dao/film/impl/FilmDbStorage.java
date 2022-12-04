@@ -56,12 +56,13 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(keyHolder.getKey().intValue());
         addFilmGenres(film);
         addFilmDirectors(film);
+        film.setGenres(filmUtils.getFilmGenres(film.getId()));
         log.info("Фильм с названием " + film.getName() + " добавлен.");
         return film;
     }
 
     @Override
-    public void deleteFilm(int id) {
+    public void deleteFilm(int id) { //тут
         if (filmUtils.getSqlRowSetByFilmId(id).next()) {
             String filmSqlQuery = "DELETE FROM films_model WHERE film_id = ?";
             jdbcTemplate.update(filmSqlQuery, id);
@@ -246,4 +247,47 @@ public class FilmDbStorage implements FilmStorage {
         }
         return commonFilms;
     }
+
+    public List<Film> searchFilm(String query, String searchBy) {
+        final String stmtForFilm =
+                "SELECT * FROM films_model fm " +
+                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
+                        "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') " +
+                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+        final String stmtForDirector =
+                "SELECT * FROM films_model fm " +
+                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
+                        "WHERE fm.film_id in " +
+                        "(SELECT fd.film_id FROM films_directors fd " +
+                        "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
+                        "WHERE LOWER(dm.director_name) LIKE LOWER('%'||?||'%'))" +
+                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+        final String stmtForDirectorAndTitle =
+                "SELECT * FROM films_model fm " +
+                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
+                        "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') OR " +
+                        "fm.film_id in " +
+                        "(SELECT fd.film_id FROM films_directors fd " +
+                        "LEFT JOIN directors_model d ON fd.director_id = d.DIRECTOR_ID " +
+                        "WHERE LOWER(d.director_name) LIKE LOWER('%'||?||'%')) " +
+                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+
+        SqlRowSet filmRows;
+        switch (searchBy) {
+            case "title":
+                filmRows = jdbcTemplate.queryForRowSet(stmtForFilm, query);
+                break;
+            case "director":
+                filmRows = jdbcTemplate.queryForRowSet(stmtForDirector, query);
+                break;
+            case "director,title":
+            case "title,director":
+                filmRows = jdbcTemplate.queryForRowSet(stmtForDirectorAndTitle, query, query);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value *searchBy* : " + searchBy);
+        }
+        return fillListWithFilms(filmRows);
+    }
+
 }

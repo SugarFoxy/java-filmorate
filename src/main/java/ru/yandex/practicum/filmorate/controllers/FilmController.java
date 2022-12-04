@@ -25,7 +25,7 @@ public class FilmController {
         return filmService.addFilm(film);
     }
 
-    @DeleteMapping("/{filmId}")
+    @DeleteMapping("/{filmId}") //тут
     public void deleteFilm(@PathVariable int filmId) {
         filmService.deleteFilm(filmId);
     }
@@ -56,6 +56,12 @@ public class FilmController {
     @GetMapping("/common")
     public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
         return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilm(@RequestParam String query,
+                                 @RequestParam String by) {
+        return filmService.searchFilm(query, by);
     }
 
     @PutMapping("/{filmId}/like/{userId}")

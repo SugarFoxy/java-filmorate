@@ -31,7 +31,7 @@ public class FilmService {
 
     public void deleteFilm(int id) {
         filmStorage.deleteFilm(id);
-    }
+    } //тут
 
     public Film updateFilm(Film film) {
         return filmStorage.updateFilm(film);
@@ -56,15 +56,22 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirector(int directorId, String sortBy) {
-        if (sortBy.equals("year")) {
-            return filmStorage.getAllFilmsByDirectorByYear(directorId);
-        } else {
-            return filmStorage.getAllFilmsByDirector(directorId);
+        switch(sortBy) {
+            case "year":
+                return filmStorage.getAllFilmsByDirectorByYear(directorId);
+            case "likes":
+                return filmStorage.getAllFilmsByDirector(directorId);
+            default:
+                throw new IllegalArgumentException("Необрабатываемый параметр sortBy - " + sortBy + ".");
         }
     }
 
     public List<Film> getCommonFilms(int userId, int friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    public List<Film> searchFilm(String query, String by) {
+        return filmStorage.searchFilm(query, by);
     }
 
     public void addLikeToFilm(int filmId, int userId) {
