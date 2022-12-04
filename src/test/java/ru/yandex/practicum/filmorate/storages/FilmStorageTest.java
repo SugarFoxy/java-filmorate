@@ -170,7 +170,7 @@ public class FilmStorageTest {
         assertEquals("Название", topFilms.get(2).getName());
     }
 
-@Test
+    @Test
     @Sql("classpath:data.sql")
     public void getCommonFilms() {
         User firstUser = userStorage.addUser(new User("e5k4p3@gmail.com", "e5k4p3", "e5k4p3",
@@ -193,8 +193,8 @@ public class FilmStorageTest {
         assertEquals("Третий", commonFilms.get(0).getName());
         assertEquals(1, commonFilms.size());
     }
-    
-     @Test
+
+    @Test
     @Sql("classpath:data.sql")
     public void getPopularByGenreAndYear() {
         User firstUser = userStorage.addUser(new User("e5k4p3@gmail.com", "e5k4p3", "e5k4p3",
@@ -204,7 +204,7 @@ public class FilmStorageTest {
         Film secondFilm = new Film("Второй", "Описание второго",
                 LocalDate.of(1999, 8, 15), 50L, gMpa);
         Film thirdFilm = new Film("Третий", "Описание третьего",
-                LocalDate.of(1999, 4, 7), 50L, pgMpa);
+                LocalDate.of(2000, 4, 7), 50L, pgMpa);
 
         Set<Genre> comedyGenres = new TreeSet<>(Comparator.comparing(Genre::getId));
         Set<Genre> DramaGenres = new TreeSet<>(Comparator.comparing(Genre::getId));
@@ -227,9 +227,17 @@ public class FilmStorageTest {
         likesStorage.addLikeToFilm(filmId, secondUser.getId());
 
         List<Film> topFilms = filmStorage.getPopularByGenreAndYear(genreComedy, 1999, 10);
+        List<Film> topFilmsNotGenre = filmStorage.getPopularByGenreAndYear(null, 2000, 10);
+        List<Film> topFilmsNotYear = filmStorage.getPopularByGenreAndYear(genreComedy, 0, 10);
 
-        assertEquals(2, topFilms.size());
-        assertEquals("Третий", topFilms.get(0).getName());
-        assertEquals("Второй", topFilms.get(1).getName());
+        assertEquals(1, topFilms.size());
+        assertEquals(2, topFilmsNotGenre.size());
+        assertEquals(2, topFilmsNotYear.size());
+        assertEquals("Второй", topFilms.get(0).getName());
+        assertEquals("Третий", topFilmsNotGenre.get(0).getName());
+        assertEquals("Название", topFilmsNotGenre.get(1).getName());
+        assertEquals("Второй", topFilmsNotYear.get(0).getName());
+        assertEquals("Третий", topFilmsNotYear.get(1).getName());
+
     }
 }
