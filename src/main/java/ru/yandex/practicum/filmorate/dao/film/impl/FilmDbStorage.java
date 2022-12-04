@@ -52,12 +52,13 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(keyHolder.getKey().intValue());
         addFilmGenres(film);
         addFilmDirectors(film);
+        film.setGenres(filmUtils.getFilmGenres(film.getId()));
         log.info("Фильм с названием " + film.getName() + " добавлен.");
         return film;
     }
 
     @Override
-    public void deleteFilm(int id) {
+    public void deleteFilm(int id) { //тут
         if (filmUtils.getSqlRowSetByFilmId(id).next()) {
             String filmSqlQuery = "DELETE FROM films_model WHERE film_id = ?";
             jdbcTemplate.update(filmSqlQuery, id);

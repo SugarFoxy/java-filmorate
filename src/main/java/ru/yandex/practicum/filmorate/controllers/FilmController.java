@@ -25,7 +25,7 @@ public class FilmController {
         return filmService.addFilm(film);
     }
 
-    @DeleteMapping("/{filmId}")
+    @DeleteMapping("/{filmId}") //тут
     public void deleteFilm(@PathVariable int filmId) {
         filmService.deleteFilm(filmId);
     }

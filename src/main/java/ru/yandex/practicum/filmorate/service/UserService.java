@@ -28,7 +28,7 @@ public class UserService {
 
     public void deleteUser(int id) {
         userStorage.deleteUser(id);
-    }
+    } //тут
 
     public User updateUser(User user) {
         return userStorage.updateUser(user);

@@ -28,7 +28,7 @@ public class FilmService {
 
     public void deleteFilm(int id) {
         filmStorage.deleteFilm(id);
-    }
+    } //тут
 
     public Film updateFilm(Film film) {
         return filmStorage.updateFilm(film);
