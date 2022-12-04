@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.likes.LikesStorage;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -15,11 +16,13 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final LikesStorage likesStorage;
+    private final GenreStorage genreStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, LikesStorage likesStorage) {
+    public FilmService(FilmStorage filmStorage, LikesStorage likesStorage, GenreStorage genreStorage) {
         this.filmStorage = filmStorage;
         this.likesStorage = likesStorage;
+        this.genreStorage = genreStorage;
     }
 
     public Film addFilm(Film film) {
@@ -42,8 +45,14 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-    public List<Film> getMostLikedFilms(int limit) {
-        return filmStorage.getMostLikedFilms(limit);
+    public List<Film> getMostLikedFilms(int genre, int year, int count) {
+        if (genre <= 0 && year <= 0) {
+            return filmStorage.getMostLikedFilms(count);
+        } else if (genre <= 0) {
+            return filmStorage.getPopularByGenreAndYear(null, year, count);
+        } else {
+            return filmStorage.getPopularByGenreAndYear(genreStorage.getGenreById(genre), year, count);
+        }
     }
 
     public List<Film> getFilmsByDirector(int directorId, String sortBy) {

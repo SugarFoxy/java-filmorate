@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
+
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -65,5 +67,15 @@ public class FilmUtils {
     public SqlRowSet getSqlRowSetByFilmId(int id) {
         String sqlQuery = "SELECT * FROM films_model WHERE film_id = ?";
         return jdbcTemplate.queryForRowSet(sqlQuery, id);
+    }
+
+    public int getAmountLikesByFilmId(Film film) {
+        int amountLikes = 0;
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT count(USER_ID) as count_users " +
+                "FROM FILMS_LIKES WHERE FILM_ID = ?", film.getId());
+        if (rowSet.next()) {
+            amountLikes = rowSet.getInt("count_users");
+        }
+        return amountLikes;
     }
 }

@@ -26,3 +26,4 @@ public class Film {
     private Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
     private List<Director> directors = new ArrayList<>();
 }
+

@@ -18,6 +18,10 @@ import ru.yandex.practicum.filmorate.utils.film.FilmUtils;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -169,6 +173,25 @@ public class FilmDbStorage implements FilmStorage {
             if (!directorUtils.getSqlRowSetByDirectorId(director.getId()).next()) {
                 throw new EntityNotFoundException("Режиссер с id " + director.getId() + " не найден.");
             }
+        }
+    }
+
+    @Override
+    public List<Film> getPopularByGenreAndYear(Genre genre, int year, int count) {
+        return getAllFilms().stream()
+                .filter(getFilter(genre, year))
+                .sorted(Comparator.comparingInt(filmUtils::getAmountLikesByFilmId).reversed())
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    private Predicate<Film> getFilter(Genre genre, int year) {
+        if (genre == null) {
+            return (Film film) -> film.getReleaseDate().getYear() == year;
+        } else if (year <= 0) {
+            return (Film film) -> film.getGenres().contains(genre);
+        } else {
+            return (Film film) -> film.getGenres().contains(genre) && film.getReleaseDate().getYear() == year;
         }
     }
 

@@ -248,6 +248,52 @@ public class FilmStorageTest {
 
     @Test
     @Sql("classpath:data.sql")
+    public void getPopularByGenreAndYear() {
+        User firstUser = userStorage.addUser(new User("e5k4p3@gmail.com", "e5k4p3", "e5k4p3",
+                LocalDate.of(1995, 7, 11)));
+        User secondUser = userStorage.addUser(new User("mulenas@gmail.com", "Mulenas", "Mulenas",
+                LocalDate.of(1995, 7, 11)));
+        Film secondFilm = new Film("Второй", "Описание второго",
+                LocalDate.of(1999, 8, 15), 50L, gMpa);
+        Film thirdFilm = new Film("Третий", "Описание третьего",
+                LocalDate.of(2000, 4, 7), 50L, pgMpa);
+
+        Set<Genre> comedyGenres = new TreeSet<>(Comparator.comparing(Genre::getId));
+        Set<Genre> DramaGenres = new TreeSet<>(Comparator.comparing(Genre::getId));
+
+        comedyGenres.add(genreComedy);
+        DramaGenres.add(genreDrama);
+
+        secondFilm.setGenres(comedyGenres);
+        thirdFilm.setGenres(comedyGenres);
+        film.setGenres(DramaGenres);
+
+        int filmId = filmStorage.addFilm(film).getId();
+        int secondFilmId = filmStorage.addFilm(secondFilm).getId();
+        int thirdFilmId = filmStorage.addFilm(thirdFilm).getId();
+
+        likesStorage.addLikeToFilm(thirdFilmId, firstUser.getId());
+        likesStorage.addLikeToFilm(thirdFilmId, secondUser.getId());
+        likesStorage.addLikeToFilm(secondFilmId, firstUser.getId());
+        likesStorage.addLikeToFilm(filmId, firstUser.getId());
+        likesStorage.addLikeToFilm(filmId, secondUser.getId());
+
+        List<Film> topFilms = filmStorage.getPopularByGenreAndYear(genreComedy, 1999, 10);
+        List<Film> topFilmsNotGenre = filmStorage.getPopularByGenreAndYear(null, 2000, 10);
+        List<Film> topFilmsNotYear = filmStorage.getPopularByGenreAndYear(genreComedy, 0, 10);
+
+        assertEquals(1, topFilms.size());
+        assertEquals(2, topFilmsNotGenre.size());
+        assertEquals(2, topFilmsNotYear.size());
+        assertEquals("Второй", topFilms.get(0).getName());
+        assertEquals("Название", topFilmsNotGenre.get(0).getName());
+        assertEquals("Третий", topFilmsNotGenre.get(1).getName());
+        assertEquals("Третий", topFilmsNotYear.get(0).getName());
+        assertEquals("Второй", topFilmsNotYear.get(1).getName());
+    }
+
+    @Test
+    @Sql("classpath:data.sql")
     public void searchFilms() {
         Film searchFilmOne = new Film("Поиск", "этот фильм должен быть найден по названию",
                 LocalDate.of(2000, 1, 1), 10L, gMpa);
@@ -272,5 +318,4 @@ public class FilmStorageTest {
         assertEquals("Название", searchFilms.get(0).getName());
         assertEquals(2, searchFilms.size());
     }
-
 }
