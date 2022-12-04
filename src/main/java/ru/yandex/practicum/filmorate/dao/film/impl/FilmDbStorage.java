@@ -14,10 +14,15 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.utils.film.FilmMapper;
 import ru.yandex.practicum.filmorate.utils.film.FilmUtils;
 
+import javax.xml.bind.ValidationException;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Repository
@@ -128,12 +133,22 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getPopularByGenreAndYear(Genre genre, int year, int count) {
         TreeSet<Film> films = new TreeSet<>((f1, f2) -> filmUtils.getAmountLikesByFilmId(f1) - filmUtils.getAmountLikesByFilmId(f2));
         films.addAll(getAllFilms().stream()
-                .filter(film -> film.getGenres().contains(genre))
-                .filter(film -> film.getReleaseDate().getYear() == year)
+                .filter(getFilter(genre,year))
                 .limit(count)
                 .collect(Collectors.toList()));
         return new ArrayList<>(films.descendingSet());
     }
+
+    private Predicate<Film> getFilter (Genre genre, int year){
+        if (genre == null) {
+            return (Film film) -> film.getReleaseDate().getYear() == year;
+        } else if (year <= 0) {
+            return (Film film) -> film.getGenres().contains(genre);
+        } else {
+            return (Film film) -> film.getGenres().contains(genre) && film.getReleaseDate().getYear() == year;
+        }
+    }
+
 
     private void addFilmGenres(Film film) {
         checkGenreIdExistence(film);
