@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationExce
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FilmService {
@@ -47,11 +46,11 @@ public class FilmService {
     }
 
     public List<Film> getMostLikedFilms(int genre, int year, int count) {
-        if(genre <= 0 && year <= 0){
+        if (genre <= 0 && year <= 0) {
             return filmStorage.getMostLikedFilms(count);
-        }else if (genre <= 0){
+        } else if (genre <= 0) {
             return filmStorage.getPopularByGenreAndYear(null, year, count);
-        }else {
+        } else {
             return filmStorage.getPopularByGenreAndYear(genreStorage.getGenreById(genre), year, count);
         }
     }
@@ -67,6 +66,7 @@ public class FilmService {
     public void removeLikeFromFilm(int filmId, int userId) {
         likesStorage.removeLikeFromFilm(filmId, userId);
     }
+
     public void logValidationErrors(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             for (ObjectError error : bindingResult.getAllErrors()) {
