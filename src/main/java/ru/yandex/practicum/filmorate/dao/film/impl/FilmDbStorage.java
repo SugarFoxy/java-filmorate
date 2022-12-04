@@ -227,31 +227,27 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> searchFilm(String query, String searchBy) {
         final String stmtForFilm =
                 "SELECT * FROM films_model fm " +
-                        "LEFT OUTER JOIN films_likes AS fl on fm.film_id = fl.film_id " +
+                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
                         "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') " +
                         "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
         final String stmtForDirector =
                 "SELECT * FROM films_model fm " +
-                        "LEFT OUTER JOIN films_likes AS fl on fm.film_id = fl.film_id " +
+                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
                         "WHERE fm.film_id in " +
                         "(SELECT fd.film_id FROM films_directors fd " +
                         "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
                         "WHERE LOWER(dm.director_name) LIKE LOWER('%'||?||'%'))" +
                         "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
         final String stmtForDirectorAndTitle =
-                "SELECT fm.*, COUNT(fl.LIKE_ID) as likes FROM films_model fm " +
-                        "LEFT OUTER JOIN films_likes AS fl on fm.film_id = fl.film_id " +
-                        "WHERE lower(fm.title) LIKE LOWER('%'||?||'%') " +
-                        "group by fm.FILM_ID " +
-                        "UNION " +
-                        "SELECT fm.*, COUNT(fl.LIKE_ID) as likes FROM films_model fm " +
-                        "LEFT OUTER JOIN films_likes AS fl on fm.film_id = fl.film_id " +
-                        "WHERE fm.film_id in " +
+                "SELECT fm.* FROM films_model fm " +
+                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
+                        "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') OR " +
+                        "fm.film_id in " +
                         "(SELECT fd.film_id FROM films_directors fd " +
-                        "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
-                        "WHERE LOWER(dm.director_name) LIKE LOWER('%'||?||'%')) " +
-                        "group by fm.FILM_ID " +
-                        "order by likes desc";
+                        "LEFT JOIN directors_model d ON fd.director_id = d.DIRECTOR_ID " +
+                        "WHERE LOWER(d.director_name) LIKE LOWER('%'||?||'%')) " +
+                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+
         SqlRowSet filmRows;
         switch (searchBy) {
             case "title":
