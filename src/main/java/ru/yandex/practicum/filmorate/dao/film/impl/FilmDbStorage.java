@@ -285,7 +285,7 @@ public class FilmDbStorage implements FilmStorage {
                 filmRows = jdbcTemplate.queryForRowSet(stmtForDirectorAndTitle, query, query);
                 break;
             default:
-                throw new IllegalStateException("Unexpected value *searchBy* : " + searchBy);
+                throw new IllegalArgumentException("Необрабатываемый параметр searchBy - " + searchBy + ".");
         }
         return fillListWithFilms(filmRows);
     }
