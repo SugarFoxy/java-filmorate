@@ -27,17 +27,6 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final FilmUtils filmUtils;
     private final DirectorUtils directorUtils;
-    private static final String stmtForFilmSearch =
-            "SELECT * FROM films_model f " +
-                    "WHERE lower(f.title) LIKE lower('%'||?||'%')";
-    private static final String stmtForDirectorSearch =
-            "SELECT * FROM films_model f " +
-                    "WHERE film_id in " +
-                    "(SELECT fd.film_id FROM films_directors fd " +
-                    "LEFT JOIN directors_model d ON fd.director_id = d.DIRECTOR_ID " +
-                    "WHERE lower(d.director_name) LIKE lower('%'||?||'%'));";
-
-    private static final String stmtForDirectorAndTitle = stmtForFilmSearch + " UNION " + stmtForDirectorSearch;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmUtils filmUtils, DirectorUtils directorUtils) {
@@ -236,13 +225,40 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public List<Film> searchFilm(String query, String searchBy) {
+        final String stmtForFilm =
+                "SELECT * FROM films_model fm " +
+                        "LEFT OUTER JOIN films_likes AS fl on fm.film_id = fl.film_id " +
+                        "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') " +
+                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+        final String stmtForDirector =
+                "SELECT * FROM films_model fm " +
+                        "LEFT OUTER JOIN films_likes AS fl on fm.film_id = fl.film_id " +
+                        "WHERE fm.film_id in " +
+                        "(SELECT fd.film_id FROM films_directors fd " +
+                        "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
+                        "WHERE LOWER(dm.director_name) LIKE LOWER('%'||?||'%'))" +
+                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+        final String stmtForDirectorAndTitle =
+                "SELECT fm.*, COUNT(fl.LIKE_ID) as likes FROM films_model fm " +
+                        "LEFT OUTER JOIN films_likes AS fl on fm.film_id = fl.film_id " +
+                        "WHERE lower(fm.title) LIKE LOWER('%'||?||'%') " +
+                        "group by fm.FILM_ID " +
+                        "UNION " +
+                        "SELECT fm.*, COUNT(fl.LIKE_ID) as likes FROM films_model fm " +
+                        "LEFT OUTER JOIN films_likes AS fl on fm.film_id = fl.film_id " +
+                        "WHERE fm.film_id in " +
+                        "(SELECT fd.film_id FROM films_directors fd " +
+                        "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
+                        "WHERE LOWER(dm.director_name) LIKE LOWER('%'||?||'%')) " +
+                        "group by fm.FILM_ID " +
+                        "order by likes desc";
         SqlRowSet filmRows;
         switch (searchBy) {
-            case "director":
-                filmRows = jdbcTemplate.queryForRowSet(stmtForDirectorSearch, query);
-                break;
             case "title":
-                filmRows = jdbcTemplate.queryForRowSet(stmtForFilmSearch, query);
+                filmRows = jdbcTemplate.queryForRowSet(stmtForFilm, query);
+                break;
+            case "director":
+                filmRows = jdbcTemplate.queryForRowSet(stmtForDirector, query);
                 break;
             case "director,title":
             case "title,director":
