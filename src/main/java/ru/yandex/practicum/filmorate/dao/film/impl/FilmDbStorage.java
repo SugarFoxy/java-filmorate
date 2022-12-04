@@ -47,6 +47,7 @@ public class FilmDbStorage implements FilmStorage {
         }, keyHolder);
         film.setId(keyHolder.getKey().intValue());
         addFilmGenres(film);
+        film.setGenres(filmUtils.getFilmGenres(film.getId()));
         log.info("Фильм с названием " + film.getName() + " добавлен.");
         return film;
     }
