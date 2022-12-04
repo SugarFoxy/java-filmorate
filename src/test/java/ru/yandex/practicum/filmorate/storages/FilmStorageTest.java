@@ -234,10 +234,9 @@ public class FilmStorageTest {
         assertEquals(2, topFilmsNotGenre.size());
         assertEquals(2, topFilmsNotYear.size());
         assertEquals("Второй", topFilms.get(0).getName());
-        assertEquals("Третий", topFilmsNotGenre.get(0).getName());
-        assertEquals("Название", topFilmsNotGenre.get(1).getName());
-        assertEquals("Второй", topFilmsNotYear.get(0).getName());
-        assertEquals("Третий", topFilmsNotYear.get(1).getName());
-
+        assertEquals("Название", topFilmsNotGenre.get(0).getName());
+        assertEquals("Третий", topFilmsNotGenre.get(1).getName());
+        assertEquals("Третий", topFilmsNotYear.get(0).getName());
+        assertEquals("Второй", topFilmsNotYear.get(1).getName());
     }
 }
