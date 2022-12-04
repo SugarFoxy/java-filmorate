@@ -21,7 +21,9 @@ public class Film {
     @NotNull(message = "Длительность фильма не может быть null.")
     @Positive(message = "Длительность фильма не может быть отрицательной.")
     private final Long duration;
-    @NotNull(message = "Мпа - рейтинг не должен отсутствовать")
+    @NotNull(message = "Рейтинг фильма не может быть null.")
     private final Mpa mpa;
     private Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
+    private List<Director> directors = new ArrayList<>();
 }
+

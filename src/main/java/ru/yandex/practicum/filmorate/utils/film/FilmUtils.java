@@ -5,15 +5,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
+
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.utils.director.DirectorMapper;
 import ru.yandex.practicum.filmorate.utils.genre.GenreMapper;
 import ru.yandex.practicum.filmorate.utils.mpa.MpaMapper;
 
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Component
 public class FilmUtils {
@@ -51,6 +52,16 @@ public class FilmUtils {
             filmGenres.add(GenreMapper.mapGenre(genreRows));
         }
         return filmGenres;
+    }
+
+    public List<Director> getFilmDirectors(int id) {
+        List<Director> filmDirectors = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM directors_model WHERE director_id IN (SELECT director_id FROM films_directors WHERE film_id = ?)";
+        SqlRowSet directorRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        while (directorRows.next()) {
+            filmDirectors.add(DirectorMapper.mapDirector(directorRows));
+        }
+        return filmDirectors;
     }
 
     public SqlRowSet getSqlRowSetByFilmId(int id) {
