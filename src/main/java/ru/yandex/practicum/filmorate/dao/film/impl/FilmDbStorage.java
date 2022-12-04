@@ -27,6 +27,17 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final FilmUtils filmUtils;
     private final DirectorUtils directorUtils;
+    private static final String stmtForFilmSearch =
+            "SELECT * FROM films_model f " +
+                    "WHERE lower(f.title) LIKE lower('%'||?||'%')";
+    private static final String stmtForDirectorSearch =
+            "SELECT * FROM films_model f " +
+                    "WHERE film_id in " +
+                    "(SELECT fd.film_id FROM films_directors fd " +
+                    "LEFT JOIN directors_model d ON fd.director_id = d.DIRECTOR_ID " +
+                    "WHERE lower(d.director_name) LIKE lower('%'||?||'%'));";
+
+    private static final String stmtForDirectorAndTitle = stmtForFilmSearch + " UNION " + stmtForDirectorSearch;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmUtils filmUtils, DirectorUtils directorUtils) {
@@ -223,4 +234,24 @@ public class FilmDbStorage implements FilmStorage {
         }
         return commonFilms;
     }
+
+    public List<Film> searchFilm(String query, String searchBy) {
+        SqlRowSet filmRows;
+        switch (searchBy) {
+            case "director":
+                filmRows = jdbcTemplate.queryForRowSet(stmtForDirectorSearch, query);
+                break;
+            case "title":
+                filmRows = jdbcTemplate.queryForRowSet(stmtForFilmSearch, query);
+                break;
+            case "director,title":
+            case "title,director":
+                filmRows = jdbcTemplate.queryForRowSet(stmtForDirectorAndTitle, query, query);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value *searchBy* : " + searchBy);
+        }
+        return fillListWithFilms(filmRows);
+    }
+
 }

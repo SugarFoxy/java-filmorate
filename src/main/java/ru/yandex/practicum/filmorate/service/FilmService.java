@@ -58,6 +58,10 @@ public class FilmService {
         return filmStorage.getCommonFilms(userId, friendId);
     }
 
+    public List<Film> searchFilm(String query, String by) {
+        return filmStorage.searchFilm(query, by);
+    }
+
     public void addLikeToFilm(int filmId, int userId) {
         likesStorage.addLikeToFilm(filmId, userId);
     }
