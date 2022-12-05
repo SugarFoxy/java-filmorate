@@ -21,6 +21,7 @@ import ru.yandex.practicum.filmorate.utils.film.FilmUtils;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -317,5 +318,39 @@ public class FilmStorageTest {
         System.out.println(searchFilms);
         assertEquals("Название", searchFilms.get(0).getName());
         assertEquals(2, searchFilms.size());
+    }
+
+    @Test
+    public void testGettingRecommendationsByUser() {
+        Function<String, Integer> addDummyUser =
+                login -> userStorage.addUser(new User(login + "@test.tst", login, login, LocalDate.now()))
+                        .getId();
+        int userId1 = addDummyUser.apply("test1");
+        int userId2 = addDummyUser.apply("test2");
+        int userId3 = addDummyUser.apply("test3");
+
+        final Mpa mpa = gMpa;
+        Function<String, Film> addDummyFilm =
+                name -> filmStorage.addFilm(
+                        new Film(name, name, LocalDate.now(),100L, mpa));
+        Film film1 = addDummyFilm.apply("name1");
+        Film film2 = addDummyFilm.apply("name2");
+        Film film3 = addDummyFilm.apply("name3");
+        Film film4 = addDummyFilm.apply("name4");
+
+        likesStorage.addLikeToFilm(film1.getId(), userId2);
+
+        likesStorage.addLikeToFilm(film2.getId(), userId2);
+        likesStorage.addLikeToFilm(film2.getId(), userId3);
+
+        likesStorage.addLikeToFilm(film3.getId(), userId1);
+        likesStorage.addLikeToFilm(film3.getId(), userId2);
+        likesStorage.addLikeToFilm(film3.getId(), userId3);
+
+        likesStorage.addLikeToFilm(film4.getId(), userId1);
+        likesStorage.addLikeToFilm(film4.getId(), userId2);
+        likesStorage.addLikeToFilm(film4.getId(), userId3);
+
+        assertEquals(List.of(film2, film1), filmStorage.getRecommendationsByUser(userId1));
     }
 }
