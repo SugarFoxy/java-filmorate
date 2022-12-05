@@ -291,21 +291,24 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendationsByUser(int userId) {
-        String sql =
-                "SELECT f.* " +
-                    "FROM films_model f " +
-                    "WHERE (f.film_id, ?) NOT IN (SELECT film_id, user_id FROM films_likes) " +
-                    "ORDER BY " +
-                        "(SELECT COUNT(1) FROM films_likes l0 " +
-                            "WHERE " +
-                                "l0.film_id != f.film_id AND " +
-                                "l0.user_id IN ( " +
-                                    "SELECT l1.user_id FROM films_likes l1 WHERE l1.film_id = f.film_id) AND " +
-                                "EXISTS ( " +
-                                    "SELECT NULL FROM films_likes l2 " +
-                                        "WHERE l2.user_id = ? AND l2.film_id = l0.film_id) " +
-                            ") DESC, " +
-                        "(SELECT COUNT(1) FROM films_likes l3 WHERE l3.film_id = f.film_id) DESC";
+        final String sql =
+                "SELECT * " +
+                    "FROM (" +
+                        "SELECT " +
+                                "f.*," +
+                                "(SELECT COUNT(1) FROM films_likes l0 " +
+                                    "WHERE " +
+                                        "l0.film_id != f.film_id AND " +
+                                        "l0.user_id IN ( " +
+                                            "SELECT l1.user_id " +
+                                                "FROM films_likes l1 WHERE l1.film_id = f.film_id) AND " +
+                                        "EXISTS ( " +
+                                            "SELECT NULL FROM films_likes l2 " +
+                                                "WHERE l2.user_id = ? AND l2.film_id = l0.film_id)) rate " +
+                            "FROM films_model f " +
+                            "WHERE (f.film_id, ?) NOT IN (SELECT film_id, user_id FROM films_likes)) " +
+                    "WHERE rate > 0 " +
+                    "ORDER BY rate DESC";
         return fillListWithFilms(jdbcTemplate.queryForRowSet(sql, userId, userId));
     }
 }
