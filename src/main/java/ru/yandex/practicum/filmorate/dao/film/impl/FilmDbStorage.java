@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -290,4 +289,23 @@ public class FilmDbStorage implements FilmStorage {
         return fillListWithFilms(filmRows);
     }
 
+    @Override
+    public List<Film> getRecommendationsByUser(int userId) {
+        String sql =
+                "SELECT f.* " +
+                    "FROM films_model f " +
+                    "WHERE (f.film_id, ?) NOT IN (SELECT film_id, user_id FROM films_likes) " +
+                    "ORDER BY " +
+                        "(SELECT COUNT(1) FROM films_likes l0 " +
+                            "WHERE " +
+                                "l0.film_id != f.film_id AND " +
+                                "l0.user_id IN ( " +
+                                    "SELECT l1.user_id FROM films_likes l1 WHERE l1.film_id = f.film_id) AND " +
+                                "EXISTS ( " +
+                                    "SELECT NULL FROM films_likes l2 " +
+                                        "WHERE l2.user_id = ? AND l2.film_id = l0.film_id) " +
+                            ") DESC, " +
+                        "(SELECT COUNT(1) FROM films_likes l3 WHERE l3.film_id = f.film_id) DESC";
+        return fillListWithFilms(jdbcTemplate.queryForRowSet(sql, userId, userId));
+    }
 }
