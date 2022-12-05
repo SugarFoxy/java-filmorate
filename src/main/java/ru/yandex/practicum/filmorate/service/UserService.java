@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.friends.FriendsStorage;
 import ru.yandex.practicum.filmorate.dao.user.UserStorage;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -15,11 +17,13 @@ import java.util.List;
 public class UserService {
     private final UserStorage userStorage;
     private final FriendsStorage friendsStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage, FriendsStorage friendsStorage) {
+    public UserService(UserStorage userStorage, FriendsStorage friendsStorage, FilmStorage filmStorage) {
         this.userStorage = userStorage;
         this.friendsStorage = friendsStorage;
+        this.filmStorage = filmStorage;
     }
 
     public User addUser(User user) {
@@ -64,5 +68,9 @@ public class UserService {
                 throw new ValidationException(error.getDefaultMessage());
             }
         }
+    }
+
+    public List<Film> getRecommendations(int userId) {
+        return filmStorage.getRecommendationsByUser(userId);
     }
 }
