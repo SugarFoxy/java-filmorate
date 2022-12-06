@@ -3,10 +3,11 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.ReviewDto;
+import ru.yandex.practicum.filmorate.dto.FilmReviewDto;
+import ru.yandex.practicum.filmorate.model.FilmReview;
 import ru.yandex.practicum.filmorate.service.ReviewService;
+import ru.yandex.practicum.filmorate.utils.review.FilmReviewDtoMapper;
 
-import javax.validation.Valid;
 import java.util.Set;
 
 @RestController
@@ -15,17 +16,18 @@ import java.util.Set;
 public class ReviewController {
 
     private final ReviewService reviewsService;
+    private final FilmReviewDtoMapper mapper;
 
 
     @GetMapping
-    public ResponseEntity<Set<ReviewDto>> getReviews() {
+    public ResponseEntity<Set<FilmReviewDto>> getReviews() {
         return null;
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDto> postReview(@RequestBody ReviewDto dto) {
-        ReviewDto dto1 = dto;
-        return ResponseEntity.ok(reviewsService.addReview(dto));
+    public ResponseEntity<FilmReviewDto> postReview(@RequestBody FilmReviewDto dto) {
+        FilmReview review = reviewsService.addReview(mapper.toFilmReview(dto));
+        return ResponseEntity.ok(mapper.toDto(review));
     }
 
 }

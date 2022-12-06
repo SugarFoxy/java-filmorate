@@ -1,15 +1,15 @@
 package ru.yandex.practicum.filmorate.dao.reviews;
 
-import ru.yandex.practicum.filmorate.dto.ReviewDto;
+import ru.yandex.practicum.filmorate.dto.FilmReviewDto;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.Set;
 
-public interface ReviewsStorage {
+public interface ReviewsStorage <T extends Review> {
 
-    Review addReview(ReviewDto review);
-    Review updateReview(Review review);
-    Set<Review> getReviews();
-    Review getReview(int id);
+    T addReview(T t);
+    T updateReview(T review);
+    Set<T> getReviews();
+    T getReview(int id);
 
 }

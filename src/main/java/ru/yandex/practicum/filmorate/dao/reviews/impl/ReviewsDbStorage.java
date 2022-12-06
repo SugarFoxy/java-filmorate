@@ -6,52 +6,49 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.reviews.ReviewsStorage;
-import ru.yandex.practicum.filmorate.dto.ReviewDto;
-import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.utils.review.ReviewDtoMapper;
+import ru.yandex.practicum.filmorate.model.FilmReview;
 
 import java.sql.PreparedStatement;
-import java.util.Objects;
 import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
-public class ReviewsDbStorage implements ReviewsStorage {
+public class ReviewsDbStorage implements ReviewsStorage<FilmReview> {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Review addReview(ReviewDto dto) {
+    public FilmReview addReview(FilmReview review) {
         String sqlReview = "INSERT INTO REVIEW_MODEL(content, is_positive) VALUES ( ?,? )";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement stmt = con.prepareStatement(sqlReview, new String[]{"review_id"});
-            stmt.setString(1, dto.getContent());
-            stmt.setBoolean(2, dto.isPositive());
+            stmt.setString(1, review.getContent());
+            stmt.setBoolean(2, review.isPositive());
             return stmt;
         }, keyHolder);
-        dto.setId(1);
+        review.setId(1);
 
         String sqlUserReviews = "INSERT INTO USER_REVIEWS(user_id, review_id) VALUES ( ?, ? )";
-        jdbcTemplate.update(sqlUserReviews, dto.getUserId(), dto.getId());
+        jdbcTemplate.update(sqlUserReviews, review.getUser().getId(), review.getId());
 
         String sqlFilReviews = "INSERT INTO FILM_REVIEWS(FILM_ID, REVIEW_ID) VALUES ( ?, ? )";
-        jdbcTemplate.update(sqlFilReviews, dto.getFilmId(),  dto.getId());
-        return ReviewDtoMapper.REVIEW_DTO_MAPPER.toReview(dto);
+        jdbcTemplate.update(sqlFilReviews, review.getFilm().getId(),  review.getId());
+        return review;
     }
 
     @Override
-    public Review updateReview(Review review) {
+    public FilmReview updateReview(FilmReview review) {
         return null;
     }
 
     @Override
-    public Set<Review> getReviews() {
+    public Set<FilmReview> getReviews() {
         return null;
     }
 
     @Override
-    public Review getReview(int id) {
+    public FilmReview getReview(int id) {
         return null;
     }
 }
