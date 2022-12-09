@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.friends.FriendsStorage;
 import ru.yandex.practicum.filmorate.dao.user.UserStorage;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.FeedEvent;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -18,12 +22,16 @@ public class UserService {
     private final UserStorage userStorage;
     private final FriendsStorage friendsStorage;
     private final FilmStorage filmStorage;
+    private final ApplicationEventPublisher publisher;
 
     @Autowired
-    public UserService(UserStorage userStorage, FriendsStorage friendsStorage, FilmStorage filmStorage) {
+    public UserService(
+            UserStorage userStorage,FriendsStorage friendsStorage, FilmStorage filmStorage,
+            ApplicationEventPublisher publisher) {
         this.userStorage = userStorage;
         this.friendsStorage = friendsStorage;
         this.filmStorage = filmStorage;
+        this.publisher = publisher;
     }
 
     public User addUser(User user) {
@@ -47,11 +55,15 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
-        friendsStorage.addToFriends(userId, friendId);
+        int friendsId = friendsStorage.addToFriends(userId, friendId);
+
+        publisher.publishEvent(new FeedEvent(userId, EventType.FRIEND, Operation.ADD, friendsId));
     }
 
     public void removeFriend(int userId, int friendId) {
-        friendsStorage.removeFromFriends(userId, friendId);
+        int friendsId = friendsStorage.removeFromFriends(userId, friendId);
+
+        publisher.publishEvent(new FeedEvent(userId, EventType.FRIEND, Operation.REMOVE, friendsId));
     }
 
     public List<User> getUserFriends(int userId) {

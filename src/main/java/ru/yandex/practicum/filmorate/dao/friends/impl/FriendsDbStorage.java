@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dao.friends.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.friends.FriendsStorage;
@@ -13,6 +14,7 @@ import ru.yandex.practicum.filmorate.utils.user.UserUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -27,22 +29,41 @@ public class FriendsDbStorage implements FriendsStorage {
     }
 
     @Override
-    public void addToFriends(int userId, int friendId) {
+    public int addToFriends(int userId, int friendId) {
         checkUserExistence(userId);
         checkUserExistence(friendId);
-        String sqlQuery = "INSERT INTO users_friends (user_id, user_friend_id) " +
-                "VALUES (?, ?)";
-        jdbcTemplate.update(sqlQuery, userId, friendId);
+
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .usingGeneratedKeyColumns("friends_id")
+                .withTableName("users_friends");
+        int friendsId = jdbcInsert
+                .executeAndReturnKey(Map.of("user_id", userId, "user_friend_id", friendId))
+                .intValue();
+
         log.info("Пользователь с id " + userId + " добавил в друзья пользователя с id " + friendId + ".");
+
+        return friendsId;
     }
 
     @Override
-    public void removeFromFriends(int userId, int friendId) {
+    public int removeFromFriends(int userId, int friendId) {
         checkUserExistence(userId);
         checkUserExistence(friendId);
-        String sqlQuery = "DELETE FROM users_friends WHERE user_id = ? AND user_friend_id = ?";
-        jdbcTemplate.update(sqlQuery, userId, friendId);
+
+        int friendsId = 0;
+        List<Integer> ids = jdbcTemplate.query(
+                "SELECT friends_id FROM users_friends WHERE user_id = ? AND user_friend_id = ?",
+                (rs, rowNum) -> rs.getInt("friends_id"),
+                userId, friendId);
+        if (ids.size() > 0) {
+            friendsId = ids.get(0);
+            String sqlQuery = "DELETE FROM users_friends WHERE user_id = ? AND user_friend_id = ?";
+            jdbcTemplate.update(sqlQuery, userId, friendId);
+        }
+
         log.info("Пользователь с id " + userId + " удалил из друзей пользователя с id " + friendId + ".");
+
+        return friendsId;
     }
 
     @Override
