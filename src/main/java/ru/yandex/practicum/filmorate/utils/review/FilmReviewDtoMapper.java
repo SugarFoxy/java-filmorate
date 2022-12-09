@@ -1,11 +1,18 @@
 package ru.yandex.practicum.filmorate.utils.review;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.FilmReviewDto;
+import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmReview;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
+
+import javax.validation.Valid;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -16,13 +23,14 @@ public class FilmReviewDtoMapper {
 
     public FilmReviewDto toDto(FilmReview review) {
         return new FilmReviewDto(review.getId(),
-                review.getContent(), review.isPositive(),
-                review.getUser().getId(), review.getFilm().getId());
+                review.getContent(), review.getIsPositive(),
+                review.getUser().getId(), review.getFilm().getId(), review.getUseful());
     }
 
     public FilmReview toFilmReview(FilmReviewDto dto) {
-        return new FilmReview(dto.getReviewId(), dto.getContent(), dto.isPositive(),
-                userService.getUserById(dto.getUserId()), filmService.getFilmById(dto.getFilmId()));
+            return new FilmReview(dto.getReviewId(), dto.getContent(), dto.getIsPositive(),
+                   dto.getUseful(), userService.getUserById(dto.getUserId()),
+                    filmService.getFilmById(dto.getFilmId()));
     }
 
 

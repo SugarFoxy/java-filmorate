@@ -30,6 +30,15 @@ public class FilmReviewDto {
         this.filmId = filmId;
     }
 
+    public FilmReviewDto(int reviewId, String content, Boolean isPositive, Integer userId, Integer filmId, Integer useful) {
+        this.reviewId = reviewId;
+        this.content = content;
+        this.isPositive = isPositive;
+        this.userId = userId;
+        this.filmId = filmId;
+        this.useful = useful;
+    }
+
     public FilmReviewDto() {
     }
 
@@ -38,9 +47,10 @@ public class FilmReviewDto {
     private String content;
     @NotNull(message = "отзыв должен быть либо положительным, либо отрицательным")
     @JsonProperty(value = "isPositive")
-    private boolean isPositive;
-    @NotBlank(message = "кто-то всё-таки должен оставить отзыв")
-    private int userId;
-    @NotBlank(message = "отзыв должен быть оставлен на фильм")
-    private int filmId;
+    private Boolean isPositive;
+    @NotNull(message = "кто-то всё-таки должен оставить отзыв")
+    private Integer userId;
+    @NotNull(message = "отзыв должен быть оставлен на фильм")
+    private Integer filmId;
+    private Integer useful = 0;
 }

@@ -5,19 +5,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.controllers.FilmController;
-import ru.yandex.practicum.filmorate.controllers.GenreController;
-import ru.yandex.practicum.filmorate.controllers.MpaController;
-import ru.yandex.practicum.filmorate.controllers.UserController;
+import ru.yandex.practicum.filmorate.controllers.*;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
 
+import java.util.Map;
+
 @Slf4j
 @RestControllerAdvice(assignableTypes = {FilmController.class,
-                                         UserController.class,
-                                         MpaController.class,
-                                         GenreController.class})
+        UserController.class,
+        MpaController.class,
+        GenreController.class,
+        ReviewController.class})
 public class ExceptionsHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -32,6 +32,7 @@ public class ExceptionsHandler {
         log.error(e.getMessage());
         return new ErrorResponse("Объект не был найден.", e.getMessage());
     }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

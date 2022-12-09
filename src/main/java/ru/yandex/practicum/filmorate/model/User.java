@@ -22,7 +22,7 @@ public class User {
     private String name;
     @Past(message = "День рождения не может быть в будущем.")
     private final LocalDate birthday;
-    private Set<Review> reviews = new TreeSet<>(Comparator.comparing(Review::getRate));
+    private Set<Review> reviews = new TreeSet<>(Comparator.comparing(Review::getUseful));
 
     public User(String email, String login, String name, LocalDate birthday) {
         this.email = email;

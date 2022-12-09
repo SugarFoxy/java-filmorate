@@ -9,8 +9,8 @@ public class FilmReview extends Review {
         super(id, content, isPositive);
     }
 
-    public FilmReview(int id, String content, boolean isPositive, User user, Film film) {
-        super(id, content, isPositive);
+    public FilmReview(int id, String content, boolean isPositive, int useful, User user, Film film) {
+        super(id, content, isPositive,useful);
         this.user = user;
         this.film = film;
     }

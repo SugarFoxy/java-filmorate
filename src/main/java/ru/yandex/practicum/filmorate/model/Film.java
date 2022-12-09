@@ -23,5 +23,5 @@ public class Film {
     private final Long duration;
     private final Mpa mpa;
     private Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
-    private Set<Review> reviews = new TreeSet<>(Comparator.comparing(Review::getRate));
+    private Set<Review> reviews = new TreeSet<>(Comparator.comparing(Review::getUseful));
 }
