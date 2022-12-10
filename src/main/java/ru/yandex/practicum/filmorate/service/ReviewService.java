@@ -22,16 +22,33 @@ public class ReviewService {
         return reviewsStorage.updateReview(review);
     }
 
-    public Set<FilmReview> getReviews() {
-        return reviewsStorage.getReviews();
+    public Set<FilmReview> getReviews(int count) {
+        return reviewsStorage.getReviews(count);
     }
 
     public FilmReview getReview(int id) {
         return reviewsStorage.getReview(id);
     }
 
-    public Set<FilmReview> getFilmReviews(int id) {
-      return reviewsStorage.getFilmReviews(id);
+    public Set<FilmReview> getFilmReviews(int id, int count) {
+      return reviewsStorage.getFilmReviews(id, count);
     }
 
+    public void deleteReview(int id) {
+        reviewsStorage.deleteReview(id);
+    }
+
+    public void addLike(int reviewId, int userId) {
+        FilmReview filmReview = reviewsStorage.getReview(reviewId);
+        int rate = filmReview.getUseful();
+        filmReview.setUseful(rate + 1);
+        reviewsStorage.saveReviewRate(filmReview.getId(), filmReview.getUseful());
+    }
+
+    public void removeLike(int reviewId, int userId) {
+        FilmReview filmReview = reviewsStorage.getReview(reviewId);
+        int rate = filmReview.getUseful();
+        filmReview.setUseful(rate - 1);
+        reviewsStorage.saveReviewRate(filmReview.getId(), filmReview.getUseful());
+    }
 }

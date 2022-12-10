@@ -14,10 +14,9 @@ import ru.yandex.practicum.filmorate.utils.review.ReviewMapper;
 import ru.yandex.practicum.filmorate.utils.review.ReviewUtils;
 
 import java.sql.PreparedStatement;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Repository
@@ -39,7 +38,7 @@ public class ReviewsDbStorage implements ReviewsStorage {
             stmt.setBoolean(2, review.getIsPositive());
             return stmt;
         }, keyHolder);
-        review.setId(keyHolder.getKey().intValue());
+        review.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
 
         String sqlUserReviews = "INSERT INTO USER_REVIEWS(user_id, review_id) VALUES ( ?, ? )";
         jdbcTemplate.update(sqlUserReviews, review.getUser().getId(), review.getId());
@@ -61,17 +60,22 @@ public class ReviewsDbStorage implements ReviewsStorage {
         return review;
     }
 
+    public void deleteReview(int id) {
+        String deleteFromFilmReview = "DELETE FROM FILM_REVIEWS WHERE REVIEW_ID=?";
+        jdbcTemplate.update(deleteFromFilmReview, id);
+        String deleteFromUserReview = "DELETE FROM USER_REVIEWS WHERE REVIEW_ID=?";
+        jdbcTemplate.update(deleteFromUserReview, id);
+        String deleteFromReviewModel = "DELETE FROM REVIEW_MODEL WHERE REVIEW_ID=?";
+        jdbcTemplate.update(deleteFromReviewModel, id);
+    }
+
     @Override
-    public Set<FilmReview> getReviews() {
-        Set<FilmReview> reviews = new TreeSet<>(Comparator.comparing(FilmReview::getUseful));
-        String sql = "SELECT R.*, FR.FILM_ID, UR.USER_ID FROM REVIEW_MODEL R " +
-                "INNER JOIN FILM_REVIEWS FR on R.REVIEW_ID = FR.REVIEW_ID " +
-                "INNER JOIN USER_REVIEWS UR on R.REVIEW_ID = UR.REVIEW_ID ";
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql);
-        while (sqlRowSet.next()) {
-            reviews.add(mapper.mapReview(sqlRowSet));
-        }
-        return reviews;
+    public Set<FilmReview> getReviews(int count) {
+        String sql = "SELECT REVIEW_ID FROM REVIEW_MODEL LIMIT ?";
+        List<Integer> ids = jdbcTemplate.queryForList(sql, Integer.class, count);
+        return ids.stream()
+                .map((this::getReview))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -84,14 +88,17 @@ public class ReviewsDbStorage implements ReviewsStorage {
         return mapper.mapReview(rowSet);
     }
 
-    public Set<FilmReview> getFilmReviews(int id) {
-        String sql = "SELECT REVIEW_ID FROM FILM_REVIEWS WHERE FILM_ID =?";
-        List<Integer> ids = jdbcTemplate.queryForList(sql, Integer.class, id);
-        if (ids.isEmpty()) {
-            throw new EntityNotFoundException(String.format("отзывы на фильм с id %d не найден", id));
-        }
+    public Set<FilmReview> getFilmReviews(int id, int count) {
+        String sql = "SELECT REVIEW_ID FROM FILM_REVIEWS WHERE FILM_ID =? LIMIT ?";
+        List<Integer> ids = jdbcTemplate.queryForList(sql, Integer.class, id, count);
+
         return ids.stream()
                 .map((this::getReview))
                 .collect(Collectors.toSet());
+    }
+
+    public void saveReviewRate(int id, int rate) {
+        String sql = "UPDATE REVIEW_MODEL SET USEFUL=? WHERE REVIEW_ID=?";
+        jdbcTemplate.update(sql, rate, id);
     }
 }

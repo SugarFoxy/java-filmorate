@@ -9,25 +9,12 @@ import javax.validation.constraints.NotNull;
 @Data
 public class FilmReviewDto {
 
-    public FilmReviewDto(String content, boolean isPositive, int userId, int filmId) {
+    public FilmReviewDto(String content, Boolean isPositive, Integer userId, Integer filmId, Integer useful) {
         this.content = content;
         this.isPositive = isPositive;
         this.userId = userId;
         this.filmId = filmId;
-    }
-
-    public FilmReviewDto(int reviewId, String content, boolean isPositive) {
-        this.reviewId = reviewId;
-        this.content = content;
-        this.isPositive = isPositive;
-    }
-
-    public FilmReviewDto(int reviewId, String content, boolean isPositive, int userId, int filmId) {
-        this.reviewId = reviewId;
-        this.content = content;
-        this.isPositive = isPositive;
-        this.userId = userId;
-        this.filmId = filmId;
+        this.useful = useful;
     }
 
     public FilmReviewDto(int reviewId, String content, Boolean isPositive, Integer userId, Integer filmId, Integer useful) {
@@ -37,9 +24,6 @@ public class FilmReviewDto {
         this.userId = userId;
         this.filmId = filmId;
         this.useful = useful;
-    }
-
-    public FilmReviewDto() {
     }
 
     private int reviewId;
@@ -52,5 +36,5 @@ public class FilmReviewDto {
     private Integer userId;
     @NotNull(message = "отзыв должен быть оставлен на фильм")
     private Integer filmId;
-    private Integer useful = 0;
+    private Integer useful;
 }
