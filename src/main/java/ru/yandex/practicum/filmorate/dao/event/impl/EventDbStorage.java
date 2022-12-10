@@ -27,7 +27,8 @@ public class EventDbStorage implements EventStorage {
                 "WHERE " +
                     "t.event_type_id = f.event_type AND " +
                     "o.event_operation_id = f.event_operation AND " +
-                    "f.user_id = ?";
+                    "f.user_id = ? " +
+                "ORDER BY f.event_time DESC";
 
     private final JdbcTemplate jdbcTemplate;
 
