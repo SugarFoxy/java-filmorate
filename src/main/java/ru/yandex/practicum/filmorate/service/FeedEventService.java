@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.event.EventStorage;
+import ru.yandex.practicum.filmorate.dao.event.FeedEventStorage;
 import ru.yandex.practicum.filmorate.model.FeedEvent;
 
 import java.util.List;
@@ -14,11 +14,11 @@ import java.util.List;
 @Service
 @Slf4j
 public class FeedEventService {
-    private final EventStorage eventStorage;
+    private final FeedEventStorage eventStorage;
     private ObjectMapper objectMapper;
 
     @Autowired
-    public FeedEventService(EventStorage eventStorage) {
+    public FeedEventService(FeedEventStorage eventStorage) {
         this.eventStorage = eventStorage;
     }
 

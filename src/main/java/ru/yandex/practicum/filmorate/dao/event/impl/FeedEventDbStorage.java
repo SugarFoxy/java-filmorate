@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.dao.event.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.event.EventStorage;
+import ru.yandex.practicum.filmorate.dao.event.FeedEventStorage;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.FeedEvent;
 import ru.yandex.practicum.filmorate.model.Operation;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class EventDbStorage implements EventStorage {
+public class FeedEventDbStorage implements FeedEventStorage {
     private static final String SQL_GET_EVENT_TYPES = "SELECT * FROM event_types_dictionary";
     private static final String SQL_GET_OPERATIONS = "SELECT * FROM event_operations_dictionary";
     private static final String SQL_SAVE =
@@ -36,7 +36,7 @@ public class EventDbStorage implements EventStorage {
     private final Map<Operation, Integer> operations;
 
     @Autowired
-    public EventDbStorage(JdbcTemplate jdbcTemplate) {
+    public FeedEventDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
 
         this.eventTypes = new HashMap<>();
@@ -54,7 +54,7 @@ public class EventDbStorage implements EventStorage {
 
     @Override
     public List<FeedEvent> getByUserId(int userId) {
-        return jdbcTemplate.query(SQL_GET_BY_USER, EventDbStorage::mapRow, userId);
+        return jdbcTemplate.query(SQL_GET_BY_USER, FeedEventDbStorage::mapRow, userId);
     }
 
     private void cacheEventTypes() {

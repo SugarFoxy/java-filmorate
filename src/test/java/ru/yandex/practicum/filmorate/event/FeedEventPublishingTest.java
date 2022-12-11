@@ -57,4 +57,10 @@ public class FeedEventPublishingTest {
 
         assertEquals(200, eventCaptor.getValue().getEntityId());
     }
+
+    @Test
+    public void shouldPublishFeedEventWhenAddingOrUpdatingOrDeletingReview() {
+        ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+        ArgumentCaptor<FeedEvent> eventCaptor = ArgumentCaptor.forClass(FeedEvent.class);
+    }
 }
