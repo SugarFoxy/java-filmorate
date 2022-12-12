@@ -57,11 +57,6 @@ class UserControllerTest {
 
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(correctUser)))
-                .andExpect(status().is2xxSuccessful());
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(userWithIncorrectEmail)))
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ValidationException))
                 .andExpect(status().is4xxClientError());
