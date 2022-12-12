@@ -5,7 +5,11 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.reviews.ReviewsStorage;
 import ru.yandex.practicum.filmorate.model.FilmReview;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,16 +26,22 @@ public class ReviewService {
         return reviewsStorage.updateReview(review);
     }
 
-    public Set<FilmReview> getReviews(int count) {
-        return reviewsStorage.getReviews(count);
-    }
+//    public Set<FilmReview> getReviews(int count) {
+//        return reviewsStorage.getReviews(count);
+//    }
 
     public FilmReview getReview(int id) {
         return reviewsStorage.getReview(id);
     }
 
-    public Set<FilmReview> getFilmReviews(int id, int count) {
-      return reviewsStorage.getFilmReviews(id, count);
+    public Set<FilmReview> getFilmReviews(Optional<Integer> id, int count) {
+        return id.map(integer -> reviewsStorage.getFilmReviews(integer, count)
+                .stream()
+                .sorted(Comparator.comparing(FilmReview::getUseful).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new))).orElseGet(() -> reviewsStorage.getReviews(count)
+                .stream()
+                .sorted(Comparator.comparing(FilmReview::getUseful).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 
     public void deleteReview(int id) {

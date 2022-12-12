@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.service.ReviewService;
 import ru.yandex.practicum.filmorate.utils.review.FilmReviewDtoMapper;
 
 import javax.validation.Valid;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -44,20 +43,10 @@ public class ReviewController {
     @GetMapping
     public ResponseEntity<Set<FilmReviewDto>> getFilmReviews(@RequestParam Optional<Integer> filmId,
                                                              @RequestParam(defaultValue = "10") int count) {
-        if (filmId.isPresent()) {
-            Set<FilmReviewDto> reviews = reviewsService.getFilmReviews(filmId.get(), count)
-                    .stream()
-                    .map(mapper::toDto)
-                    .sorted(Comparator.comparing(FilmReviewDto::getUseful).reversed())
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-            return ResponseEntity.ok(reviews);
-        }
-        Set<FilmReviewDto> reviews = reviewsService.getReviews(count)
+        return ResponseEntity.ok(reviewsService.getFilmReviews(filmId, count)
                 .stream()
                 .map(mapper::toDto)
-                .sorted(Comparator.comparing(FilmReviewDto::getUseful).reversed())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        return ResponseEntity.ok(reviews);
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 
     @DeleteMapping("/{reviewId}")

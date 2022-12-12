@@ -10,11 +10,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public abstract class Review {
 
-    public Review(int id, String content, boolean isPositive) {
-        this.id = id;
-        this.content = content;
-        this.isPositive = isPositive;
-    }
 
     public Review(int id, String content, Boolean isPositive, Integer useful) {
         this.id = id;

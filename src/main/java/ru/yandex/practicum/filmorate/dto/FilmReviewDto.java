@@ -9,6 +9,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class FilmReviewDto {
 
+    public FilmReviewDto() {
+    }
+
     public FilmReviewDto(String content, Boolean isPositive, Integer userId, Integer filmId, Integer useful) {
         this.content = content;
         this.isPositive = isPositive;
@@ -16,6 +19,7 @@ public class FilmReviewDto {
         this.filmId = filmId;
         this.useful = useful;
     }
+
 
     public FilmReviewDto(int reviewId, String content, Boolean isPositive, Integer userId, Integer filmId, Integer useful) {
         this.reviewId = reviewId;
@@ -36,5 +40,5 @@ public class FilmReviewDto {
     private Integer userId;
     @NotNull(message = "отзыв должен быть оставлен на фильм")
     private Integer filmId;
-    private Integer useful;
+    private Integer useful = 0;
 }

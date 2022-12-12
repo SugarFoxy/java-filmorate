@@ -61,6 +61,10 @@ public class ReviewsDbStorage implements ReviewsStorage {
     }
 
     public void deleteReview(int id) {
+        SqlRowSet rowSet = reviewUtils.getReviewRowSetByReviewId(id);
+        if (!rowSet.next()) {
+            throw new EntityNotFoundException(String.format("отзыв c id %d не найден", id));
+        }
         String deleteFromFilmReview = "DELETE FROM FILM_REVIEWS WHERE REVIEW_ID=?";
         jdbcTemplate.update(deleteFromFilmReview, id);
         String deleteFromUserReview = "DELETE FROM USER_REVIEWS WHERE REVIEW_ID=?";
