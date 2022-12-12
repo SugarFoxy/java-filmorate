@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -25,7 +25,7 @@ public class FilmController {
         return filmService.addFilm(film);
     }
 
-    @DeleteMapping("/{filmId}")
+    @DeleteMapping("/{filmId}") //тут
     public void deleteFilm(@PathVariable int filmId) {
         filmService.deleteFilm(filmId);
     }
@@ -47,13 +47,21 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getMostLikedFilms(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getMostLikedFilms(count);
+    public List<Film> getMostLikedFilms(@RequestParam(defaultValue = "10") int count,
+                                        @RequestParam(defaultValue = "0") int genreId,
+                                        @RequestParam(defaultValue = "0") int year) {
+        return filmService.getMostLikedFilms(genreId, year, count);
     }
 
     @GetMapping("/common")
     public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
         return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilm(@RequestParam String query,
+                                 @RequestParam String by) {
+        return filmService.searchFilm(query, by);
     }
 
     @PutMapping("/{filmId}/like/{userId}")
@@ -64,5 +72,10 @@ public class FilmController {
     @DeleteMapping("/{filmId}/like/{userId}")
     public void removeLikeFromFilm(@PathVariable int filmId, @PathVariable int userId) {
         filmService.removeLikeFromFilm(filmId, userId);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsByDirector(@PathVariable int directorId, @RequestParam String sortBy) {
+        return filmService.getFilmsByDirector(directorId, sortBy);
     }
 }
