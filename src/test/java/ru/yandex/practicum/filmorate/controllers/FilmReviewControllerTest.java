@@ -33,8 +33,8 @@ public class FilmReviewControllerTest {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
     private Gson gson;
-    private User user;
-    private Film film;
+    private User userU;
+    private Film filmF;
     private FilmReviewDto correctDto;
     private FilmReviewDto blankContentDto;
     private FilmReviewDto nullIsPositiveBoolean;
@@ -51,21 +51,21 @@ public class FilmReviewControllerTest {
     @BeforeEach
     public void beforeEach() {
         gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
-        user = new User("e@gmail.com", "e", "Mulenas", LocalDate.of(1995, 7, 11));
-        film = new Film("Название фильма", "Описание фильма",
+        userU = new User("erew@gmail.com", "efgdsf", "Mulууenas", LocalDate.of(1996, 8, 13));
+        filmF = new Film("Название фильма", "Описание фильма",
                 LocalDate.of(2000, 10, 10), 100L, new Mpa(1, null, null));
         correctDto = new FilmReviewDto("content", true, 1, 1, 0);
         blankContentDto = new FilmReviewDto("", true, 1, 1, 0);
         nullIsPositiveBoolean = new FilmReviewDto("content", null, 1, 1, 0);
         emptyFilmIdDto = new FilmReviewDto("content", true, null, 1, 0);
         emptyUserIdDto = new FilmReviewDto("content", true, 1, null, 0);
-        filmStorage.addFilm(film);
-        userStorage.addUser(user);
     }
 
     @Test
-    @DisplayName("проперяет валид")
+    @DisplayName("проверяет валидность данных")
     public void validationTests() throws Exception {
+        filmStorage.addFilm(filmF);
+        userStorage.addUser(userU);
 
         mockMvc.perform(post("/reviews")
                         .contentType(MediaType.APPLICATION_JSON)

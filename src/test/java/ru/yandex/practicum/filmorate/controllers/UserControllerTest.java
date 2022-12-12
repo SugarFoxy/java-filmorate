@@ -40,7 +40,7 @@ class UserControllerTest {
     @BeforeEach
     public void beforeEach() {
         gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
-        correctUser = new User("e@gmail.com", "e", "Mulenas", LocalDate.of(1995, 7, 11));
+        correctUser = new User("emr4@gmail.com", "euneoch", "Murlenassas", LocalDate.of(1995, 7, 11));
         userWithIncorrectEmail = new User("@gmail.com", "e5k4p3", "Mulenas", LocalDate.of(1995, 7, 11));
         userWithIncorrectLogin = new User("e5k4p3@gmail.com", "e5 k4 p3", "Mulenas", LocalDate.of(1995, 7, 11));
         userWithEmptyName = new User("m@gmail.com", "Mule", "", LocalDate.of(1995, 7, 11));
@@ -49,6 +49,12 @@ class UserControllerTest {
 
     @Test
     public void validationTest() throws Exception {
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(correctUser)))
+                .andExpect(status().is2xxSuccessful());
+
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(userWithIncorrectEmail)))
