@@ -17,7 +17,9 @@ import java.util.Map;
         UserController.class,
         MpaController.class,
         GenreController.class,
-        ReviewController.class})
+        ReviewController.class,
+        DirectorController.class})
+
 public class ExceptionsHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -39,5 +41,12 @@ public class ExceptionsHandler {
     public ErrorResponse handleAlreadyExists(final EntityAlreadyExistsException e) {
         log.error(e.getMessage());
         return new ErrorResponse("Пользователь с таким логином или email уже существует.", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgument(final IllegalArgumentException e) {
+        log.error(e.getMessage());
+        return new ErrorResponse("Необрабатываемый параметр запроса.", e.getMessage());
     }
 }
