@@ -18,10 +18,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/reviews")
 public class ReviewController {
-
     private final ReviewService reviewsService;
     private final FilmReviewDtoMapper mapper;
-
 
     @PostMapping
     public ResponseEntity<FilmReviewDto> postReview(@Valid @RequestBody FilmReviewDto dto) {

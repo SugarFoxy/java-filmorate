@@ -11,7 +11,6 @@ public class FilmReviewDto {
 
     public FilmReviewDto() {
     }
-
     public FilmReviewDto(String content, Boolean isPositive, Integer userId, Integer filmId, Integer useful) {
         this.content = content;
         this.isPositive = isPositive;
@@ -19,8 +18,6 @@ public class FilmReviewDto {
         this.filmId = filmId;
         this.useful = useful;
     }
-
-
     public FilmReviewDto(int reviewId, String content, Boolean isPositive, Integer userId, Integer filmId, Integer useful) {
         this.reviewId = reviewId;
         this.content = content;
@@ -29,7 +26,6 @@ public class FilmReviewDto {
         this.filmId = filmId;
         this.useful = useful;
     }
-
     private int reviewId;
     @NotBlank(message = "отзыв не может быть пустым")
     private String content;
