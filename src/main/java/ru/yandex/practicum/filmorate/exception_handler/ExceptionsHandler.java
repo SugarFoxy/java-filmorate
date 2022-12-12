@@ -10,12 +10,16 @@ import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityAlreadyE
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
 
+import java.util.Map;
+
 @Slf4j
 @RestControllerAdvice(assignableTypes = {FilmController.class,
-                                         UserController.class,
-                                         MpaController.class,
-                                         GenreController.class,
-                                         DirectorController.class})
+        UserController.class,
+        MpaController.class,
+        GenreController.class,
+        ReviewController.class,
+        DirectorController.class})
+
 public class ExceptionsHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -30,6 +34,7 @@ public class ExceptionsHandler {
         log.error(e.getMessage());
         return new ErrorResponse("Объект не был найден.", e.getMessage());
     }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
