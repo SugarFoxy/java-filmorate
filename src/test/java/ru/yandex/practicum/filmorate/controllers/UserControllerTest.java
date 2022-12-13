@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase
 @AutoConfigureMockMvc
 class UserControllerTest {
-
     private final MockMvc mockMvc;
     private Gson gson;
     private User correctUser;

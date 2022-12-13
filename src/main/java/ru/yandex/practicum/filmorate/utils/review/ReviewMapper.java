@@ -16,11 +16,8 @@ public class ReviewMapper {
     private final FilmStorage filmStorage;
 
     public FilmReview mapReview(SqlRowSet sqlRowSet) {
-
         User user = userStorage.getUserById(sqlRowSet.getInt("user_id"));
         Film film = filmStorage.getFilmById(sqlRowSet.getInt("film_id"));
-
-
         return new FilmReview(sqlRowSet.getInt("review_id"),
                 sqlRowSet.getString("content"),
                 sqlRowSet.getBoolean("is_positive"),

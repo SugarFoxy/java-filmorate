@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
-
     private final ReviewsStorage reviewsStorage;
     private final ApplicationEventPublisher publisher;
 

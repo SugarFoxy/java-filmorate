@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @AutoConfigureTestDatabase
 public class MpaStorageTest {
-
     @Autowired
     private MpaStorage mpaStorage;
 

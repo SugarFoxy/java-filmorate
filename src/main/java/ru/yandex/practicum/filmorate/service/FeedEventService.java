@@ -30,7 +30,6 @@ public class FeedEventService {
     @EventListener(FeedEvent.class)
     public void onEvent(FeedEvent event) {
         eventStorage.save(event);
-
         trace(event);
     }
 

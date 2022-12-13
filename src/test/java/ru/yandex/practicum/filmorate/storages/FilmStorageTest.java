@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase
 public class FilmStorageTest {
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

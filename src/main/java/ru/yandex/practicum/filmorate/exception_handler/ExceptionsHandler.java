@@ -12,12 +12,11 @@ import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationExce
 
 @Slf4j
 @RestControllerAdvice(assignableTypes = {FilmController.class,
-        UserController.class,
-        MpaController.class,
-        GenreController.class,
-        ReviewController.class,
-        DirectorController.class})
-
+                                         UserController.class,
+                                         MpaController.class,
+                                         GenreController.class,
+                                         ReviewController.class,
+                                         DirectorController.class})
 public class ExceptionsHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

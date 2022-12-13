@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @AutoConfigureTestDatabase
 public class FriendsStorageTest {
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

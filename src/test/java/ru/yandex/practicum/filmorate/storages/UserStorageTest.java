@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase
 public class UserStorageTest {
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

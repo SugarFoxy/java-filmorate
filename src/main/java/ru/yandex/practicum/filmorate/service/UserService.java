@@ -52,13 +52,11 @@ public class UserService {
 
     public void addFriend(int userId, int friendId) {
         friendsStorage.addToFriends(userId, friendId);
-
         publisher.publishEvent(new FeedEvent(userId, EventType.FRIEND, Operation.ADD, friendId));
     }
 
     public void removeFriend(int userId, int friendId) {
         friendsStorage.removeFromFriends(userId, friendId);
-
         publisher.publishEvent(new FeedEvent(userId, EventType.FRIEND, Operation.REMOVE, friendId));
     }
 

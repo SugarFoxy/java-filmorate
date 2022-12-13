@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase
 @AutoConfigureMockMvc
 public class FilmReviewControllerTest {
-
     private final MockMvc mockMvc;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;

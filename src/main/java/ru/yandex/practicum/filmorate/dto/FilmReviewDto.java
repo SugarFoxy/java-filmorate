@@ -8,6 +8,17 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class FilmReviewDto {
+    private int reviewId;
+    @NotBlank(message = "отзыв не может быть пустым")
+    private String content;
+    @NotNull(message = "отзыв должен быть либо положительным, либо отрицательным")
+    @JsonProperty(value = "isPositive")
+    private Boolean isPositive;
+    @NotNull(message = "кто-то всё-таки должен оставить отзыв")
+    private Integer userId;
+    @NotNull(message = "отзыв должен быть оставлен на фильм")
+    private Integer filmId;
+    private Integer useful = 0;
 
     public FilmReviewDto() {
     }
@@ -29,15 +40,5 @@ public class FilmReviewDto {
         this.useful = useful;
     }
 
-    private int reviewId;
-    @NotBlank(message = "отзыв не может быть пустым")
-    private String content;
-    @NotNull(message = "отзыв должен быть либо положительным, либо отрицательным")
-    @JsonProperty(value = "isPositive")
-    private Boolean isPositive;
-    @NotNull(message = "кто-то всё-таки должен оставить отзыв")
-    private Integer userId;
-    @NotNull(message = "отзыв должен быть оставлен на фильм")
-    private Integer filmId;
-    private Integer useful = 0;
+
 }

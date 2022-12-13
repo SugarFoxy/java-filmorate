@@ -31,14 +31,12 @@ public class FeedEventDbStorage implements FeedEventStorage {
                     "ORDER BY f.event_id";
 
     private final JdbcTemplate jdbcTemplate;
-
     private final Map<EventType, Integer> eventTypes;
     private final Map<Operation, Integer> operations;
 
     @Autowired
     public FeedEventDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-
         this.eventTypes = new HashMap<>();
         cacheEventTypes();
         this.operations = new HashMap<>();
@@ -80,7 +78,6 @@ public class FeedEventDbStorage implements FeedEventStorage {
         event.setEntityId(rs.getInt("entity_id"));
         event.setEventType(EventType.valueOf(rs.getString("event_type")));
         event.setOperation(Operation.valueOf(rs.getString("event_operation")));
-
         return event;
     }
 }

@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class ReviewsDbStorage implements ReviewsStorage {
-
     private final JdbcTemplate jdbcTemplate;
     private final ReviewUtils reviewUtils;
     private final ReviewMapper mapper;
