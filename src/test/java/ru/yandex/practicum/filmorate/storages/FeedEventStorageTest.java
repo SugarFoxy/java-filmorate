@@ -61,13 +61,13 @@ public class FeedEventStorageTest {
     }
 
     @Test
-    public void testTimestampDescendingOrder() {
+    public void testIdAscendingOrder() {
         User user = new User("test@test.tst", "test", "test", LocalDate.now());
 
         userStorage.addUser(user);
 
-        FeedEvent event1 = new FeedEvent(user.getId(), EventType.FRIEND, Operation.REMOVE, 1);
-        FeedEvent event2 = new FeedEvent(user.getId(), EventType.LIKE, Operation.ADD, 2);
+        FeedEvent event1 = new FeedEvent(user.getId(), EventType.FRIEND, Operation.REMOVE, 100);
+        FeedEvent event2 = new FeedEvent(user.getId(), EventType.LIKE, Operation.ADD, 200);
 
         eventStorage.save(event2);
         eventStorage.save(event1);
@@ -75,8 +75,8 @@ public class FeedEventStorageTest {
         List<FeedEvent> events = eventStorage.getByUserId(user.getId());
 
         assertEquals(2, events.size());
-        assertEquals(event2.getTimestamp(), events.get(0).getTimestamp());
-        assertEquals(event1.getTimestamp(), events.get(1).getTimestamp());
+        assertEquals(1, events.get(0).getEventId());
+        assertEquals(2, events.get(1).getEventId());
     }
 
     @Test

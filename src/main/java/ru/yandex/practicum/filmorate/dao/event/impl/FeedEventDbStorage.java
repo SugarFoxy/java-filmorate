@@ -28,7 +28,7 @@ public class FeedEventDbStorage implements FeedEventStorage {
                     "t.event_type_id = f.event_type AND " +
                     "o.event_operation_id = f.event_operation AND " +
                     "f.user_id = ? " +
-                "ORDER BY f.event_time DESC";
+                "ORDER BY f.event_id";
 
     private final JdbcTemplate jdbcTemplate;
 
