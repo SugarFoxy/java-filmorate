@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.FeedEvent;
-import ru.yandex.practicum.filmorate.service.FeedEventService;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FeedEventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -30,7 +30,7 @@ public class UserController {
         return userService.addUser(user);
     }
 
-    @DeleteMapping("/{userId}") //тут
+    @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable int userId) {
         userService.deleteUser(userId);
     }

@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ReviewUtils {
-
     private final JdbcTemplate jdbcTemplate;
-
     public SqlRowSet getReviewRowSetByReviewId(int id) {
         String sqlQuery = "SELECT R.*, FR.FILM_ID, UR.USER_ID FROM REVIEW_MODEL R\n" +
                 "INNER JOIN FILM_REVIEWS FR on R.REVIEW_ID = FR.REVIEW_ID\n" +

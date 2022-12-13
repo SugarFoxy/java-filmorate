@@ -10,8 +10,6 @@ import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityAlreadyE
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
 
-import java.util.Map;
-
 @Slf4j
 @RestControllerAdvice(assignableTypes = {FilmController.class,
         UserController.class,

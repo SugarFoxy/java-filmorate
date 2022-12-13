@@ -8,11 +8,11 @@ import org.springframework.validation.ObjectError;
 import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.likes.LikesStorage;
+import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.FeedEvent;
-import ru.yandex.practicum.filmorate.model.Operation;
-import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Operation;
 
 import java.util.List;
 
@@ -39,8 +39,7 @@ public class FilmService {
 
     public void deleteFilm(int id) {
         filmStorage.deleteFilm(id);
-    } //тут
-
+    }
     public Film updateFilm(Film film) {
         return filmStorage.updateFilm(film);
     }
@@ -64,7 +63,7 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirector(int directorId, String sortBy) {
-        switch(sortBy) {
+        switch (sortBy) {
             case "year":
                 return filmStorage.getAllFilmsByDirectorByYear(directorId);
             case "likes":

@@ -20,15 +20,15 @@ public class FeedEventDbStorage implements FeedEventStorage {
     private static final String SQL_GET_OPERATIONS = "SELECT * FROM event_operations_dictionary";
     private static final String SQL_SAVE =
             "INSERT INTO users_feed (user_id, event_type, event_operation, entity_id, event_time) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                    "VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_GET_BY_USER =
             "SELECT f.event_id, f.event_time, f.user_id, f.entity_id, t.event_type, o.event_operation " +
-                "FROM users_feed f, event_types_dictionary t, event_operations_dictionary o " +
-                "WHERE " +
+                    "FROM users_feed f, event_types_dictionary t, event_operations_dictionary o " +
+                    "WHERE " +
                     "t.event_type_id = f.event_type AND " +
                     "o.event_operation_id = f.event_operation AND " +
                     "f.user_id = ? " +
-                "ORDER BY f.event_id";
+                    "ORDER BY f.event_id";
 
     private final JdbcTemplate jdbcTemplate;
 

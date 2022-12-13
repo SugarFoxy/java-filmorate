@@ -12,10 +12,8 @@ import ru.yandex.practicum.filmorate.model.User;
 @Component
 @RequiredArgsConstructor
 public class ReviewMapper {
-
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-
 
     public FilmReview mapReview(SqlRowSet sqlRowSet) {
 

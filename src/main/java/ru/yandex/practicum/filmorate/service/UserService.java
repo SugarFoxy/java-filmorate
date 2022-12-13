@@ -8,12 +8,8 @@ import org.springframework.validation.ObjectError;
 import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.friends.FriendsStorage;
 import ru.yandex.practicum.filmorate.dao.user.UserStorage;
-import ru.yandex.practicum.filmorate.model.EventType;
-import ru.yandex.practicum.filmorate.model.FeedEvent;
-import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.util.List;
 
@@ -26,7 +22,7 @@ public class UserService {
 
     @Autowired
     public UserService(
-            UserStorage userStorage,FriendsStorage friendsStorage, FilmStorage filmStorage,
+            UserStorage userStorage, FriendsStorage friendsStorage, FilmStorage filmStorage,
             ApplicationEventPublisher publisher) {
         this.userStorage = userStorage;
         this.friendsStorage = friendsStorage;
@@ -40,7 +36,7 @@ public class UserService {
 
     public void deleteUser(int id) {
         userStorage.deleteUser(id);
-    } //тут
+    }
 
     public User updateUser(User user) {
         return userStorage.updateUser(user);

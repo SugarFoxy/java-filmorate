@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.storages;
 
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,7 +52,7 @@ public class FilmReviewStorageTest {
         user = new User("erewd@gmail.com", "eUsweer", "Mulenaewsss", LocalDate.of(1995, 7, 11));
         film = new Film("Название фильма", "Описание фильма",
                 LocalDate.of(2000, 10, 10), 100L, new Mpa(1, null, null));
-        review = new FilmReview(1,"content", true, 0, user, film);
+        review = new FilmReview(1, "content", true, 0, user, film);
         userStorage.addUser(user);
         filmStorage.addFilm(film);
     }
@@ -121,7 +124,7 @@ public class FilmReviewStorageTest {
                 LocalDate.of(2000, 10, 10), 100L, new Mpa(1, null, null));
         userStorage.addUser(newUser);
         filmStorage.addFilm(newFilm);
-        FilmReview newReview = new FilmReview(2,"AddContent", false, 0, newUser, newFilm);
+        FilmReview newReview = new FilmReview(2, "AddContent", false, 0, newUser, newFilm);
         reviewsStorage.addReview(review);
         reviewsStorage.addReview(newReview);
         FilmReview getReview = reviewsStorage.getReview(1);

@@ -11,7 +11,8 @@ public class FeedEvent {
     private Operation operation;
     private int entityId;
 
-    public FeedEvent() {}
+    public FeedEvent() {
+    }
 
     public FeedEvent(int userId, EventType eventType, Operation operation, int entityId) {
         this.timestamp = System.currentTimeMillis();

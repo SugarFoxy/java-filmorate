@@ -332,7 +332,7 @@ public class FilmStorageTest {
         final Mpa mpa = gMpa;
         Function<String, Film> addDummyFilm =
                 name -> filmStorage.addFilm(
-                        new Film(name, name, LocalDate.now(),100L, mpa));
+                        new Film(name, name, LocalDate.now(), 100L, mpa));
         Film film1 = addDummyFilm.apply("name1");
         Film film2 = addDummyFilm.apply("name2");
         Film film3 = addDummyFilm.apply("name3");

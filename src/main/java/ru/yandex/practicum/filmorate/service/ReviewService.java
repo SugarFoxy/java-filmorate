@@ -38,10 +38,6 @@ public class ReviewService {
         return review;
     }
 
-//    public Set<FilmReview> getReviews(int count) {
-//        return reviewsStorage.getReviews(count);
-//    }
-
     public FilmReview getReview(int id) {
         return reviewsStorage.getReview(id);
     }
