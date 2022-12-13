@@ -249,27 +249,27 @@ public class FilmDbStorage implements FilmStorage {
 
     public List<Film> searchFilm(String query, String searchBy) {
         final String stmtForFilm =
-                "SELECT * FROM films_model fm " +
+                "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
                         "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
                         "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') " +
-                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+                        "GROUP BY fm.film_id ORDER BY count_like DESC";
         final String stmtForDirector =
-                "SELECT * FROM films_model fm " +
+                "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
                         "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
                         "WHERE fm.film_id in " +
                         "(SELECT fd.film_id FROM films_directors fd " +
                         "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
                         "WHERE LOWER(dm.director_name) LIKE LOWER('%'||?||'%'))" +
-                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+                        "GROUP BY fm.film_id ORDER BY count_like DESC";
         final String stmtForDirectorAndTitle =
-                "SELECT * FROM films_model fm " +
+                "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
                         "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
                         "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') OR " +
                         "fm.film_id in " +
                         "(SELECT fd.film_id FROM films_directors fd " +
                         "LEFT JOIN directors_model d ON fd.director_id = d.DIRECTOR_ID " +
                         "WHERE LOWER(d.director_name) LIKE LOWER('%'||?||'%')) " +
-                        "GROUP BY fm.film_id ORDER BY COUNT(fl.like_id) DESC";
+                        "GROUP BY fm.film_id ORDER BY count_like DESC";
 
         SqlRowSet filmRows;
         switch (searchBy) {
