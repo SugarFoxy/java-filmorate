@@ -83,15 +83,15 @@ public class FilmService {
     }
 
     public void addLikeToFilm(int filmId, int userId) {
-        int likeId = likesStorage.addLikeToFilm(filmId, userId);
+        likesStorage.addLikeToFilm(filmId, userId);
 
-        publisher.publishEvent(new FeedEvent(userId, EventType.LIKE, Operation.ADD, likeId));
+        publisher.publishEvent(new FeedEvent(userId, EventType.LIKE, Operation.ADD, filmId));
     }
 
     public void removeLikeFromFilm(int filmId, int userId) {
-        int likeId = likesStorage.removeLikeFromFilm(filmId, userId);
+        likesStorage.removeLikeFromFilm(filmId, userId);
 
-        publisher.publishEvent(new FeedEvent(userId, EventType.LIKE, Operation.REMOVE, likeId));
+        publisher.publishEvent(new FeedEvent(userId, EventType.LIKE, Operation.REMOVE, filmId));
     }
 
     public void logValidationErrors(BindingResult bindingResult) {

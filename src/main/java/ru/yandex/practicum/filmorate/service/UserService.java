@@ -55,15 +55,15 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
-        int friendsId = friendsStorage.addToFriends(userId, friendId);
+        friendsStorage.addToFriends(userId, friendId);
 
-        publisher.publishEvent(new FeedEvent(userId, EventType.FRIEND, Operation.ADD, friendsId));
+        publisher.publishEvent(new FeedEvent(userId, EventType.FRIEND, Operation.ADD, friendId));
     }
 
     public void removeFriend(int userId, int friendId) {
-        int friendsId = friendsStorage.removeFromFriends(userId, friendId);
+        friendsStorage.removeFromFriends(userId, friendId);
 
-        publisher.publishEvent(new FeedEvent(userId, EventType.FRIEND, Operation.REMOVE, friendsId));
+        publisher.publishEvent(new FeedEvent(userId, EventType.FRIEND, Operation.REMOVE, friendId));
     }
 
     public List<User> getUserFriends(int userId) {

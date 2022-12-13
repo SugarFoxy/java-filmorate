@@ -9,9 +9,7 @@ import ru.yandex.practicum.filmorate.dao.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.likes.LikesStorage;
 import ru.yandex.practicum.filmorate.dao.reviews.ReviewsStorage;
 import ru.yandex.practicum.filmorate.dao.user.UserStorage;
-import ru.yandex.practicum.filmorate.model.FeedEvent;
-import ru.yandex.practicum.filmorate.model.FilmReview;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -24,44 +22,58 @@ import static org.mockito.Mockito.*;
 public class FeedEventPublishingTest {
     @Test
     public void shouldPublishFeedEventWhenAddingAndDeletingFriend() {
-        FriendsStorage friendStorage = mock(FriendsStorage.class);
         ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
         UserService userService = new UserService(
-                mock(UserStorage.class), friendStorage, mock(FilmStorage.class), publisher);
+                mock(UserStorage.class), mock(FriendsStorage.class), mock(FilmStorage.class), publisher);
         ArgumentCaptor<FeedEvent> eventCaptor = ArgumentCaptor.forClass(FeedEvent.class);
 
-        when(friendStorage.addToFriends(1, 2)).thenReturn(100);
-        when(friendStorage.removeFromFriends(3, 4)).thenReturn(200);
         doNothing().when(publisher).publishEvent(eventCaptor.capture());
 
         userService.addFriend(1, 2);
 
-        assertEquals(100, eventCaptor.getValue().getEntityId());
+        FeedEvent event = eventCaptor.getValue();
+
+        assertEquals(1, event.getUserId());
+        assertEquals(2, event.getEntityId());
+        assertEquals(EventType.FRIEND, event.getEventType());
+        assertEquals(Operation.ADD, event.getOperation());
 
         userService.removeFriend(3, 4);
 
-        assertEquals(200, eventCaptor.getValue().getEntityId());
+        event = eventCaptor.getValue();
+
+        assertEquals(3, event.getUserId());
+        assertEquals(4, event.getEntityId());
+        assertEquals(EventType.FRIEND, event.getEventType());
+        assertEquals(Operation.REMOVE, event.getOperation());
     }
 
     @Test
     public void shouldPublishFeedEventWhenAddingOrDeletingLike() {
-        LikesStorage likesStorage = mock(LikesStorage.class);
         ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
         FilmService filmService = new FilmService(
-                mock(FilmStorage.class), likesStorage, mock(GenreStorage.class), publisher);
+                mock(FilmStorage.class), mock(LikesStorage.class), mock(GenreStorage.class), publisher);
         ArgumentCaptor<FeedEvent> eventCaptor = ArgumentCaptor.forClass(FeedEvent.class);
 
-        when(likesStorage.addLikeToFilm(1, 2)).thenReturn(100);
-        when(likesStorage.removeLikeFromFilm(3, 4)).thenReturn(200);
         doNothing().when(publisher).publishEvent(eventCaptor.capture());
 
         filmService.addLikeToFilm(1, 2);
 
-        assertEquals(100, eventCaptor.getValue().getEntityId());
+        FeedEvent event = eventCaptor.getValue();
+
+        assertEquals(2, event.getUserId());
+        assertEquals(1, event.getEntityId());
+        assertEquals(EventType.LIKE, event.getEventType());
+        assertEquals(Operation.ADD, event.getOperation());
 
         filmService.removeLikeFromFilm(3, 4);
 
-        assertEquals(200, eventCaptor.getValue().getEntityId());
+        event = eventCaptor.getValue();
+
+        assertEquals(4, event.getUserId());
+        assertEquals(3, event.getEntityId());
+        assertEquals(EventType.LIKE, event.getEventType());
+        assertEquals(Operation.REMOVE, event.getOperation());
     }
 
     @Test

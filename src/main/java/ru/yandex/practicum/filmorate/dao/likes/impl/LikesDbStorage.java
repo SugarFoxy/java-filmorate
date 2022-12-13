@@ -3,16 +3,12 @@ package ru.yandex.practicum.filmorate.dao.likes.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.likes.LikesStorage;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.utils.film.FilmUtils;
 import ru.yandex.practicum.filmorate.utils.user.UserUtils;
-
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Repository
@@ -29,41 +25,21 @@ public class LikesDbStorage implements LikesStorage {
     }
 
     @Override
-    public int addLikeToFilm(int filmId, int userId) {
+    public void addLikeToFilm(int filmId, int userId) {
         checkFilmId(filmId);
         checkUserId(userId);
-
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .usingGeneratedKeyColumns("like_id")
-                .withTableName("films_likes");
-        int likeId = jdbcInsert
-                .executeAndReturnKey(Map.of("film_id", filmId, "user_id", userId))
-                .intValue();
-
+        String sqlQuery = "INSERT INTO films_likes(film_id, user_id) VALUES (?, ?)";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
         log.info("Пользователь с id " + userId + " поставил лайк фильму с id " + filmId + ".");
-
-        return likeId;
     }
 
     @Override
-    public int removeLikeFromFilm(int filmId, int userId) {
+    public void removeLikeFromFilm(int filmId, int userId) {
         checkFilmId(filmId);
         checkUserId(userId);
-
-        int likeId = 0;
-        List<Integer> ids = jdbcTemplate.query(
-                "SELECT like_id FROM films_likes WHERE film_id = ? AND user_id = ?",
-                (rs, rowNum) -> rs.getInt("like_id"),
-                filmId, userId);
-        if (ids.size() > 0) {
-            likeId = ids.get(0);
-            String sqlQuery = "DELETE FROM films_likes WHERE film_id = ? AND user_id = ?";
-            jdbcTemplate.update(sqlQuery, filmId, userId);
-        }
-
+        String sqlQuery = "DELETE FROM films_likes WHERE film_id = ? AND user_id = ?";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
         log.info("Пользователь с id " + userId + " убрал лайк с фильма с id " + filmId + ".");
-
-        return likeId;
     }
 
     private void checkFilmId(int filmId) {
