@@ -1,9 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.reviews.ReviewsStorage;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.FeedEvent;
 import ru.yandex.practicum.filmorate.model.FilmReview;
+import ru.yandex.practicum.filmorate.model.Operation;
 
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -16,14 +20,22 @@ import java.util.stream.Collectors;
 public class ReviewService {
 
     private final ReviewsStorage reviewsStorage;
+    private final ApplicationEventPublisher publisher;
 
     public FilmReview addReview(FilmReview review) {
-        return reviewsStorage.addReview(review);
-
+        reviewsStorage.addReview(review);
+        publisher.publishEvent(
+                new FeedEvent(review.getUser().getId(), EventType.REVIEW, Operation.ADD, review.getId()));
+        return review;
     }
 
     public FilmReview updateReview(FilmReview review) {
-        return reviewsStorage.updateReview(review);
+        FilmReview reviewToBeUpdated = getReview(review.getId());
+        reviewsStorage.updateReview(review);
+        publisher.publishEvent(
+                new FeedEvent(reviewToBeUpdated.getUser().getId(),
+                        EventType.REVIEW, Operation.UPDATE, review.getId()));
+        return review;
     }
 
 //    public Set<FilmReview> getReviews(int count) {
@@ -45,7 +57,10 @@ public class ReviewService {
     }
 
     public void deleteReview(int id) {
+        FilmReview review = getReview(id);
         reviewsStorage.deleteReview(id);
+        publisher.publishEvent(
+                new FeedEvent(review.getUser().getId(), EventType.REVIEW, Operation.REMOVE, id));
     }
 
     public void addLike(int reviewId, int userId) {

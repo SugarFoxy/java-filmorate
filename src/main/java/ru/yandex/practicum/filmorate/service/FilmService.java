@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.likes.LikesStorage;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.FeedEvent;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -17,12 +21,16 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final LikesStorage likesStorage;
     private final GenreStorage genreStorage;
+    private final ApplicationEventPublisher publisher;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, LikesStorage likesStorage, GenreStorage genreStorage) {
+    public FilmService(
+            FilmStorage filmStorage, LikesStorage likesStorage, GenreStorage genreStorage,
+            ApplicationEventPublisher publisher) {
         this.filmStorage = filmStorage;
         this.likesStorage = likesStorage;
         this.genreStorage = genreStorage;
+        this.publisher = publisher;
     }
 
     public Film addFilm(Film film) {
@@ -76,10 +84,14 @@ public class FilmService {
 
     public void addLikeToFilm(int filmId, int userId) {
         likesStorage.addLikeToFilm(filmId, userId);
+
+        publisher.publishEvent(new FeedEvent(userId, EventType.LIKE, Operation.ADD, filmId));
     }
 
     public void removeLikeFromFilm(int filmId, int userId) {
         likesStorage.removeLikeFromFilm(filmId, userId);
+
+        publisher.publishEvent(new FeedEvent(userId, EventType.LIKE, Operation.REMOVE, filmId));
     }
 
     public void logValidationErrors(BindingResult bindingResult) {
