@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmReviewDto;
 import ru.yandex.practicum.filmorate.model.FilmReview;
@@ -15,55 +14,60 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/reviews")
 public class ReviewController {
     private final ReviewService reviewsService;
     private final FilmReviewDtoMapper mapper;
 
+    @Autowired
+    public ReviewController(ReviewService reviewsService, FilmReviewDtoMapper mapper) {
+        this.reviewsService = reviewsService;
+        this.mapper = mapper;
+    }
+
     @PostMapping
-    public ResponseEntity<FilmReviewDto> postReview(@Valid @RequestBody FilmReviewDto dto) {
+    public FilmReviewDto postReview(@Valid @RequestBody FilmReviewDto dto) {
         FilmReview review = reviewsService.addReview(mapper.toFilmReview(dto));
-        return ResponseEntity.ok(mapper.toDto(review));
+        return mapper.toDto(review);
     }
 
     @PutMapping
-    public ResponseEntity<FilmReviewDto> putReview(@Valid @RequestBody FilmReviewDto dto) {
+    public FilmReviewDto putReview(@Valid @RequestBody FilmReviewDto dto) {
         FilmReview review = reviewsService.updateReview(mapper.toFilmReview(dto));
-        return ResponseEntity.ok(mapper.toDto(review));
+        return mapper.toDto(review);
     }
 
     @GetMapping("/{reviewId}")
-    public ResponseEntity<FilmReviewDto> getReviews(@PathVariable int reviewId) {
-        return ResponseEntity.ok(mapper.toDto(reviewsService.getReview(reviewId)));
+    public FilmReviewDto getReviews(@PathVariable int reviewId) {
+        return mapper.toDto(reviewsService.getReview(reviewId));
     }
 
     @GetMapping
-    public ResponseEntity<Set<FilmReviewDto>> getFilmReviews(@RequestParam Optional<Integer> filmId,
-                                                             @RequestParam(defaultValue = "10") int count) {
-        return ResponseEntity.ok(reviewsService.getFilmReviews(filmId, count)
+    public Set<FilmReviewDto> getFilmReviews(@RequestParam Optional<Integer> filmId,
+                                             @RequestParam(defaultValue = "10") int count) {
+        return reviewsService.getFilmReviews(filmId, count)
                 .stream()
                 .map(mapper::toDto)
-                .collect(Collectors.toCollection(LinkedHashSet::new)));
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<String> deleteReview(@PathVariable int reviewId) {
+    public String deleteReview(@PathVariable int reviewId) {
         reviewsService.deleteReview(reviewId);
-        return ResponseEntity.ok("Отзыв удалён");
+        return "Отзыв удалён";
     }
 
     @PutMapping("/{reviewId}/like/{userId}")
-    public ResponseEntity<String> addLikeToReview(@PathVariable int reviewId,
-                                                  @PathVariable int userId) {
+    public String addLikeToReview(@PathVariable int reviewId,
+                                  @PathVariable int userId) {
         reviewsService.addLike(reviewId, userId);
-        return ResponseEntity.ok("Лайк добавлен");
+        return "Лайк добавлен";
     }
 
     @PutMapping("/{reviewId}/dislike/{userId}")
-    public ResponseEntity<String> addDislikeToReview(@PathVariable int reviewId,
-                                                     @PathVariable int userId) {
+    public String addDislikeToReview(@PathVariable int reviewId,
+                                     @PathVariable int userId) {
         reviewsService.removeLike(reviewId, userId);
-        return ResponseEntity.ok("Дизлайк добавлен");
+        return "Дизлайк добавлен";
     }
 }

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.reviews.impl;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,11 +21,18 @@ import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
-@RequiredArgsConstructor
 public class ReviewsDbStorage implements ReviewsStorage {
+
     private final JdbcTemplate jdbcTemplate;
     private final ReviewUtils reviewUtils;
     private final ReviewMapper mapper;
+
+    @Autowired
+    public ReviewsDbStorage(JdbcTemplate jdbcTemplate, ReviewUtils reviewUtils, ReviewMapper mapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.reviewUtils = reviewUtils;
+        this.mapper = mapper;
+    }
 
     @Override
     public FilmReview addReview(FilmReview review) {
@@ -74,7 +81,7 @@ public class ReviewsDbStorage implements ReviewsStorage {
 
     @Override
     public Set<FilmReview> getReviews(int count) {
-        String sql = "SELECT REVIEW_ID FROM REVIEW_MODEL LIMIT ?";
+        String sql = "SELECT REVIEW_ID FROM REVIEW_MODEL FETCH NEXT ? ROWS ONLY";
         List<Integer> ids = jdbcTemplate.queryForList(sql, Integer.class, count);
         return ids.stream()
                 .map((this::getReview))
@@ -92,7 +99,7 @@ public class ReviewsDbStorage implements ReviewsStorage {
     }
 
     public Set<FilmReview> getFilmReviews(int id, int count) {
-        String sql = "SELECT REVIEW_ID FROM FILM_REVIEWS WHERE FILM_ID =? LIMIT ?";
+        String sql = "SELECT REVIEW_ID FROM FILM_REVIEWS WHERE FILM_ID =? FETCH NEXT ? ROWS ONLY ";
         List<Integer> ids = jdbcTemplate.queryForList(sql, Integer.class, id, count);
 
         return ids.stream()

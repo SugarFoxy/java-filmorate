@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.reviews.ReviewsStorage;
@@ -16,10 +16,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class ReviewService {
     private final ReviewsStorage reviewsStorage;
     private final ApplicationEventPublisher publisher;
+
+    @Autowired
+    public ReviewService(ReviewsStorage reviewsStorage, ApplicationEventPublisher publisher) {
+        this.reviewsStorage = reviewsStorage;
+        this.publisher = publisher;
+    }
 
     public FilmReview addReview(FilmReview review) {
         reviewsStorage.addReview(review);
