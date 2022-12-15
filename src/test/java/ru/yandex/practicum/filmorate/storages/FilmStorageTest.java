@@ -352,6 +352,6 @@ public class FilmStorageTest {
         likesStorage.addLikeToFilm(film4.getId(), userId2);
         likesStorage.addLikeToFilm(film4.getId(), userId3);
 
-        assertEquals(List.of(film2, film1), filmStorage.getRecommendationsByUser(userId1));
+        assertEquals(List.of(film1, film2), filmStorage.getRecommendationsByUser(userId1));
     }
 }
