@@ -55,6 +55,9 @@ public class FeedEventDbStorage implements FeedEventStorage {
         return jdbcTemplate.query(SQL_GET_BY_USER, FeedEventDbStorage::mapRow, userId);
     }
 
+    /**
+     * Наличие данных в базе гарантированно сценарием инициализации data.sql
+     **/
     private void cacheEventTypes() {
         jdbcTemplate.queryForList(SQL_GET_EVENT_TYPES).forEach(
                 row -> eventTypes.put(
@@ -62,6 +65,9 @@ public class FeedEventDbStorage implements FeedEventStorage {
                         (Integer) row.get("EVENT_TYPE_ID")));
     }
 
+    /**
+     * Наличие данных в базе гарантированно сценарием инициализации data.sql
+     **/
     private void cacheOperations() {
         jdbcTemplate.queryForList(SQL_GET_OPERATIONS).forEach(
                 row -> operations.put(

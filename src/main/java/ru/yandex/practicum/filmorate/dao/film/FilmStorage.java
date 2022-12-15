@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.film;
 
+import ru.yandex.practicum.filmorate.controllers.sorts.QueryBy;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -27,7 +28,7 @@ public interface FilmStorage {
 
     List<Film> getCommonFilms(int userId, int friendId);
 
-    List<Film> searchFilm(String query, String by);
+    List<Film> searchFilm(String query, List<QueryBy> by);
 
     List<Film> getRecommendationsByUser(int userId);
 }

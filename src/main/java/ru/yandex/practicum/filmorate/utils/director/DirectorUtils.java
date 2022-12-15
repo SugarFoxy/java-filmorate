@@ -17,5 +17,5 @@ public class DirectorUtils {
     public SqlRowSet getSqlRowSetByDirectorId(int id) {
         String sqlQuery = "SELECT * FROM directors_model WHERE director_id = ?";
         return jdbcTemplate.queryForRowSet(sqlQuery, id);
-    }
+    }// Вынес его в отдельный утилитарный класс, потому что используется в разных частях проектра
 }

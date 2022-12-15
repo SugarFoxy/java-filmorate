@@ -7,7 +7,7 @@ import java.util.List;
 public interface DirectorStorage {
     Director addDirector(Director director);
 
-    Director updateDirector(Director director);
+    Director updateDirector(Director director); // возвращается режиссер дла тестов постмана
 
     Director getDirectorById(int id);
 

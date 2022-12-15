@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import ru.yandex.practicum.filmorate.controllers.sorts.QueryBy;
 import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.likes.LikesStorage;
@@ -63,11 +64,11 @@ public class FilmService {
         }
     }
 
-    public List<Film> getFilmsByDirector(int directorId, String sortBy) {
+    public List<Film> getFilmsByDirector(int directorId, QueryBy sortBy) {
         switch (sortBy) {
-            case "year":
+            case YEAR:
                 return filmStorage.getAllFilmsByDirectorByYear(directorId);
-            case "likes":
+            case LIKES:
                 return filmStorage.getAllFilmsByDirector(directorId);
             default:
                 throw new IllegalArgumentException("Необрабатываемый параметр sortBy - " + sortBy + ".");
@@ -78,7 +79,7 @@ public class FilmService {
         return filmStorage.getCommonFilms(userId, friendId);
     }
 
-    public List<Film> searchFilm(String query, String by) {
+    public List<Film> searchFilm(String query, List<QueryBy> by) {
         return filmStorage.searchFilm(query, by);
     }
 

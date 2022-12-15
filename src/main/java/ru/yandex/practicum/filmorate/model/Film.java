@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validators.ReleaseDateValidation;
 
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -12,6 +13,7 @@ import java.util.*;
 
 @Data
 public class Film {
+    @Id
     private int id;
     @NotBlank(message = "Название фильма не может быть пустым.")
     private final String name;

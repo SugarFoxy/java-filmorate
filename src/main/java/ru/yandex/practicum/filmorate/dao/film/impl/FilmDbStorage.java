@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.controllers.sorts.QueryBy;
 import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -247,40 +248,55 @@ public class FilmDbStorage implements FilmStorage {
         return commonFilms;
     }
 
-    public List<Film> searchFilm(String query, String searchBy) {
+    public List<Film> searchFilm(String query, List<QueryBy> searchBy) {
         final String stmtForFilm =
                 "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
                         "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
-                        "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') " +
+                        // запрос вернет все данные из таблицы films_model и количество лайков для каждого фильма
+                        "WHERE fm.title ILIKE '%'||?||'%' " +
+                        // в названии которых содержится искомая подстрока
                         "GROUP BY fm.film_id ORDER BY count_like DESC";
+        // отсортированные по количеству лайков
         final String stmtForDirector =
                 "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
                         "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
+                        // запрос вернет все данные из таблицы films_model и количество лайков для каждого фильма
                         "WHERE fm.film_id in " +
                         "(SELECT fd.film_id FROM films_directors fd " +
                         "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
-                        "WHERE LOWER(dm.director_name) LIKE LOWER('%'||?||'%'))" +
+                        "WHERE dm.director_name ILIKE '%'||?||'%')" +
+                        // в имени режиссера которых содержится искомая подстрока
                         "GROUP BY fm.film_id ORDER BY count_like DESC";
+        // отсортированные по количеству лайков
         final String stmtForDirectorAndTitle =
                 "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
                         "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
-                        "WHERE LOWER(fm.title) LIKE LOWER('%'||?||'%') OR " +
+                        // запрос вернет все данные из таблицы films_model и количество лайков для каждого фильма
+                        "WHERE fm.title ILIKE '%'||?||'%' OR " +
+                        // в названии которых содержится искомая подстрока
                         "fm.film_id in " +
                         "(SELECT fd.film_id FROM films_directors fd " +
                         "LEFT JOIN directors_model d ON fd.director_id = d.DIRECTOR_ID " +
-                        "WHERE LOWER(d.director_name) LIKE LOWER('%'||?||'%')) " +
+                        "WHERE d.director_name ILIKE '%'||?||'%') " +
+                        // либо в имени режиссера которых содержится та же подстрока
                         "GROUP BY fm.film_id ORDER BY count_like DESC";
+        // отсортированные по количеству лайков
 
         SqlRowSet filmRows;
-        switch (searchBy) {
-            case "title":
-                filmRows = jdbcTemplate.queryForRowSet(stmtForFilm, query);
+        switch (searchBy.size()) {
+            case 1:
+                switch (searchBy.get(0)) {
+                    case TITLE:
+                        filmRows = jdbcTemplate.queryForRowSet(stmtForFilm, query);
+                        break;
+                    case DIRECTOR:
+                        filmRows = jdbcTemplate.queryForRowSet(stmtForDirector, query);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Необрабатываемый параметр searchBy - " + searchBy + ".");
+                }
                 break;
-            case "director":
-                filmRows = jdbcTemplate.queryForRowSet(stmtForDirector, query);
-                break;
-            case "director,title":
-            case "title,director":
+            case 2:
                 filmRows = jdbcTemplate.queryForRowSet(stmtForDirectorAndTitle, query, query);
                 break;
             default:
@@ -289,26 +305,28 @@ public class FilmDbStorage implements FilmStorage {
         return fillListWithFilms(filmRows);
     }
 
+    /**
+     * 1) USER_LIKES - Лайки установленные пользователем
+     * 2) INTERSECTED - Пользователи с количеством совпадений по лайкам
+     * 3) RELATED_USER - Пользователь с наибольшим количеством совпадений по лайкам
+     * 4) RECOMENDED - Итоговый набор с рекомендуемыми фильмами
+     **/
     @Override
     public List<Film> getRecommendationsByUser(int userId) {
         final String sql =
-                "SELECT * " +
-                        "FROM (" +
-                        "SELECT " +
-                        "f.*," +
-                        "(SELECT COUNT(1) FROM films_likes l0 " +
+                "SELECT FILMS.*,COUNT(LIKES.like_id) as count_like FROM films_likes AS RECOMENDED " +
+                        "LEFT JOIN films_model as FILMS on RECOMENDED.film_id = FILMS.film_id " +
+                        "LEFT JOIN films_likes AS LIKES on FILMS.film_id = LIKES.film_id " +
                         "WHERE " +
-                        "l0.film_id != f.film_id AND " +
-                        "l0.user_id IN ( " +
-                        "SELECT l1.user_id " +
-                        "FROM films_likes l1 WHERE l1.film_id = f.film_id) AND " +
-                        "EXISTS ( " +
-                        "SELECT NULL FROM films_likes l2 " +
-                        "WHERE l2.user_id = ? AND l2.film_id = l0.film_id)) rate " +
-                        "FROM films_model f " +
-                        "WHERE (f.film_id, ?) NOT IN (SELECT film_id, user_id FROM films_likes)) " +
-                        "WHERE rate > 0 " +
-                        "ORDER BY rate DESC";
-        return fillListWithFilms(jdbcTemplate.queryForRowSet(sql, userId, userId));
+                        "       RECOMENDED.user_id in " +
+                        "           (SELECT RELATED_USER.user_id FROM " +
+                        "               (SELECT INTERSECTED.user_id, COUNT(FILM_ID) AS INTERSECTIONS_COUNT FROM films_likes AS INTERSECTED " +
+                        "               WHERE INTERSECTED.user_id != ? and  INTERSECTED.film_id IN  (SELECT FILM_ID FROM films_likes AS USER_LIKES WHERE user_id = ?) " +
+                        "               GROUP BY INTERSECTED.user_id ORDER BY INTERSECTIONS_COUNT DESC) " +
+                        "           AS RELATED_USER LIMIT 1) " +
+                        "   AND " +
+                        "       RECOMENDED.FILM_ID NOT IN (SELECT FILM_ID FROM films_likes AS USER_LIKES WHERE user_id = ?) " +
+                        "GROUP BY FILMS.film_id ";
+        return fillListWithFilms(jdbcTemplate.queryForRowSet(sql, userId, userId, userId));
     }
 }

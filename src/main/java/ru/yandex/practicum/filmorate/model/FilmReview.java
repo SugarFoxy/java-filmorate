@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -11,6 +12,7 @@ public class FilmReview {
     private User user;
     @NotNull(message = "отзыв должен быть оставлен на фильм")
     private Film film;
+    @Id
     private int id;
     @NotBlank(message = "отзыв не может быть пустым")
     private String content;

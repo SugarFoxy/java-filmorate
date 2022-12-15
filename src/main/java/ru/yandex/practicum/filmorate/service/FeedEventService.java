@@ -18,12 +18,8 @@ public class FeedEventService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    public FeedEventService(FeedEventStorage eventStorage) {
+    public FeedEventService(FeedEventStorage eventStorage, ObjectMapper objectMapper) {
         this.eventStorage = eventStorage;
-    }
-
-    @Autowired
-    public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 

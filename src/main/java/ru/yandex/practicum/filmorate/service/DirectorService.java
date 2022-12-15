@@ -43,7 +43,7 @@ public class DirectorService {
         if (bindingResult.hasErrors()) {
             for (ObjectError error : bindingResult.getAllErrors()) {
                 throw new ValidationException(error.getDefaultMessage());
-            }
-        }
+            } // Используетс для выбрасования ValidationException при ошибках валидации объекта
+        }//Перенесено все в сервесный слой что бы в контролере не было логики
     }
 }

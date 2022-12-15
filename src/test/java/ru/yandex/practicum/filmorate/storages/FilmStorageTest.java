@@ -24,6 +24,8 @@ import java.util.*;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.yandex.practicum.filmorate.controllers.sorts.QueryBy.DIRECTOR;
+import static ru.yandex.practicum.filmorate.controllers.sorts.QueryBy.TITLE;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -312,7 +314,7 @@ public class FilmStorageTest {
         int filmTwoId = filmStorage.addFilm(searchFilmTwo).getId();
         filmStorage.addFilm(searchFilmThree); // добавили три фильма
         likesStorage.addLikeToFilm(filmTwoId, firstUser.getId()); //юзер поставил лайк searchFilmTwo
-        List<Film> searchFilms = filmStorage.searchFilm("пОиС", "title,director");
+        List<Film> searchFilms = new ArrayList<>(filmStorage.searchFilm("пОиС", List.of(TITLE, DIRECTOR)));
         System.out.println(searchFilms.size());
         System.out.println(searchFilms);
         assertEquals("Название", searchFilms.get(0).getName());

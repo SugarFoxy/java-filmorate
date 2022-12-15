@@ -2,12 +2,16 @@ package ru.yandex.practicum.filmorate.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
+@NoArgsConstructor
 public class FilmReviewDto {
+    @Id
     private int reviewId;
     @NotBlank(message = "отзыв не может быть пустым")
     private String content;
@@ -19,9 +23,6 @@ public class FilmReviewDto {
     @NotNull(message = "отзыв должен быть оставлен на фильм")
     private Integer filmId;
     private Integer useful = 0;
-
-    public FilmReviewDto() {
-    }
 
     public FilmReviewDto(String content, Boolean isPositive, Integer userId, Integer filmId, Integer useful) {
         this.content = content;
@@ -39,6 +40,4 @@ public class FilmReviewDto {
         this.filmId = filmId;
         this.useful = useful;
     }
-
-
 }

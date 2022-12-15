@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 
 @Data
 public class User {
+    @Id
     private int id;
     @Email(message = "Введен некорректный email.")
     private final String email;
