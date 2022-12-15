@@ -282,7 +282,7 @@ public class FilmStorageTest {
 
         List<Film> topFilms = filmStorage.getPopularByGenreAndYear(genreComedy, 1999, 10);
         List<Film> topFilmsNotGenre = filmStorage.getPopularByGenreAndYear(null, 2000, 10);
-        List<Film> topFilmsNotYear = filmStorage.getPopularByGenreAndYear(genreComedy, 0, 10);
+        List<Film> topFilmsNotYear = filmStorage.getPopularByGenreAndYear(genreComedy, null, 10);
 
         assertEquals(1, topFilms.size());
         assertEquals(2, topFilmsNotGenre.size());
