@@ -1,4 +1,12 @@
 # java-filmorate
 Template repository for Filmorate project.
-![image](https://user-images.githubusercontent.com/106406397/207454460-3667050d-1eba-4e44-88fd-63490f27a32b.png)
-
+![er filmorate](https://user-images.githubusercontent.com/86505088/203482192-a4001ac4-b8d4-4c46-90b1-c7b474f367e5.png)
+В проекте реализован функционал:
+1 Отзывы
+2 Общие Фильмы
+3 Лента событий
+4 Добавление режиссёров в фильмы
+5 Поиск
+6 Вывод самых популярных фильмов
+7 Удаление фильмов и пользователей
+8 Рекомендации

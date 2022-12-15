@@ -1,68 +1,31 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class User {
-    private Integer id;
+    @Id
+    private int id;
+    @Email(message = "Введен некорректный email.")
+    private final String email;
+    @NotBlank(message = "Логин не может быть пустым.")
+    @Pattern(regexp = "\\S+", message = "Логин не должен содержать пробелы.")
+    private final String login;
     private String name;
-    @NotNull(message = "Email не может отсутствовать")
-    @NotBlank(message = "Email не может быть пустым")
-    @Email(message = "Email должен быть действительным")
-    private String email;
-    @NotNull(message = "логин не может быть null")
-    @NotBlank(message = "логин не может быть пустым")
-    private String login;
-    @NotNull(message = "День рождения отсутствует")
-    @Past(message = "День рождения не должен быть в будущем")
-    private LocalDate birthday;
-    private List<Integer> friends;
+    @Past(message = "День рождения не может быть в будущем.")
+    private final LocalDate birthday;
 
-    public User(Integer id, String email, String login, String name, LocalDate birthday) {
-        this.id = id;
+    public User(String email, String login, String name, LocalDate birthday) {
         this.email = email;
         this.login = login;
         this.name = name;
         this.birthday = birthday;
-    }
-
-    public List<Integer> getFriends() {
-        createFriends();
-        return friends;
-    }
-
-    public void setFriends(List<Integer> friends) {
-        createFriends();
-        this.friends = friends;
-    }
-
-    public void addFriend(Integer id) {
-        createFriends();
-        friends.add(id);
-    }
-
-    public void deleteFriend(Integer id) {
-        createFriends();
-        friends.remove(id);
-    }
-
-    private void createFriends() {
-        if (friends == null) {
-            friends = new ArrayList<>();
-        }
     }
 }
