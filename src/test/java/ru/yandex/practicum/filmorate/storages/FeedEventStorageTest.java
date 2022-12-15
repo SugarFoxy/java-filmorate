@@ -32,7 +32,7 @@ public class FeedEventStorageTest {
 
     @AfterEach
     public void clear() {
-        jdbcTemplate.update("DELETE FROM users_model");
+        jdbcTemplate.update("DELETE FROM users_model WHERE USER_ID < 100");
     }
 
     @Test

@@ -8,6 +8,7 @@ import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 public class FeedEvent {
+    @Id
     private int eventId;
     private long timestamp;
     private int userId;
