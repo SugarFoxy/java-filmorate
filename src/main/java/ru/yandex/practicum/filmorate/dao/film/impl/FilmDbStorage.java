@@ -177,7 +177,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularByGenreAndYear(Genre genre, int year, int count) {
+    public List<Film> getPopularByGenreAndYear(Genre genre, Integer year, int count) {
         return getAllFilms().stream()
                 .filter(getFilter(genre, year))
                 .sorted(Comparator.comparingInt(filmUtils::getAmountLikesByFilmId).reversed())
@@ -185,10 +185,10 @@ public class FilmDbStorage implements FilmStorage {
                 .collect(Collectors.toList());
     }
 
-    private Predicate<Film> getFilter(Genre genre, int year) {
+    private Predicate<Film> getFilter(Genre genre, Integer year) {
         if (genre == null) {
             return (Film film) -> film.getReleaseDate().getYear() == year;
-        } else if (year <= 0) {
+        } else if (year == null) {
             return (Film film) -> film.getGenres().contains(genre);
         } else {
             return (Film film) -> film.getGenres().contains(genre) && film.getReleaseDate().getYear() == year;

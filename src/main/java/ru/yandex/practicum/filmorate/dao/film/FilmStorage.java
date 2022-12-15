@@ -20,7 +20,7 @@ public interface FilmStorage {
 
     List<Film> getMostLikedFilms(int limit);
 
-    List<Film> getPopularByGenreAndYear(Genre genre, int year, int count);
+    List<Film> getPopularByGenreAndYear(Genre genre, Integer year, int count);
 
     List<Film> getAllFilmsByDirector(int directorId);
 

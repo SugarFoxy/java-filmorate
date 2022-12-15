@@ -54,10 +54,10 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-    public List<Film> getMostLikedFilms(int genre, int year, int count) {
-        if (genre <= 0 && year <= 0) {
+    public List<Film> getMostLikedFilms(Integer genre, Integer year, int count) {
+        if (genre == null && year == null) {
             return filmStorage.getMostLikedFilms(count);
-        } else if (genre <= 0) {
+        } else if (genre == null) {
             return filmStorage.getPopularByGenreAndYear(null, year, count);
         } else {
             return filmStorage.getPopularByGenreAndYear(genreStorage.getGenreById(genre), year, count);

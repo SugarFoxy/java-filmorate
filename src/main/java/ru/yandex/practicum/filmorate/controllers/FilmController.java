@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controllers.sorts.QueryBy;
@@ -48,9 +49,9 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getMostLikedFilms(@RequestParam(defaultValue = "10") int count,
-                                        @RequestParam(defaultValue = "0") int genreId,
-                                        @RequestParam(defaultValue = "0") int year) {
+    public List<Film> getMostLikedFilms(@RequestParam(defaultValue = "10") Integer count,
+                                        @RequestParam()  @Nullable Integer genreId,
+                                        @RequestParam()  @Nullable Integer year) {
         return filmService.getMostLikedFilms(genreId, year, count);
     }
 
