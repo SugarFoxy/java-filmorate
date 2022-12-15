@@ -32,6 +32,7 @@ public class FeedEventStorageTest {
     private UserStorage userStorage;
 
     @Test
+    @Sql("classpath:data.sql")
     public void testGettingFeedWhenEmpty() {
         assertEquals(Collections.emptyList(), eventStorage.getByUserId(1));
     }
