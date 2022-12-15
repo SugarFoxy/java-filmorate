@@ -249,55 +249,39 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public List<Film> searchFilm(String query, List<QueryBy> searchBy) {
-        final String stmtForFilm =
-                "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
-                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
-                        // запрос вернет все данные из таблицы films_model и количество лайков для каждого фильма
-                        "WHERE fm.title ILIKE '%'||?||'%' " +
-                        // в названии которых содержится искомая подстрока
-                        "GROUP BY fm.film_id ORDER BY count_like DESC";
-        // отсортированные по количеству лайков
-        final String stmtForDirector =
-                "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
-                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
-                        // запрос вернет все данные из таблицы films_model и количество лайков для каждого фильма
-                        "WHERE fm.film_id in " +
-                        "(SELECT fd.film_id FROM films_directors fd " +
-                        "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
-                        "WHERE dm.director_name ILIKE '%'||?||'%')" +
-                        // в имени режиссера которых содержится искомая подстрока
-                        "GROUP BY fm.film_id ORDER BY count_like DESC";
-        // отсортированные по количеству лайков
-        final String stmtForDirectorAndTitle =
-                "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
-                        "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
-                        // запрос вернет все данные из таблицы films_model и количество лайков для каждого фильма
-                        "WHERE fm.title ILIKE '%'||?||'%' OR " +
-                        // в названии которых содержится искомая подстрока
-                        "fm.film_id in " +
-                        "(SELECT fd.film_id FROM films_directors fd " +
-                        "LEFT JOIN directors_model d ON fd.director_id = d.DIRECTOR_ID " +
-                        "WHERE d.director_name ILIKE '%'||?||'%') " +
-                        // либо в имени режиссера которых содержится та же подстрока
-                        "GROUP BY fm.film_id ORDER BY count_like DESC";
-        // отсортированные по количеству лайков
+
+        final String base_sql = "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
+                "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +
+                "WHERE ";
+        // запрос вернет все данные из таблицы films_model и количество лайков для каждого фильма где...
+        final String director_clause = "fm.film_id in " +
+                "(SELECT fd.film_id FROM films_directors fd " +
+                "LEFT JOIN directors_model dm ON fd.director_id = dm.DIRECTOR_ID " +
+                "WHERE dm.director_name ILIKE '%'||?||'%')";
+        // имя режиссёра содержит указанную подстроку
+        final String title_clause = "fm.title ILIKE '%'||?||'%' ";
+        // название фильма содержит указанную подстроку
+        final String group_by_clause = "GROUP BY fm.film_id ORDER BY count_like DESC";
+        // сортирует по количеству лайков
 
         SqlRowSet filmRows;
+
         switch (searchBy.size()) {
             case 1:
                 switch (searchBy.get(0)) {
                     case TITLE:
-                        filmRows = jdbcTemplate.queryForRowSet(stmtForFilm, query);
+                        filmRows = jdbcTemplate.queryForRowSet(base_sql + title_clause + group_by_clause, query);
                         break;
                     case DIRECTOR:
-                        filmRows = jdbcTemplate.queryForRowSet(stmtForDirector, query);
+                        filmRows = jdbcTemplate.queryForRowSet(base_sql + director_clause + group_by_clause, query);
                         break;
                     default:
                         throw new IllegalArgumentException("Необрабатываемый параметр searchBy - " + searchBy + ".");
                 }
                 break;
             case 2:
-                filmRows = jdbcTemplate.queryForRowSet(stmtForDirectorAndTitle, query, query);
+                filmRows = jdbcTemplate.queryForRowSet(base_sql + title_clause + "OR " +
+                        director_clause + group_by_clause, query, query);
                 break;
             default:
                 throw new IllegalArgumentException("Необрабатываемый параметр searchBy - " + searchBy + ".");
