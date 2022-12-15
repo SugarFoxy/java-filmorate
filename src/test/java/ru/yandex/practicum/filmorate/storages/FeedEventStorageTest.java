@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.dao.event.FeedEventStorage;
 import ru.yandex.practicum.filmorate.dao.user.UserStorage;
 import ru.yandex.practicum.filmorate.model.EventType;
@@ -30,17 +31,13 @@ public class FeedEventStorageTest {
     @Autowired
     private UserStorage userStorage;
 
-    @AfterEach
-    public void clear() {
-        jdbcTemplate.update("DELETE FROM users_model WHERE USER_ID < 100");
-    }
-
     @Test
     public void testGettingFeedWhenEmpty() {
         assertEquals(Collections.emptyList(), eventStorage.getByUserId(1));
     }
 
     @Test
+    @Sql("classpath:data.sql")
     public void testSavingThenGetting() {
         User user = new User("test@test.tst", "test", "test", LocalDate.now());
 
@@ -62,6 +59,7 @@ public class FeedEventStorageTest {
     }
 
     @Test
+    @Sql("classpath:data.sql")
     public void testIdAscendingOrder() {
         User user = new User("test@test.tst", "test", "test", LocalDate.now());
 
@@ -81,6 +79,7 @@ public class FeedEventStorageTest {
     }
 
     @Test
+    @Sql("classpath:data.sql")
     public void testGettingByDifferentUsers() {
         User user1 = new User("test1@test.tst", "test1", "test1", LocalDate.now());
         User user2 = new User("test2@test.tst", "test2", "test2", LocalDate.now());
