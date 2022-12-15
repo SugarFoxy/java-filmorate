@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.controllers.sorts.QueryBy;
+import ru.yandex.practicum.filmorate.controllers.sorts.SearchBy;
 import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 import ru.yandex.practicum.filmorate.exception_handler.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -248,7 +248,7 @@ public class FilmDbStorage implements FilmStorage {
         return commonFilms;
     }
 
-    public List<Film> searchFilm(String query, List<QueryBy> searchBy) {
+    public List<Film> searchFilm(String query, List<SearchBy> searchBy) {
 
         final String base_sql = "SELECT fm.*, COUNT(fl.like_id) as count_like FROM films_model fm " +
                 "LEFT OUTER JOIN films_likes AS fl ON fm.film_id = fl.film_id " +

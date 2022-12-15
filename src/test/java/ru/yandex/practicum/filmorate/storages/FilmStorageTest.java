@@ -24,8 +24,8 @@ import java.util.*;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.yandex.practicum.filmorate.controllers.sorts.QueryBy.DIRECTOR;
-import static ru.yandex.practicum.filmorate.controllers.sorts.QueryBy.TITLE;
+import static ru.yandex.practicum.filmorate.controllers.sorts.SearchBy.DIRECTOR;
+import static ru.yandex.practicum.filmorate.controllers.sorts.SearchBy.TITLE;
 
 @SpringBootTest
 @AutoConfigureTestDatabase

@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controllers.sorts.QueryBy;
+import ru.yandex.practicum.filmorate.controllers.sorts.SearchBy;
+import ru.yandex.practicum.filmorate.controllers.sorts.SortBy;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -62,7 +63,7 @@ public class FilmController {
 
     @GetMapping("/search")
     public List<Film> searchFilm(@RequestParam String query,
-                                 @RequestParam("by") List<QueryBy> by) {
+                                 @RequestParam("by") List<SearchBy> by) {
         return filmService.searchFilm(query, by);
     }
 
@@ -77,7 +78,7 @@ public class FilmController {
     }
 
     @GetMapping("/director/{directorId}")
-    public List<Film> getFilmsByDirector(@PathVariable int directorId, @RequestParam("sortBy") QueryBy sortBy) {
+    public List<Film> getFilmsByDirector(@PathVariable int directorId, @RequestParam("sortBy") SortBy sortBy) {
         return filmService.getFilmsByDirector(directorId, sortBy);
     }
 }

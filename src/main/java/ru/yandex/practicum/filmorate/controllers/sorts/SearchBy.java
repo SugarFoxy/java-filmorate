@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers.sorts;
 
-public enum QueryBy {
+public enum SearchBy {
     DIRECTOR,
-    TITLE,
-    YEAR,
-    LIKES
+    TITLE
 }
