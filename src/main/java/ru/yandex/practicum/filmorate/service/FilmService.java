@@ -1,102 +1,106 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import ru.yandex.practicum.filmorate.controllers.sorts.SearchBy;
+import ru.yandex.practicum.filmorate.controllers.sorts.SortBy;
+import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.dao.likes.LikesStorage;
+import ru.yandex.practicum.filmorate.exception_handler.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.FeedEvent;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
+import ru.yandex.practicum.filmorate.model.Operation;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class FilmService {
-
-    private final FilmStorage storage;
-    private final LikeStorage likeStorage;
+    private final FilmStorage filmStorage;
+    private final LikesStorage likesStorage;
     private final GenreStorage genreStorage;
+    private final ApplicationEventPublisher publisher;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage storage,
-                       @Qualifier("likeDbStorage") LikeStorage likeStorage,
-                       @Qualifier("genreDbStorage") GenreStorage genreStorage) {
-        this.storage = storage;
-        this.likeStorage = likeStorage;
+    public FilmService(
+            FilmStorage filmStorage, LikesStorage likesStorage, GenreStorage genreStorage,
+            ApplicationEventPublisher publisher) {
+        this.filmStorage = filmStorage;
+        this.likesStorage = likesStorage;
         this.genreStorage = genreStorage;
-    }
-
-    public List<Film> getAllFilms() {
-        log.info("Получен запрос на список всех фильмов");
-        List<Film> films =storage.getFilms();
-        films.forEach(this::addGenreAndLikes);
-        return films;
+        this.publisher = publisher;
     }
 
     public Film addFilm(Film film) {
-        log.info("Получен запрос на добавление фильма");
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Фильм не может быть выпущен раньше 28.12.1895");
-        }
-        Film createdFilm =storage.addFilm(film);
-        assignGenre(film.getGenres(), createdFilm.getId());
-        return addGenreAndLikes(createdFilm) ;
+        return filmStorage.addFilm(film);
+    }
+
+    public void deleteFilm(int id) {
+        filmStorage.deleteFilm(id);
     }
 
     public Film updateFilm(Film film) {
-        log.info("Получен запрос на обнавление фильма");
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Фильм не может быть выпущен раньше 28.12.1895");
-        }
-        deleteGenre(genreStorage.getByFilmId(film.getId()), film.getId());
-        assignGenre(film.getGenres(), film.getId());
-        return addGenreAndLikes(storage.updateFilms(film));
+        return filmStorage.updateFilm(film);
     }
 
-    public Film getFilmById(Integer id) {
-        log.info("Получен запрос на получение фильма по ID");
-        return addGenreAndLikes(storage.getFilmById(id));
+    public Film getFilmById(int id) {
+        return filmStorage.getFilmById(id);
     }
 
-    public void like(Integer id, Integer userId) {
-        log.info("Получен запрос добавления лайка");
-        likeStorage.addLike(userId, id);
+    public List<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
     }
 
-    public void deleteLike(Integer id, Integer userId) {
-        log.info("Получен запрос на удаление лайка");
-        likeStorage.deleteLike(userId, id);
-    }
-
-    public List<Film> getPopularFilms(Integer count) {
-        log.info("Получен запрос на список популярных фильмов");
-        List<Film> films =storage.getFilms();
-        films.forEach(this::addGenreAndLikes);
-        return films.stream()
-                .sorted(Comparator.comparing(Film::getCountLikes).reversed())
-                .limit(count)
-                .collect(Collectors.toList());
-    }
-
-    private void assignGenre(List<Genre> genres, int filmId){
-        if (!genres.isEmpty()) {
-            genres.forEach(g -> genreStorage.assignGenre(filmId, g.getId()));
+    public List<Film> getMostLikedFilms(Integer genre, Integer year, int count) {
+        if (genre == null && year == null) {
+            return filmStorage.getMostLikedFilms(count);
+        } else if (genre == null) {
+            return filmStorage.getPopularByGenreAndYear(null, year, count);
+        } else {
+            return filmStorage.getPopularByGenreAndYear(genreStorage.getGenreById(genre), year, count);
         }
     }
 
-    private void deleteGenre(List<Genre> genres, int filmId){
-        genres.forEach(g->genreStorage.delete(filmId));
+    public List<Film> getFilmsByDirector(int directorId, SortBy sortBy) {
+        switch (sortBy) {
+            case YEAR:
+                return filmStorage.getAllFilmsByDirectorByYear(directorId);
+            case LIKES:
+                return filmStorage.getAllFilmsByDirector(directorId);
+            default:
+                throw new IllegalArgumentException("Необрабатываемый параметр sortBy - " + sortBy + ".");
+        }
     }
-    private Film addGenreAndLikes(Film film){
-        film.setGenres(genreStorage.getByFilmId(film.getId()));
-        film.setLikes(likeStorage.getFilmLikeId(film.getId()));
-        return film;
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    public List<Film> searchFilm(String query, List<SearchBy> by) {
+        return filmStorage.searchFilm(query, by);
+    }
+
+    public void addLikeToFilm(int filmId, int userId) {
+        likesStorage.addLikeToFilm(filmId, userId);
+
+        publisher.publishEvent(new FeedEvent(userId, EventType.LIKE, Operation.ADD, filmId));
+    }
+
+    public void removeLikeFromFilm(int filmId, int userId) {
+        likesStorage.removeLikeFromFilm(filmId, userId);
+
+        publisher.publishEvent(new FeedEvent(userId, EventType.LIKE, Operation.REMOVE, filmId));
+    }
+
+    public void logValidationErrors(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                throw new ValidationException(error.getDefaultMessage());
+            }
+        }
     }
 }

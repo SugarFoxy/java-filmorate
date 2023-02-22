@@ -1,31 +1,26 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.util.List;
 
 @Service
-@Slf4j
 public class GenreService {
-    private final GenreStorage storage;
+    private final GenreStorage genreStorage;
 
     @Autowired
-    public GenreService(@Qualifier("genreDbStorage") GenreStorage storage) {
-        this.storage = storage;
+    public GenreService(GenreStorage genreStorage) {
+        this.genreStorage = genreStorage;
     }
 
-    public List<Genre> getAll() {
-        log.info("Получен запрос на список жанров");
-        return storage.getAll();
+    public Genre getGenreById(int id) {
+        return genreStorage.getGenreById(id);
     }
 
-    public Genre getById(Integer id) {
-        log.info("Получен запрос на получение жанра по ID");
-        return storage.getById(id);
+    public List<Genre> getAllGenres() {
+        return genreStorage.getAllGenres();
     }
 }
