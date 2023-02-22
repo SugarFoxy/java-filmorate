@@ -46,5 +46,5 @@ REST Api, H2, JdbcTemplate
 При разработке использовался фреймворк Spring Boot и база данных H2.
 Структура базы данных представлена на изображении.
 
-![er filmorate](https://user-images.githubusercontent.com/86505088/203482192-a4001ac4-b8d4-4c46-90b1-c7b474f367e5.png)
+![er filmorate](https://github.com/SugarFoxy/java-filmorate/blob/main/resources/er_filmorate_group.png?raw=true)
 
